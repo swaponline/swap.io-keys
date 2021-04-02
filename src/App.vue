@@ -8,6 +8,7 @@
 
 <script>
 import { MediaQueryProvider } from 'vue-component-media-queries'
+import windowParentPostMessage from '@/windowParentPostMessage'
 import { MODULE_NAME as PROFILE_MODULE } from '@/store/modules/Profile'
 
 const queries = {
@@ -54,6 +55,12 @@ export default {
   mounted() {
     window.addEventListener('resize', this.resize)
     this.resize()
+    window.addEventListener('message', event => {
+      if (event.origin !== 'http://localhost') return
+      setTimeout(() => {
+        windowParentPostMessage(event.data)
+      }, 2000)
+    })
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.resize)

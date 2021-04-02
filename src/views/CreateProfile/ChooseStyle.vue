@@ -7,16 +7,16 @@
       </header>
       <div class="choose-style__cards">
         <div v-for="cardColor in cardColors" :key="cardColor.background" class="choose-style__card">
-          <div
+          <button
             class="choose-style__card-inner"
             :class="{ 'choose-style__card-inner--select': selectGradient === cardColor }"
             @click="select(cardColor)"
           >
-            <div
+            <span
               class="choose-style__card-background"
               :style="`background: linear-gradient(${cardColor.background});`"
-            ></div>
-          </div>
+            ></span>
+          </button>
           <span v-if="selectGradient === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
             >Complementary text
           </span>
@@ -182,9 +182,13 @@ export default {
   }
 
   &__card-inner {
+    display: block;
+    width: 100%;
+    height: 100%;
     padding: 5px 5px;
     border-radius: 20px;
     border: 5px solid transparent;
+    outline: none;
 
     &--select {
       border-color: $--grey;
@@ -192,6 +196,7 @@ export default {
   }
 
   &__card-background {
+    display: block;
     border-radius: 12px;
     width: 100%;
     height: 120px;
