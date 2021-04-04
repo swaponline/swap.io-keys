@@ -6,7 +6,7 @@ This repo is responsible for key storage, signing of transactions and messages, 
 Main functionality:
 
 1. Create profile (bip39 - based).
-2. Create wallet (a pair of subkeys).
+2. Create wallet (bip 32 - pair of derived subkeys).
 3. Sign transaction
 4. Sign message
 5. Get list of wallets
