@@ -43,7 +43,7 @@
 <script>
 import { mapActions } from 'vuex'
 import { MODULE_NAME as PROFILE_MODULE, SET_USERS_COLORS, FILL_CARDS } from '@/store/modules/Profile'
-import windowParentMessage from '@/windowParentPostMessage'
+import windowParentPostMessage from '@/windowParentPostMessage'
 
 export default {
   name: 'ChooseStyle',
@@ -80,7 +80,7 @@ export default {
     },
     setBackground() {
       this.actionSetUsersColors(this.selectGradient)
-      windowParentMessage(this.selectGradient)
+      windowParentPostMessage({ key: 'style', selectGradient: this.selectGradient })
     }
   }
 }
