@@ -11,13 +11,17 @@ import '@/assets/scss/base.scss'
 Vue.config.productionTip = false
 Vue.use(UI)
 const lang = getLanguage()
-loadLanguageAsync(lang).then(() => {
-  /* eslint-disable vue/require-name-property */
-  new Vue({
-    i18n,
-    router,
-    vuetify,
-    store,
-    render: h => h(App)
-  }).$mount('#app')
-})
+
+// Не разрешаем обычное открытие, только в iframe
+if (window.top !== window.self) {
+  loadLanguageAsync(lang).then(() => {
+    /* eslint-disable vue/require-name-property */
+    new Vue({
+      i18n,
+      router,
+      vuetify,
+      store,
+      render: h => h(App)
+    }).$mount('#app')
+  })
+}

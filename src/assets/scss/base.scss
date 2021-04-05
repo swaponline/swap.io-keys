@@ -11,11 +11,11 @@ body {
   font-family: $--font-base;
   font-weight: $--font-weight-regular;
   font-size: $--font-size-base;
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   text-size-adjust: 100%;
+  background: transparent;
 }
 
 button {
@@ -45,9 +45,11 @@ ul {
 html {
   overflow-y: auto;
 }
+
 .v-application {
   font-family: $--font-base;
 }
+
 .v-application--wrap {
   // также можно использовать -webkit-fill-available
   min-height: calc(var(--vh, 1vh) * 100);
