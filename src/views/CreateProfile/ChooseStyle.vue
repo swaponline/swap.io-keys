@@ -26,7 +26,9 @@
         >Complementary text
       </span>
       <div class="choose-style__buttons">
-        <swap-button class="choose-style__button" @click="goToSecretPhrase">Create</swap-button>
+        <swap-button :disabled="!isEnabledCreate" class="choose-style__button" @click="goToSecretPhrase">
+          Create
+        </swap-button>
         <swap-button
           class="choose-style__button choose-style__button--text"
           :depressed="false"
@@ -59,6 +61,9 @@ export default {
   computed: {
     cardColors() {
       return this.$store.state[PROFILE_MODULE].list
+    },
+    isEnabledCreate() {
+      return this.selectGradient.wordList.length === 24
     }
   },
   mounted() {
@@ -80,7 +85,7 @@ export default {
     },
     setBackground() {
       this.actionSetUsersColors(this.selectGradient)
-      windowParentPostMessage({ key: 'style', selectGradient: this.selectGradient })
+      windowParentPostMessage({ key: 'profile', selectGradient: this.selectGradient })
     }
   }
 }

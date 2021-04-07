@@ -12,7 +12,7 @@
     </div>
     <div class="input-secret-phrase__buttons">
       <swap-button class="input-secret-phrase__button" @click="$emit('back')">Back</swap-button>
-      <swap-button class="input-secret-phrase__button" :disabled="!isDisabledCreate" @click="create">
+      <swap-button class="input-secret-phrase__button" :disabled="!isEnabledCreate" @click="create">
         Create
       </swap-button>
     </div>
@@ -20,6 +20,9 @@
 </template>
 
 <script>
+import { mnemonicToSeedSync } from 'bip39'
+import windowParentPostMessage from '@/windowParentPostMessage'
+
 export default {
   name: 'InputSecretPhrase',
   props: {
@@ -35,7 +38,7 @@ export default {
     }
   },
   computed: {
-    isDisabledCreate() {
+    isEnabledCreate() {
       const a = this.words.toString()
       const b = this.wordsWrapper.toString()
       return a === b
@@ -44,7 +47,7 @@ export default {
   created() {
     const array = [...this.words]
     let i = 0
-    while (i < 6) {
+    while (i < 1) {
       const index = this.randomInteger(0, array.length - 1)
       if (array[index]) {
         array[index] = ''
@@ -62,9 +65,14 @@ export default {
     setValue(index, value) {
       this.wordsWrapper.splice(index, 1, value)
     },
-    create() {
-      if (this.isDisabledCreate) {
-        this.$router.push({ name: 'ChooseStyle' })
+    async create() {
+      if (this.isEnabledCreate) {
+        const a = JSON.parse(window.localStorage.getItem('profile')) || {}
+        const mnemonic = this.words.join(' ')
+        const seed = await mnemonicToSeedSync(mnemonic).toString('hex')
+        a[seed.slice(0, 20)] = seed
+        window.localStorage.setItem('profile', JSON.stringify(a))
+        windowParentPostMessage({ key: 'profile', callbackName: 'close' })
       }
     }
   }
@@ -80,72 +88,88 @@ export default {
   padding: 40px 50px 60px;
   display: flex;
   flex-direction: column;
+
   @include tablet {
     padding: 20px 20px;
   }
+
   &__title {
     width: 100%;
     text-align: center;
     font-weight: $--font-weight-semi-bold;
     font-size: $--font-size-extra-title;
+
     @include tablet {
       width: 100%;
       text-align: left;
       font-size: $--font-size-subtitle;
     }
   }
+
   &__words {
     margin: 30px 0 20px;
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+
     @include tablet {
       margin-top: 0;
     }
   }
+
   &__word {
     width: calc(100% / 6);
     font-size: $--font-size-extra-small-subtitle;
     margin-top: 30px;
+
     @include tablet {
       margin-top: 20px;
       width: calc(100% / 3);
     }
+
     @include phone {
       font-size: $--font-size-medium;
     }
+
     @include small {
       font-size: $--font-size-base;
     }
   }
+
   &__label {
     display: flex;
     border-bottom: 1px solid $--black;
     margin-right: 20px;
   }
+
   &__text {
     display: block;
     height: 100%;
     width: 100%;
     border-bottom: 1px solid transparent;
   }
+
   &__field {
     width: 100%;
     margin-left: 2px;
     margin-bottom: 2px;
     outline: none;
   }
+
   &__buttons {
     margin-top: auto;
     display: flex;
     justify-content: center;
+
     @include tablet {
       flex-wrap: wrap-reverse;
     }
   }
+
   &__button {
     margin: 0 5px;
     min-width: 174px !important;
+
     @include tablet {
       width: 100%;
       margin-bottom: 10px;
