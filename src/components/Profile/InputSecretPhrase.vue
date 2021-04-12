@@ -20,9 +20,6 @@
 </template>
 
 <script>
-import { mnemonicToSeedSync } from 'bip39'
-import windowParentPostMessage from '@/windowParentPostMessage'
-
 export default {
   name: 'InputSecretPhrase',
   props: {
@@ -47,7 +44,7 @@ export default {
   created() {
     const array = [...this.words]
     let i = 0
-    while (i < 1) {
+    while (i < 6) {
       const index = this.randomInteger(0, array.length - 1)
       if (array[index]) {
         array[index] = ''
@@ -65,14 +62,9 @@ export default {
     setValue(index, value) {
       this.wordsWrapper.splice(index, 1, value)
     },
-    async create() {
+    create() {
       if (this.isEnabledCreate) {
-        const a = JSON.parse(window.localStorage.getItem('profile')) || {}
-        const mnemonic = this.words.join(' ')
-        const seed = await mnemonicToSeedSync(mnemonic).toString('hex')
-        a[seed.slice(0, 20)] = seed
-        window.localStorage.setItem('profile', JSON.stringify(a))
-        windowParentPostMessage({ key: 'profile', callbackName: 'close' })
+        this.$emit('create')
       }
     }
   }
