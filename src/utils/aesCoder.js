@@ -141,6 +141,7 @@ export async function decryptData(encryptedData, password) {
  * @param {string} seed
  * @param {object} params объект со следующими параметрами пути:
  * @param {number} params.typeCurrency тип криптовалюты(для каждой уникальный свой номер)
+ * https://github.com/satoshilabs/slips/blob/master/slip-0044.md номера валют
  * @param {number} params.account Этот уровень разделяет пространство ключей на независимые идентификаторы
  * пользователей, поэтому кошелек никогда не смешивает монеты из разных учетных записей.
  * Но вообще 1 сид 1 аккаунт, может быть в константу вынести будет надо
