@@ -49,11 +49,11 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
 }
 
 /**
- * Шифровальщик seed строки
- * @param {string} seed seed строка, получается из мнемоник фарзы
+ * Шифровальщик seed строки с помощью пароля
+ * @param {string} seed seed строка, получается из мнемоник фразы
  * @param {string} password пароль, с помощью него шифруется seed
  * @param {} params параметры для шифрования, можно менять частично
- * @returns
+ * @returns Объект с зашифрованной
  */
 export async function encryptData(seed, password, userParams = {}) {
   try {
@@ -104,7 +104,7 @@ export async function encryptData(seed, password, userParams = {}) {
  * Расшифровывает seed строку с помощью пароля
  * @param {*} encryptedData ОбЪект, вовзращаемый из стораджа по части publicKey
  * @param {*} password пароль для расшифровки
- * @returns seed строка, используется для подтверждения операций
+ * @returns seed строка
  */
 export async function decryptData(encryptedData, password) {
   try {
@@ -134,4 +134,38 @@ export async function decryptData(encryptedData, password) {
     console.log(`Error - ${e}`)
     return ''
   }
+}
+/**
+ * Функция создания кошелька
+ * Подробнее про стандарт bip44, можно прочитать тут(https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
+ * @param {string} seed
+ * @param {object} params объект со следующими параметрами пути:
+ * @param {number} params.typeCurrency тип криптовалюты(для каждой уникальный свой номер)
+ * @param {number} params.account Этот уровень разделяет пространство ключей на независимые идентификаторы
+ * пользователей, поэтому кошелек никогда не смешивает монеты из разных учетных записей.
+ * Но вообще 1 сид 1 аккаунт, может быть в константу вынести будет надо
+ * @param {number} params.change Константа 0 используется для внешней цепочки,
+ * а константа 1 для внутренней цепочки (также известной как адреса изменения).
+ * @param {number} params.index Адреса нумеруются, начиная с индекса 0, в порядке возрастания.
+ * @param {bitcoin.Network} network сеть
+ * @returns возвращает номер кошелька
+ */
+export function createWallet(
+  seed,
+  params = {
+    typeCurrency: 0,
+    account: 0,
+    change: 0,
+    index: 0
+  },
+  network = undefined
+) {
+  const root = bitcoin.bip32.fromSeed(Buffer.from(seed, 'hex'), network)
+  const child1 = root
+    .deriveHardened(44)
+    .deriveHardened(params.typeCurrency)
+    .deriveHardened(params.account)
+    .derive(params.change)
+    .derive(params.index)
+  return child1
 }
