@@ -10,7 +10,7 @@
 
 <script>
 import { mnemonicToSeedSync } from 'bip39'
-import { encryptData, decryptData } from '@/utils/aesCoder'
+import { encryptData, decryptData } from '@/utils/chifer'
 // import windowParentPostMessage from '@/windowParentPostMessage'
 
 import { MODULE_NAME as PROFILE_MODULE } from '@/store/modules/Profile'
