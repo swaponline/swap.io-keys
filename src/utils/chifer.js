@@ -61,7 +61,7 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
 
 /**
  * Шифровальщик seed строки с помощью пароля
- * @param {string} seed seed строка, получается из мнемоник фразы
+ * @param {Buffer} seed seed строка, получается из мнемоник фразы
  * @param {string} password пароль, с помощью него шифруется seed
  * @param {} params параметры для шифрования, можно менять частично
  * @returns Объект с зашифрованной
