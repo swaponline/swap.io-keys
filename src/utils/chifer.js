@@ -1,11 +1,18 @@
 import * as bitcoin from 'bitcoinjs-lib'
 
+// default params
 const DEFAULT_CIFHER_PARAMS = {
   algoName: 'PBKDF2',
   hash: 'SHA-256',
   iterations: 250000,
   cipherName: 'AES-GCM',
   bits: 256
+}
+const DEFAULT_DERIVATION_PARAMS = {
+  typeCurrency: 0,
+  account: 0,
+  change: 0,
+  index: 0
 }
 
 // Функции трансформаторы
@@ -15,6 +22,10 @@ const buffToBase64 = buff => btoa(String.fromCharCode.apply(null, buff))
 const hexToBuff = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
 const buffToHex = buffer =>
   Array.prototype.map.call(new Uint8Array(buffer), x => `00${x.toString(16)}`.slice(-2)).join('')
+
+function getAddress(node, network) {
+  return bitcoin.payments.p2pkh({ pubkey: node.publicKey, network }).address
+}
 
 function getPasswordKey(password) {
   return window.crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey'])
@@ -151,22 +162,14 @@ export async function decryptData(encryptedData, password) {
  * @param {bitcoin.Network} network сеть
  * @returns возвращает номер кошелька
  */
-export function createWallet(
-  seed,
-  params = {
-    typeCurrency: 0,
-    account: 0,
-    change: 0,
-    index: 0
-  },
-  network = undefined
-) {
+export function createWallet(seed, userParams = {}, network = undefined) {
+  const params = { ...DEFAULT_DERIVATION_PARAMS, ...userParams }
   const root = bitcoin.bip32.fromSeed(Buffer.from(seed, 'hex'), network)
-  const child1 = root
+  const child = root
     .deriveHardened(44)
     .deriveHardened(params.typeCurrency)
     .deriveHardened(params.account)
     .derive(params.change)
     .derive(params.index)
-  return child1
+  return getAddress(child, network)
 }
