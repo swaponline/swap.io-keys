@@ -61,7 +61,7 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
 
 /**
  * Шифровальщик seed строки с помощью пароля
- * @param {Buffer} seed seed строка, получается из мнемоник фразы
+ * @param {Buffer} seed seed буффер, получается из мнемоник фразы
  * @param {string} password пароль, с помощью него шифруется seed
  * @param {} params параметры для шифрования, можно менять частично
  * @returns Объект с зашифрованной
@@ -115,7 +115,7 @@ export async function encryptData(seed, password, userParams = {}) {
  * Расшифровывает seed строку с помощью пароля
  * @param {*} encryptedData ОбЪект, вовзращаемый из стораджа по части publicKey
  * @param {*} password пароль для расшифровки
- * @returns seed строка
+ * @returns {string} seed
  */
 export async function decryptData(encryptedData, password) {
   try {
@@ -129,6 +129,7 @@ export async function decryptData(encryptedData, password) {
     const encryptedDataBuff = base64ToBuf(encryptedData.cipher.text)
     const salt = hexToBuff(encryptedData.algo.salt)
     const iv = hexToBuff(encryptedData.cipher.iv)
+
     const data = encryptedDataBuff
     const passwordKey = await getPasswordKey(password)
     const aesKey = await deriveKey(passwordKey, salt, ['decrypt'], params)
