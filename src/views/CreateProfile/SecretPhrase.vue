@@ -4,14 +4,15 @@
       <template v-if="!isRecoverProfile">
         <show-secret-phrase v-if="!isWritePhrase" :words="words" @next="isWritePhrase = true"></show-secret-phrase>
       </template>
-      <input-secret-phrase
-        v-if="isWritePhrase"
-        :words="words"
-        :is-recover-profile="isRecoverProfile"
-        @create="createProfile"
-        @recover="recoverProfile"
-        @back="back"
-      ></input-secret-phrase>
+      <template v-if="isWritePhrase || isRecoverProfile">
+        <input-secret-phrase
+          :words="words"
+          :is-recover-profile="isRecoverProfile"
+          @create="createProfile"
+          @recover="recoverProfile"
+          @back="back"
+        ></input-secret-phrase>
+      </template>
     </div>
     <form-password v-if="formVisible" @close="reject" @submit="resolve" />
   </div>
