@@ -163,7 +163,8 @@ export async function decryptData(encryptedData, password) {
  * @param {bitcoin.Network} network сеть
  * @returns возвращает номер кошелька
  */
-export function createWallet(seed, userParams = {}, network = undefined) {
+
+export function createAddress(seed, userParams = {}, network = undefined) {
   const params = { ...DEFAULT_DERIVATION_PARAMS, ...userParams }
   const root = bitcoin.bip32.fromSeed(Buffer.from(seed, 'hex'), network)
   const child = root

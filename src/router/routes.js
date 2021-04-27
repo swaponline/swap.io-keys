@@ -1,10 +1,5 @@
 export default [
   {
-    path: '/security-info',
-    name: 'SecurityInfo',
-    component: () => import(/* webpackChunkName: 'SecurityInfo' */ '@/views/CreateProfile/SecurityInfo.vue')
-  },
-  {
     path: '/secret-phrase',
     name: 'SecretPhrase',
     component: () => import(/* webpackChunkName: 'SecretPhrase' */ '@/views/CreateProfile/SecretPhrase.vue')
