@@ -26,8 +26,10 @@
         >Complementary text
       </span>
       <div class="choose-style__buttons">
-        <swap-button class="choose-style__button" @click="goToSecretPhrase">Create</swap-button>
-        <swap-button class="choose-style__button choose-style__button--text" :depressed="false" text @click="getCards">
+        <swap-button class="choose-style__button" :disabled="!isDisabledCreateProfile" @click="goToSecretPhrase"
+          >Create</swap-button
+        >
+        <swap-button class="choose-style__button choose-style__button--text" text @click="getCards">
           Refresh colors
         </swap-button>
       </div>
@@ -54,8 +56,8 @@ export default {
     }
   },
   computed: {
-    canCreateCreateProfile() {
-      return !this.selectGradient.wordList.length
+    isDisabledCreateProfile() {
+      return !!this.selectGradient.wordList.length
     }
   },
   mounted() {
