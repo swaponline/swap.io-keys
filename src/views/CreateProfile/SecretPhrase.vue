@@ -1,8 +1,17 @@
 <template>
   <div class="secret-phrase">
     <div class="secret-phrase__inner">
-      <show-secret-phrase v-if="!isWritePhrase" :words="words" @next="isWritePhrase = true"></show-secret-phrase>
-      <input-secret-phrase v-else :words="words" @create="createProfile" @back="back"></input-secret-phrase>
+      <template v-if="!isRecoverProfile">
+        <show-secret-phrase v-if="!isWritePhrase" :words="words" @next="isWritePhrase = true"></show-secret-phrase>
+      </template>
+      <input-secret-phrase
+        v-if="isWritePhrase"
+        :words="words"
+        :is-recover-profile="isRecoverProfile"
+        @create="createProfile"
+        @recover="recoverProfile"
+        @back="back"
+      ></input-secret-phrase>
     </div>
     <form-password v-if="formVisible" @close="reject" @submit="resolve" />
   </div>
@@ -15,7 +24,6 @@ import FormPassword from '@/components/Profile/FormPassword.vue'
 import { mnemonicToSeedSync } from 'bip39'
 import { encryptData } from '@/utils/chifer'
 import { getStorage, setStorage } from '@/utils/storage'
-import windowParentPostMessage from '@/windowParentPostMessage'
 import mnemonic from './mnemonic'
 
 export default {
@@ -35,36 +43,57 @@ export default {
       reject: null
     }
   },
-  created() {
-    if (mnemonic.card.wordList.length === 0) {
-      this.$router.replace({ name: 'ChooseStyle' })
-    } else {
-      this.words = mnemonic.card.wordList
+  computed: {
+    isRecoverProfile() {
+      return !mnemonic.card?.wordList
     }
+  },
+  created() {
+    if (this.isRecoverProfile) {
+      this.words = new Array(24).fill('', 0, 24)
+      return
+    }
+
+    if (mnemonic.card?.wordList.length === 0) {
+      this.$router.replace({ name: 'ChooseStyle' })
+      return
+    }
+
+    this.words = mnemonic.card?.wordList
   },
   methods: {
     back() {
       this.isWritePhrase = false
     },
+
     async createProfile() {
       try {
         const password = await new Promise((resolve, reject) => {
-          this.formVisible = true
-          this.resolve = resolve
-          this.reject = reject
+          this.toggleFormPassword(true, resolve, reject)
         })
+
         const seed = mnemonicToSeedSync(this.words.join(' '))
         const newProfile = await encryptData(seed, password)
         const profiles = JSON.parse(getStorage('profiles')) || {}
         profiles[newProfile.publicKey.slice(0, 10)] = newProfile
+
         setStorage('profiles', JSON.stringify(profiles))
-        windowParentPostMessage({ key: 'CreateProfile', newProfile })
       } catch (e) {
         console.error(`Create profile reject: ${e}`)
       }
-      this.formVisible = false
-      this.resolve = null
-      this.reject = null
+
+      this.toggleFormPassword(false)
+    },
+
+    toggleFormPassword(visible, resolve = null, reject = null) {
+      this.formVisible = visible
+      this.resolve = resolve
+      this.reject = reject
+    },
+
+    recoverProfile(recoverWords) {
+      this.words = recoverWords
+      this.createProfile()
     }
   }
 }

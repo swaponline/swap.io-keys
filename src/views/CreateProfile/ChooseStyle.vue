@@ -38,6 +38,7 @@
 <script>
 import { generateColor, getGradient } from '@/utils/generators'
 import { generateMnemonic } from 'bip39'
+import windowParentPostMessage from '@/windowParentPostMessage'
 import mnemonic from './mnemonic'
 
 export default {
@@ -50,6 +51,11 @@ export default {
         wordList: []
       },
       cardColors: []
+    }
+  },
+  computed: {
+    canCreateCreateProfile() {
+      return !this.selectGradient.wordList.length
     }
   },
   mounted() {
@@ -66,6 +72,11 @@ export default {
       }
     },
     getCards() {
+      this.selectGradient = {
+        background: '',
+        color: '',
+        wordList: []
+      }
       const list = []
       for (let i = 0; i < 4; i += 1) {
         const wordList = generateMnemonic(256).split(' ')
@@ -79,6 +90,7 @@ export default {
       this.cardColors = list
     },
     setBackground() {
+      windowParentPostMessage({ key: 'CreateProfile', selectGradient: this.selectGradient })
       mnemonic.card = this.selectGradient
     }
   }

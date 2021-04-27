@@ -1,18 +1,34 @@
 <template>
   <div class="input-secret-phrase">
-    <header class="input-secret-phrase__title">Fill in the missing words</header>
+    <header class="input-secret-phrase__title">{{ headerTitle }}</header>
     <div class="input-secret-phrase__words">
       <div v-for="(word, i) in words" :key="word + i" class="input-secret-phrase__word">
-        <label v-if="inputIndexes.includes(i)" class="input-secret-phrase__label">
-          <span> {{ i + 1 }}. </span>
-          <input type="text" class="input-secret-phrase__field" @input="setValue(i, $event.target.value)" />
-        </label>
-        <span v-else class="input-secret-phrase__text"> {{ i + 1 }}. {{ word }} </span>
+        <template v-if="!isRecoverProfile">
+          <label v-if="inputIndexes.includes(i)" class="input-secret-phrase__label">
+            <span> {{ i + 1 }}. </span>
+            <input type="text" class="input-secret-phrase__field" @input="setValue(i, $event.target.value)" />
+          </label>
+          <span v-else class="input-secret-phrase__text"> {{ i + 1 }}. {{ word }} </span>
+        </template>
+        <template v-else>
+          <label class="input-secret-phrase__label">
+            <span> {{ i + 1 }}. </span>
+            <input type="text" class="input-secret-phrase__field" @input="setValue(i, $event.target.value)" />
+          </label>
+        </template>
       </div>
     </div>
     <div class="input-secret-phrase__buttons">
       <swap-button class="input-secret-phrase__button" @click="$emit('back')">Back</swap-button>
-      <swap-button class="input-secret-phrase__button" :disabled="!isDisabledCreate" @click="create">
+      <swap-button
+        v-if="isRecoverProfile"
+        class="input-secret-phrase__button"
+        :disabled="!isDisabledRecover"
+        @click="recover"
+      >
+        Recover
+      </swap-button>
+      <swap-button v-else class="input-secret-phrase__button" :disabled="!isDisabledCreate" @click="create">
         Create
       </swap-button>
     </div>
@@ -26,6 +42,10 @@ export default {
     words: {
       type: Array,
       default: () => []
+    },
+    isRecoverProfile: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -39,9 +59,25 @@ export default {
       const a = this.words.toString()
       const b = this.wordsWrapper.toString()
       return a === b
+    },
+    isDisabledRecover() {
+      return (
+        this.wordsWrapper.length !== 0 &&
+        this.wordsWrapper.every(word => {
+          return word !== ''
+        })
+      )
+    },
+    headerTitle() {
+      return this.isRecoverProfile ? 'Your secret phrase' : 'Fill in the missing words'
     }
   },
   created() {
+    if (this.isRecoverProfile) {
+      this.wordsWrapper = [...this.words]
+      return
+    }
+
     const array = [...this.words]
     let i = 0
     while (i < 6) {
@@ -63,9 +99,10 @@ export default {
       this.wordsWrapper.splice(index, 1, value)
     },
     create() {
-      if (this.isDisabledCreate) {
-        this.$emit('create')
-      }
+      this.$emit('create')
+    },
+    recover() {
+      this.$emit('recover', this.wordsWrapper)
     }
   }
 }

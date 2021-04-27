@@ -15,7 +15,6 @@
 </template>
 
 <script>
-// component
 import SecurityInfoBlock from '@/components/Profile/SecurityInfoBlock.vue'
 import infoBlocks from './infoBlocks'
 
