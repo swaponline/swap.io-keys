@@ -1,16 +1,46 @@
-# swap.io-keys
+# Keys layer
+
 https://keys.swap.io
 
-This repo is responsible for key storage, signing of transactions and messages, creation of profiles (root keys).
+localStorage-based simple multicurrency key storage. This part of swap.io is responsible
+for storage of keys and signing messages. This includes blockchain-aware generation and signing
+algorithms but all the cryptography inside this repo is offline. To interact with the actual 
+blockchain you need connections to networks.
 
-Main functionality:
+The keys layer is isolated from the rest of repository for additional security.
 
-1. Create profile (bip39 - based).
-2. Create wallet (a pair of subkeys).
-3. Sign transaction
-4. Sign message
-5. Get list of wallets
+Main repo interacts with this via cross-frame 
+[window.postMessage()](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) routines
 
-The functionality of this repo is limited to keeping the secrets and working with the cryptography.
+The routines are wrapped in the following methods:
 
-This is done for the isolation of both the code and the limitation of access to sensitive part of the infrastructure.
+### createProfile()
+
+Creates a new profile - basically a pair of ECDSA keys. This profile is saved encrypted
+in local storage on the domain (keys.swap.io) and can further be referenced to sign txs.
+
+This method pops an iframe on your website with dialog to create a new profile.
+
+### createAddresses()
+
+Creates one or more blockchain addresses.
+
+### sign()
+
+Signs a transaction for an address.
+
+### signMessage()
+
+Signs a message by an address.
+
+### publicKey()
+
+Returns public key for a specific address.
+
+### privateKey()
+
+Pops up a dialog on your website with private key for specific address.
+
+### backupProfile()
+
+Pops up a dialog to backup a profile.
