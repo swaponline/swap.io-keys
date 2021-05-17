@@ -48,39 +48,39 @@ export const colors = generateColors()
 
 export function getSecondColors(prevColorIdx) {
   const maxNumberColors = colors.length
-  const ExcludeSimilarSize = 256
-  const ExcludeSimilarEnd = 256
-  const ExcludeSimilarStart = maxNumberColors - ExcludeSimilarEnd
-  const ExcludeOppositeStart = 768 - ExcludeSimilarSize
-  const ExcludeOppositeEnd = 768 + ExcludeSimilarSize
+  const excludeSimilarSize = 256
+  const excludeSimilarEnd = 256
+  const excludeSimilarStart = maxNumberColors - excludeSimilarEnd
+  const excludeOppositeStart = 768 - excludeSimilarSize
+  const excludeOppositeEnd = 768 + excludeSimilarSize
 
-  let calculatedPositionСurrentСolor = Math.round(
-    (randomInteger(Math.log2(256)) / 256) * (maxNumberColors - (ExcludeOppositeEnd - ExcludeOppositeStart))
+  let calculatedPositionСurrentColor = Math.round(
+    (randomInteger(Math.log2(256)) / 256) * (maxNumberColors - (excludeOppositeEnd - excludeOppositeStart))
   )
 
   //! если мы попали в запрещенный диапазон, выносим за предели запрещенного диапазона
-  if (ExcludeOppositeStart < calculatedPositionСurrentСolor && calculatedPositionСurrentСolor < ExcludeOppositeEnd) {
-    calculatedPositionСurrentСolor = ExcludeOppositeEnd + (calculatedPositionСurrentСolor - ExcludeOppositeStart)
+  if (excludeOppositeStart < calculatedPositionСurrentColor && calculatedPositionСurrentColor < excludeOppositeEnd) {
+    calculatedPositionСurrentColor = excludeOppositeEnd + (calculatedPositionСurrentColor - excludeOppositeStart)
   }
 
   //! Исключаем похожие цвета, выносим за предели несочетающегося диапазона
-  if (calculatedPositionСurrentСolor < ExcludeSimilarEnd) {
-    calculatedPositionСurrentСolor += ExcludeSimilarEnd
+  if (calculatedPositionСurrentColor < excludeSimilarEnd) {
+    calculatedPositionСurrentColor += excludeSimilarEnd
   }
 
   //! Исключаем похожие цвета за пределами массива, выносим за предели несочетающегося диапазона
-  if (calculatedPositionСurrentСolor > ExcludeSimilarStart) {
-    calculatedPositionСurrentСolor -= ExcludeSimilarEnd
+  if (calculatedPositionСurrentColor > excludeSimilarStart) {
+    calculatedPositionСurrentColor -= excludeSimilarEnd
   }
 
   //! Пересчет положения текущего цвета после исключения попадания в запрещенный диапазон и исключения похожих цветов
-  calculatedPositionСurrentСolor = prevColorIdx + calculatedPositionСurrentСolor
+  calculatedPositionСurrentColor = prevColorIdx + calculatedPositionСurrentColor
 
   //! если вышли за пределы массива, переноси в начало массива, на расстояние выхода за пределы
-  if (calculatedPositionСurrentСolor > maxNumberColors - 1) {
-    calculatedPositionСurrentСolor -= maxNumberColors - 1
+  if (calculatedPositionСurrentColor > maxNumberColors - 1) {
+    calculatedPositionСurrentColor -= maxNumberColors - 1
   }
-  return calculatedPositionСurrentСolor
+  return calculatedPositionСurrentColor
 }
 
 /**
