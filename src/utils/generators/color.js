@@ -6,6 +6,7 @@ function hexToRgb(hex) {
 
     const c = `0x${newHex.substring(1)}`
 
+    // eslint-disable-next-line no-bitwise
     return [(c >> 16) & 255, (c >> 8) & 255, c & 255]
   }
 
@@ -45,45 +46,46 @@ function generateColors() {
 
 export const colors = generateColors()
 
-export function getSecondColors(p) {
-  const maxNumberColors = 1535
-  const ex = 256
-  const ex01 = 256
-  const ex02 = maxNumberColors - ex01
-  const ex1 = 768 - ex
-  const ex2 = 768 + ex
+export function getSecondColors(prevColorIdx) {
+  const maxNumberColors = colors.length
+  const ExcludeSimilarSize = 256
+  const ExcludeSimilarEnd = 256
+  const ExcludeSimilarStart = maxNumberColors - ExcludeSimilarEnd
+  const ExcludeOppositeStart = 768 - ExcludeSimilarSize
+  const ExcludeOppositeEnd = 768 + ExcludeSimilarSize
 
-  let p2 = Math.round((randomInteger(Math.log2(256)) / 256) * (maxNumberColors - (ex2 - ex1)))
-  //! если мы попали в запрещенный диапазон
-  if (ex1 < p2 && p2 < ex2) {
-    //! выносим за предели запрещенного диапазона
-    p2 = ex2 + (p2 - ex1)
+  let calculatedPositionСurrentСolor = Math.round(
+    (randomInteger(Math.log2(256)) / 256) * (maxNumberColors - (ExcludeOppositeEnd - ExcludeOppositeStart))
+  )
+
+  //! если мы попали в запрещенный диапазон, выносим за предели запрещенного диапазона
+  if (ExcludeOppositeStart < calculatedPositionСurrentСolor && calculatedPositionСurrentСolor < ExcludeOppositeEnd) {
+    calculatedPositionСurrentСolor = ExcludeOppositeEnd + (calculatedPositionСurrentСolor - ExcludeOppositeStart)
   }
 
-  //! Если мы попали в несочетающийся цвет
-  if (p2 < ex01) {
-    //! выносим за предели несочетающегося диапазона
-    p2 += ex01
+  //! Исключаем похожие цвета, выносим за предели несочетающегося диапазона
+  if (calculatedPositionСurrentСolor < ExcludeSimilarEnd) {
+    calculatedPositionСurrentСolor += ExcludeSimilarEnd
   }
 
-  //! Если мы попали в несочетающийся цвет
-  if (p2 > ex02) {
-    //! выносим за предели несочетающегося диапазона
-    p2 -= ex01
+  //! Исключаем похожие цвета за пределами массива, выносим за предели несочетающегося диапазона
+  if (calculatedPositionСurrentСolor > ExcludeSimilarStart) {
+    calculatedPositionСurrentСolor -= ExcludeSimilarEnd
   }
 
-  p2 = p + p2
-  //! если вышли за пределы массива
-  if (p2 > maxNumberColors - 1) {
-    //! переноси в начало массива, на расстояние выхода за пределы
-    p2 -= maxNumberColors - 1
+  //! Пересчет положения текущего цвета после исключения попадания в запрещенный диапазон и исключения похожих цветов
+  calculatedPositionСurrentСolor = prevColorIdx + calculatedPositionСurrentСolor
+
+  //! если вышли за пределы массива, переноси в начало массива, на расстояние выхода за пределы
+  if (calculatedPositionСurrentСolor > maxNumberColors - 1) {
+    calculatedPositionСurrentСolor -= maxNumberColors - 1
   }
-  return p2
+  return calculatedPositionСurrentСolor
 }
 
 /**
  *
- * @param {string} colorHex затемняемый цве тв формате HEX
+ * @param {string} colorHex затемняемый цвет в формате HEX
  * @param {number} dimmingPercentage процент на который затемняется цвет
  */
 export function getDarkenedColor(colorHex = '', dimmingPercentage = 0) {
