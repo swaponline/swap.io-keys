@@ -9,6 +9,7 @@ blockchain you need connections to networks.
 
 The keys layer is isolated from the rest of repository for additional security.
 
+
 Main repo interacts with this via cross-frame 
 [window.postMessage()](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) routines
 
@@ -39,7 +40,15 @@ Returns public key for a specific address.
 
 ### privateKey()
 
+0. Pops up a dialog on your website with private key for specific address.
+1. Create profile (bip39 - based).
+2. Create wallet (bip 32 - pair of derived subkeys).
+3. Sign transaction
+4. Sign message
+5. Get list of wallets
+
 Pops up a dialog on your website with private key for specific address.
+
 
 ### backupProfile()
 
