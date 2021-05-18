@@ -3,13 +3,13 @@ import { getDarkenedColor, getSecondColors, colors } from './color'
 import { randomInteger } from './randomizer'
 
 // eslint-disable-next-line import/prefer-default-export
-export class GenerateUserColorTheme {
+export class UserColorTheme {
   constructor() {
     this.DEFAULT_WIDTH_SVG = 200
     this.DEFAULT_HEIGHT_SVG = 120
-    this.DEFAULT_HEIGHT_RECTANGLES = 300
+    this.DEFAULT_HEIGHT_RECTANGLES = 500
     this.DEFAULT_OFFSET_RECT_X = -100
-    this.DEFAULT_OFFSET_RECT_Y = -100
+    this.DEFAULT_OFFSET_RECT_Y = -200
     this.widthRects = this.generateWidthRects()
     this.rectsModel = this.generateRectModel()
     this.ellipseModel = this.generateEllipseModel()
@@ -18,19 +18,19 @@ export class GenerateUserColorTheme {
   // eslint-disable-next-line class-methods-use-this
   generateWidthRects() {
     const quantityRects = randomInteger(Math.log2(3)) + 4
-    const localWidthRests = []
+    const localWidthRects = []
     for (let i = 0; i < quantityRects; i += 1) {
-      localWidthRests.push(20 + randomInteger(Math.log2(20)))
+      localWidthRects.push(20 + randomInteger(Math.log2(20)))
     }
-    const sumAllWidthRects = localWidthRests.reduce((a, b) => a + b, 0)
+    const sumAllWidthRects = localWidthRects.reduce((a, b) => a + b, 0)
 
     if (sumAllWidthRects < 100 || sumAllWidthRects > 100) {
-      return localWidthRests.map(width => {
+      return localWidthRects.map(width => {
         const newWidth = (100 / sumAllWidthRects) * width
         return Number(newWidth.toFixed(2))
       })
     }
-    return localWidthRests
+    return localWidthRects
   }
 
   generateRectModel() {
