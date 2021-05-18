@@ -36,7 +36,9 @@ function getPasswordKey(password) {
  * @param {string} seed
  * @returns
  */
-const getPublicKey = seed => bitcoin.bip32.fromSeed(seed).publicKey.toString('hex')
+export const getPublicKey = seed => bitcoin.bip32.fromSeed(seed).publicKey
+
+// .toString('hex')
 
 /**
  * Для получения секретного ключа из главного ключа.
