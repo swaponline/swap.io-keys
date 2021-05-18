@@ -12,10 +12,7 @@
             :class="{ 'choose-style__card-inner--select': selectGradient === cardColor }"
             @click="select(cardColor)"
           >
-            <div
-              class="choose-style__card-background"
-              :style="`background: linear-gradient(${cardColor.background});`"
-            ></div>
+            <div class="choose-style__card-background" :style="`background-image: ${cardColor.background}`"></div>
           </div>
           <span v-if="selectGradient === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
             >Complementary text
@@ -29,7 +26,7 @@
         <swap-button class="choose-style__button" :disabled="!isDisabledCreateProfile" @click="goToSecretPhrase"
           >Create</swap-button
         >
-        <swap-button class="choose-style__button choose-style__button--text" text @click="getCards">
+        <swap-button class="choose-style__button choose-style__button--text" text @click="refreshColors">
           Refresh colors
         </swap-button>
       </div>
@@ -38,21 +35,27 @@
 </template>
 
 <script>
-import { generateColor, getGradient } from '@/utils/generators'
-import { generateMnemonic } from 'bip39'
+import { derivedRandom } from '@/utils/generators/randomizer'
+import { generateMnemonic, mnemonicToSeed } from 'bip39'
+import { getPublicKey } from '@/utils/chifer'
 import windowParentPostMessage from '@/windowParentPostMessage'
+import { UserColorTheme } from '@/utils/generators/background'
+import { Base64 } from 'js-base64'
 import mnemonic from './mnemonic'
+
+const QUANTITY_CARDS = 4
 
 export default {
   name: 'ChooseStyle',
   data() {
     return {
       selectGradient: {
-        background: '',
-        color: '',
+        background: null,
+        color: null,
         wordList: []
       },
-      cardColors: []
+      cardColors: [],
+      publicKeys: []
     }
   },
   computed: {
@@ -60,7 +63,8 @@ export default {
       return !!this.selectGradient.wordList.length
     }
   },
-  mounted() {
+  async mounted() {
+    await this.getMnemonic()
     this.getCards()
   },
   methods: {
@@ -68,29 +72,56 @@ export default {
       this.selectGradient = color
       this.setBackground()
     },
+
     goToSecretPhrase() {
       if (this.selectGradient.wordList.length > 0) {
         this.$router.push({ name: 'SecretPhrase' })
       }
     },
-    getCards() {
-      this.selectGradient = {
-        background: '',
-        color: '',
-        wordList: []
+
+    async getMnemonic() {
+      const seedsResolvers = []
+      for (let i = 0; i < QUANTITY_CARDS; i += 1) {
+        this.selectGradient.wordList = generateMnemonic(256).split(' ')
+        const seed = mnemonicToSeed(this.selectGradient.wordList.join(''))
+        seedsResolvers.push(seed)
       }
+      const seeds = await Promise.all(seedsResolvers)
+
+      seeds.forEach(seed => {
+        const publicKey = getPublicKey(seed)
+        this.publicKeys.push(publicKey)
+      })
+    },
+
+    getCards() {
       const list = []
-      for (let i = 0; i < 4; i += 1) {
-        const wordList = generateMnemonic(256).split(' ')
-        const color = generateColor()
+      for (let i = 0; i < this.publicKeys.length; i += 1) {
+        derivedRandom(this.publicKeys[i])
+        const { background, color } = new UserColorTheme().getColorTheme()
+        const svgBase64 = `url("data:image/svg+xml;base64,${Base64.encode(background)}")`
+
         list.splice(i, 1, {
-          background: getGradient(color),
+          background: svgBase64,
           color,
-          wordList
+          wordList: this.selectGradient.wordList
         })
       }
+
       this.cardColors = list
     },
+
+    async refreshColors() {
+      this.selectGradient = {
+        background: null,
+        color: null,
+        wordList: []
+      }
+      this.publicKeys = []
+      await this.getMnemonic()
+      this.getCards()
+    },
+
     setBackground() {
       windowParentPostMessage({ key: 'CreateProfile', selectGradient: this.selectGradient })
       mnemonic.card = this.selectGradient
@@ -198,6 +229,7 @@ export default {
     padding: 5px 5px;
     border-radius: 20px;
     border: 5px solid transparent;
+    cursor: pointer;
 
     &--select {
       border-color: $--grey;
@@ -205,6 +237,7 @@ export default {
   }
 
   &__card-background {
+    background-size: 100% 100%;
     border-radius: 12px;
     width: 100%;
     height: 120px;
