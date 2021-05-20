@@ -1,0 +1,57 @@
+@import 'vars';
+@import 'media';
+@import '~normalize.css';
+@import 'stylesheet';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $--font-base;
+  font-weight: $--font-weight-regular;
+  font-size: $--font-size-base;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  text-size-adjust: 100%;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  background-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0;
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Переопределяем стили vuetify
+html {
+  overflow-y: auto;
+}
+
+.v-application {
+  font-family: $--font-base;
+}
+// Переопределим некоторые стили для vuetify
+// уберем левый отступ у вкладок на маленьких устройствах
+.v-slide-group__prev {
+  &--disabled {
+    display: none !important;
+  }
+}
