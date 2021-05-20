@@ -2,13 +2,16 @@
 node_modules
 /dist
 
+# test artifacts
 /tests/e2e/videos/
 /tests/e2e/screenshots/
-
 
 # local env files
 .env.local
 .env.*.local
+
+# lock files
+*.lock
 
 # Log files
 npm-debug.log*
@@ -24,3 +27,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+report
+
+.env*

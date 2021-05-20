@@ -34,7 +34,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { derivedRandom } from '@/utils/generators/randomizer'
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
 import { getPublicKey } from '@/utils/chifer'
