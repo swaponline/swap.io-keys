@@ -68,6 +68,6 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,vue}": "vue-cli-service lint --mode production --fix"
+    "*.{js,jsx,ts,tsx,vue}": "vue-cli-service lint --mode production --fix"
   }
 }
