@@ -22,9 +22,13 @@
 import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
 import InputSecretPhrase from '@/components/Profile/InputSecretPhrase.vue'
 import FormPassword from '@/components/Profile/FormPassword.vue'
-import { mnemonicToSeedSync } from 'bip39'
-import { encryptData } from '@/utils/chifer'
+import { mnemonicToSeed } from 'bip39'
+import { encryptData, getPublicKey } from '@/utils/chifer'
+import { getUserColorTheme } from '@/utils/getUserColorTheme'
+import windowParentPostMessage from '@/windowParentPostMessage'
 import { getStorage, setStorage } from '@/utils/storage'
+import { REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
+import { RECOVER_PROFILE, CREATE_PROFILE } from '@/constants/windowKey'
 import mnemonic from './mnemonic'
 
 export default {
@@ -64,6 +68,14 @@ export default {
   },
   methods: {
     back() {
+      if (this.isRecoverProfile) {
+        windowParentPostMessage({
+          key: RECOVER_PROFILE,
+          data: {
+            type: REDIRECT_TO_HOME
+          }
+        })
+      }
       this.isWritePhrase = false
     },
 
@@ -73,17 +85,28 @@ export default {
           this.toggleFormPassword(true, resolve, reject)
         })
 
-        const seed = mnemonicToSeedSync(this.words.join(' '))
+        const seed = await mnemonicToSeed(this.words.join(' '))
+
+        if (this.isRecoverProfile) {
+          await this.recoverBackground(seed)
+        }
+
         const newProfile = await encryptData(seed, password)
         const profiles = JSON.parse(getStorage('profiles')) || {}
         profiles[newProfile.publicKey.slice(0, 10)] = newProfile
-
         setStorage('profiles', JSON.stringify(profiles))
       } catch (e) {
         console.error(`Create profile reject: ${e}`)
       }
 
       this.toggleFormPassword(false)
+
+      windowParentPostMessage({
+        key: this.isRecoverProfile ? RECOVER_PROFILE : CREATE_PROFILE,
+        data: {
+          type: REDIRECT_TO_HOME
+        }
+      })
     },
 
     toggleFormPassword(visible, resolve = null, reject = null) {
@@ -95,6 +118,21 @@ export default {
     recoverProfile(recoverWords) {
       this.words = recoverWords
       this.createProfile()
+    },
+
+    recoverBackground(seed) {
+      return new Promise(resolve => {
+        const publicKey = getPublicKey(seed)
+
+        windowParentPostMessage({
+          key: RECOVER_PROFILE,
+          data: {
+            type: SET_BACKGROUND,
+            selectGradient: getUserColorTheme(publicKey)
+          }
+        })
+        return resolve()
+      })
     }
   }
 }
