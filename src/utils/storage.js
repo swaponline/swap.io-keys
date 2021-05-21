@@ -1,15 +1,17 @@
+const storage = localStorage
+
 export const setLanguage = lang => {
-  window.localStorage.setItem('lang', lang)
+  storage.setItem('lang', JSON.stringify(lang))
 }
 
 export const getLanguage = () => {
-  return window.localStorage.getItem('lang') || 'en'
+  return JSON.parse(storage.getItem('lang')) || 'en'
 }
 
 export const getStorage = key => {
-  return window.localStorage.getItem(key)
+  return JSON.parse(storage.getItem(key))
 }
 
 export const setStorage = (key, data) => {
-  return window.localStorage.setItem(key, data)
+  return storage.setItem(key, JSON.stringify(data))
 }
