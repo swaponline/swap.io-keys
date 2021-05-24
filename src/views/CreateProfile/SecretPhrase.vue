@@ -27,7 +27,7 @@ import { encryptData, getPublicKey } from '@/utils/chifer'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { getStorage, setStorage } from '@/utils/storage'
-import { REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
+import { REDIRECT_TO_HOME, SET_BACKGROUND, LOADING } from '@/constants/createProfile'
 import { RECOVER_PROFILE, CREATE_PROFILE } from '@/constants/windowKey'
 import mnemonic from './mnemonic'
 
@@ -52,6 +52,15 @@ export default {
     isRecoverProfile() {
       return !mnemonic.card?.wordList
     }
+  },
+  mounted() {
+    windowParentPostMessage({
+      key: RECOVER_PROFILE,
+      data: {
+        type: LOADING,
+        loading: false
+      }
+    })
   },
   created() {
     if (this.isRecoverProfile) {
@@ -92,9 +101,9 @@ export default {
         }
 
         const newProfile = await encryptData(seed, password)
-        const profiles = JSON.parse(getStorage('profiles')) || {}
+        const profiles = getStorage('profiles') || {}
         profiles[newProfile.publicKey.slice(0, 10)] = newProfile
-        setStorage('profiles', JSON.stringify(profiles))
+        setStorage('profiles', profiles)
       } catch (e) {
         console.error(`Create profile reject: ${e}`)
       }
