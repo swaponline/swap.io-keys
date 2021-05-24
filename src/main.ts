@@ -14,8 +14,10 @@ Vue.use(UI)
 messageHandler()
 windowParentPostMessage({ key: 'createWindow' })
 
+const isDev = process.env.NODE_ENV === 'development'
+
 // Не разрешаем обычное открытие, только в iframe и только на определенном домене
-if (window.top !== window.self && window.location.ancestorOrigins[0] === process.env.VUE_APP_HOME_URL) {
+if (isDev || window.top !== window.self && window.location.ancestorOrigins[0] === process.env.VUE_APP_HOME_URL) {
   /* eslint-disable vue/require-name-property */
   new Vue({
     router,

@@ -1,4 +1,11 @@
 export default data => {
+  const isDev = process.env.NODE_ENV === 'development'
+
+  if (isDev) {
+    console.log(`📤 (mocked) ${JSON.stringify(data)}`)
+    return
+  }
+
   if (!(window && window.parent && typeof window.parent.postMessage === 'function')) {
     throw new Error('No `window.parent.postMessage`')
   }
