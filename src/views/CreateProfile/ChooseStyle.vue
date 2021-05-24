@@ -34,7 +34,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
 import { getPublicKey } from '@/utils/chifer'
 import windowParentPostMessage from '@/windowParentPostMessage'
@@ -80,7 +80,7 @@ export default {
     },
 
     async getMnemonic() {
-      const seedsResolvers = []
+      const seedsResolvers: Promise<Buffer>[] = []
       for (let i = 0; i < QUANTITY_CARDS; i += 1) {
         this.selectGradient.wordList = generateMnemonic(256).split(' ')
         const seed = mnemonicToSeed(this.selectGradient.wordList.join(' '))
@@ -95,7 +95,12 @@ export default {
     },
 
     getCards() {
-      const list = []
+      type listItem = {
+        background: string
+        color: string
+        wordList: string[]
+      }
+      const list: listItem[] = []
       for (let i = 0; i < this.publicKeys.length; i += 1) {
         const { background, color } = getUserColorTheme(this.publicKeys[i])
 

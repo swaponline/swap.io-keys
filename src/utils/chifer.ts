@@ -15,13 +15,16 @@ const DEFAULT_DERIVATION_PARAMS = {
   index: 0
 }
 
-let publicKey = ''
+let publicKey
 
 // Функции трансформаторы
-const base64ToBuf = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(null))
+const base64ToBuf = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+
 const buffToBase64 = buff => btoa(String.fromCharCode.apply(null, buff))
+
 // Для сохранения соли и iv в сторадже и возвращения к Uint8Array подобному виду
 const hexToBuff = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
+
 const buffToHex = buffer =>
   Array.prototype.map.call(new Uint8Array(buffer), x => `00${x.toString(16)}`.slice(-2)).join('')
 
@@ -72,45 +75,40 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
  * @returns Объект с зашифрованной
  */
 export async function encryptData(seed, password, userParams = {}) {
-  try {
-    const params = { ...DEFAULT_CIFHER_PARAMS, ...userParams }
+  const params = { ...DEFAULT_CIFHER_PARAMS, ...userParams }
 
-    const salt = window.crypto.getRandomValues(new Uint8Array(16))
-    const iv = window.crypto.getRandomValues(new Uint8Array(12))
+  const salt = window.crypto.getRandomValues(new Uint8Array(16))
+  const iv = window.crypto.getRandomValues(new Uint8Array(12))
 
-    const passwordKey = await getPasswordKey(password)
-    const aesKey = await deriveKey(passwordKey, salt, ['encrypt'], params)
-    const encryptedContent = await window.crypto.subtle.encrypt(
-      {
-        name: params.cipherName,
-        iv
-      },
-      aesKey,
-      new TextEncoder().encode(seed)
-    )
+  const passwordKey = await getPasswordKey(password)
+  const aesKey = await deriveKey(passwordKey, salt, ['encrypt'], params)
+  const encryptedContent = await window.crypto.subtle.encrypt(
+    {
+      name: params.cipherName,
+      iv
+    },
+    aesKey,
+    new TextEncoder().encode(seed)
+  )
 
-    const encryptedContentArr = new Uint8Array(encryptedContent)
-    const buff = new Uint8Array(encryptedContentArr.byteLength)
-    buff.set(encryptedContentArr)
+  const encryptedContentArr = new Uint8Array(encryptedContent)
+  const buff = new Uint8Array(encryptedContentArr.byteLength)
+  buff.set(encryptedContentArr)
 
-    return {
-      algo: {
-        name: params.algoName,
-        iterations: params.iterations,
-        hash: params.hash,
-        salt: buffToHex(salt)
-      },
-      cipher: {
-        name: params.cipherName,
-        bits: params.bits,
-        iv: buffToHex(iv),
-        text: buffToBase64(buff)
-      },
-      publicKey: publicKey.toString('hex')
-    }
-  } catch (e) {
-    console.log(`Error - ${e}`)
-    return ''
+  return {
+    algo: {
+      name: params.algoName,
+      iterations: params.iterations,
+      hash: params.hash,
+      salt: buffToHex(salt)
+    },
+    cipher: {
+      name: params.cipherName,
+      bits: params.bits,
+      iv: buffToHex(iv),
+      text: buffToBase64(buff)
+    },
+    publicKey: publicKey.toString()
   }
 }
 

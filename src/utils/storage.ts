@@ -5,11 +5,12 @@ export const setLanguage = lang => {
 }
 
 export const getLanguage = () => {
-  return JSON.parse(storage.getItem('lang')) || 'en'
+  return storage.getItem('lang') || 'en'
 }
 
 export const getStorage = key => {
-  return JSON.parse(storage.getItem(key))
+  const value = storage.getItem(key)
+  return value && JSON.parse(value)
 }
 
 export const setStorage = (key, data) => {

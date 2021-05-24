@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
 import InputSecretPhrase from '@/components/Profile/InputSecretPhrase.vue'
 import FormPassword from '@/components/Profile/FormPassword.vue'
@@ -92,8 +92,10 @@ export default {
         }
 
         const newProfile = await encryptData(seed, password)
-        const profiles = JSON.parse(getStorage('profiles')) || {}
-        profiles[newProfile.publicKey.slice(0, 10)] = newProfile
+
+        const profiles = JSON.parse(getStorage('profiles') || '{}')
+        profiles[String(newProfile.publicKey.slice(0, 10))] = newProfile
+
         setStorage('profiles', JSON.stringify(profiles))
       } catch (e) {
         console.error(`Create profile reject: ${e}`)
@@ -131,7 +133,7 @@ export default {
             selectGradient: getUserColorTheme(publicKey)
           }
         })
-        return resolve()
+        return resolve(true)
       })
     }
   }
