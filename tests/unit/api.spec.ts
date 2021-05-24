@@ -1,15 +1,10 @@
-// import HelloWorld from '@/components/HelloWorld.vue'
+import crypto from '@/crypto'
 
 import { mnemonic, references } from './references'
 
-
-/*describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message'
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg }
-    })
-    expect(wrapper.text()).toMatch(msg)
+describe('createProfile', () => {
+  it('Can create a profile', () => {
+    const profile = crypto.createProfile()
+    expect(profile).toBe('mock')
   })
-})*/
-
+})
