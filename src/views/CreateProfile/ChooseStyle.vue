@@ -35,12 +35,12 @@
 </template>
 
 <script lang="ts">
-import { derivedRandom } from '@/utils/generators/randomizer'
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
 import { getPublicKey } from '@/utils/chifer'
 import windowParentPostMessage from '@/windowParentPostMessage'
-import { UserColorTheme } from '@/utils/generators/background'
-import { Base64 } from 'js-base64'
+import { SET_BACKGROUND } from '@/constants/createProfile'
+import { getUserColorTheme } from '@/utils/getUserColorTheme'
+import { CREATE_PROFILE } from '@/constants/windowKey'
 import mnemonic from './mnemonic'
 
 const QUANTITY_CARDS = 4
@@ -83,7 +83,7 @@ export default {
       const seedsResolvers: Promise<Buffer>[] = []
       for (let i = 0; i < QUANTITY_CARDS; i += 1) {
         this.selectGradient.wordList = generateMnemonic(256).split(' ')
-        const seed = mnemonicToSeed(this.selectGradient.wordList.join(''))
+        const seed = mnemonicToSeed(this.selectGradient.wordList.join(' '))
         seedsResolvers.push(seed)
       }
       const seeds = await Promise.all(seedsResolvers)
@@ -102,12 +102,10 @@ export default {
       }
       const list: listItem[] = []
       for (let i = 0; i < this.publicKeys.length; i += 1) {
-        derivedRandom(this.publicKeys[i])
-        const { background, color } = new UserColorTheme().getColorTheme()
-        const svgBase64 = `url("data:image/svg+xml;base64,${Base64.encode(background)}")`
+        const { background, color } = getUserColorTheme(this.publicKeys[i])
 
         list.splice(i, 1, {
-          background: svgBase64,
+          background,
           color,
           wordList: this.selectGradient.wordList
         })
@@ -128,7 +126,13 @@ export default {
     },
 
     setBackground() {
-      windowParentPostMessage({ key: 'CreateProfile', selectGradient: this.selectGradient })
+      windowParentPostMessage({
+        key: CREATE_PROFILE,
+        data: {
+          type: SET_BACKGROUND,
+          selectGradient: this.selectGradient
+        }
+      })
       mnemonic.card = this.selectGradient
     }
   }

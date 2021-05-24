@@ -96,7 +96,7 @@ export default {
       return Math.floor(rand)
     },
     setValue(index, value) {
-      this.wordsWrapper.splice(index, 1, value)
+      this.wordsWrapper.splice(index, 1, value.trim())
     },
     create() {
       this.$emit('create')

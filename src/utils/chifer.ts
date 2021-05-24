@@ -15,6 +15,8 @@ const DEFAULT_DERIVATION_PARAMS = {
   index: 0
 }
 
+let publicKey
+
 // Функции трансформаторы
 const base64ToBuf = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0))
 
@@ -39,9 +41,10 @@ function getPasswordKey(password) {
  * @param {string} seed
  * @returns
  */
-export const getPublicKey = seed => bitcoin.bip32.fromSeed(seed).publicKey
-
-// .toString('hex')
+export const getPublicKey = seed => {
+  publicKey = bitcoin.bip32.fromSeed(seed).publicKey
+  return publicKey
+}
 
 /**
  * Для получения секретного ключа из главного ключа.
@@ -74,8 +77,6 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
 export async function encryptData(seed, password, userParams = {}) {
   const params = { ...DEFAULT_CIFHER_PARAMS, ...userParams }
 
-  const publicKey = getPublicKey(seed)
-
   const salt = window.crypto.getRandomValues(new Uint8Array(16))
   const iv = window.crypto.getRandomValues(new Uint8Array(12))
 
@@ -107,7 +108,7 @@ export async function encryptData(seed, password, userParams = {}) {
       iv: buffToHex(iv),
       text: buffToBase64(buff)
     },
-    publicKey
+    publicKey: publicKey.toString()
   }
 }
 
