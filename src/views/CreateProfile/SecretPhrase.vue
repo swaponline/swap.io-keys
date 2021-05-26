@@ -19,6 +19,7 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
 import InputSecretPhrase from '@/components/Profile/InputSecretPhrase.vue'
 import FormPassword from '@/components/Profile/FormPassword.vue'
@@ -27,34 +28,43 @@ import { encryptData, getPublicKey } from '@/utils/chifer'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { getStorage, setStorage } from '@/utils/storage'
-import { REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
+import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
 import { RECOVER_PROFILE, CREATE_PROFILE } from '@/constants/windowKey'
 import mnemonic from './mnemonic'
 
-export default {
+type Data = {
+  words: Array<string>
+  isWritePhrase: boolean
+  formVisible: boolean
+}
+
+export default Vue.extend({
   name: 'SecretPhrase',
   components: {
     ShowSecretPhrase,
     InputSecretPhrase,
     FormPassword
   },
-  data() {
+  data(): Data {
     return {
       words: [],
       isWritePhrase: false,
-      currentWindow: null,
-      formVisible: false,
-      resolve: null,
-      reject: null
+      formVisible: false
     }
   },
   computed: {
-    isRecoverProfile() {
+    isRecoverProfile(): boolean {
       return !mnemonic.card?.wordList
     }
   },
-  created() {
+  created(): void {
     if (this.isRecoverProfile) {
+      windowParentPostMessage({
+        key: RECOVER_PROFILE,
+        data: {
+          type: INIT_IFRAME
+        }
+      })
       this.words = new Array(24).fill('', 0, 24)
       return
     }
@@ -67,7 +77,7 @@ export default {
     this.words = mnemonic.card?.wordList
   },
   methods: {
-    back() {
+    back(): void {
       if (this.isRecoverProfile) {
         windowParentPostMessage({
           key: RECOVER_PROFILE,
@@ -79,7 +89,7 @@ export default {
       this.isWritePhrase = false
     },
 
-    async createProfile() {
+    async createProfile(): Promise<void> {
       try {
         const password = await new Promise((resolve, reject) => {
           this.toggleFormPassword(true, resolve, reject)
@@ -111,18 +121,18 @@ export default {
       })
     },
 
-    toggleFormPassword(visible, resolve = null, reject = null) {
+    toggleFormPassword(visible: boolean, resolve = null, reject = null): void {
       this.formVisible = visible
       this.resolve = resolve
       this.reject = reject
     },
 
-    recoverProfile(recoverWords) {
+    recoverProfile(recoverWords: Array<string>): void {
       this.words = recoverWords
       this.createProfile()
     },
 
-    recoverBackground(seed) {
+    recoverBackground(seed: string): Promise<boolean> {
       return new Promise(resolve => {
         const publicKey = getPublicKey(seed)
 
@@ -137,7 +147,7 @@ export default {
       })
     }
   }
-}
+})
 </script>
 
 <style lang="scss">
