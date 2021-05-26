@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import FormTextField from '@/components/UI/Forms/TextField.vue'
 
 export default {

@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
 import InputSecretPhrase from '@/components/Profile/InputSecretPhrase.vue'
 import FormPassword from '@/components/Profile/FormPassword.vue'
@@ -140,7 +140,7 @@ export default {
             selectGradient: getUserColorTheme(publicKey)
           }
         })
-        return resolve()
+        return resolve(true)
       })
     }
   }

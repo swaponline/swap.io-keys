@@ -7,7 +7,7 @@
   </svg>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'SvgIcon',
   props: {
@@ -27,12 +27,11 @@ export default {
   },
   computed: {
     iconPath() {
-      let icon = {}
       if (Object.prototype.hasOwnProperty.call(this.icon, 'default')) {
-        icon = this.icon.default
+        const icon = this.icon.default
+        return `#${icon.id}`
       }
-
-      return `#${icon.id}`
+      return `#`
     },
     className() {
       return `svg-icon svg-icon--${this.name}`
