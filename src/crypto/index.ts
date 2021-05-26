@@ -1,3 +1,9 @@
+/*
+seed + password + HD Path => private key
+private key => public key
+public key => public address
+*/
+
 type TMnemonic = string
 type TPrivateKey = string
 type TPublicKey = string
@@ -9,17 +15,6 @@ type TProfile = {
   privateKey: TPrivateKey
   publicKey: TPublicKey
   address: TAddress
-}
-
-export const coins = []
-
-export const createProfile: () => TProfile = () => {
-  return {
-    // mock
-    privateKey: 'L2opBasCx47tgK9h4dP7r9kVRCjyBu7Z47fByBuamYwHYbzbP42g',
-    publicKey: '029f7b0a848819c4e19c2282572a821b0a0dc265128f515af292fc84f81c4b1a3f',
-    address: '1P8HdnAAFkJDbbKnfV3721KS9cVyX59x5j'
-  }
 }
 
 export enum ENetworkType {
@@ -53,5 +48,5 @@ export interface ICoin {
   networks: {
     [key: string]: INetwork
   }
-  profileFromMnemonic: (mnemonic: TMnemonic, netName: TNetworkName) => TProfile
+  profileFromMnemonic: ({ mnemonic: TMnemonic, netName: TNetworkName, index: number }) => TProfile
 }

@@ -1,7 +1,7 @@
 export const mnemonic = 'sudden expire elegant spend they peanut search giggle battle gas sister atom'
 
 export const references = [
-  {
+  /* {
     coin: 'BTC',
     network: 'mainnet',
     derived: [
@@ -97,5 +97,5 @@ export const references = [
         address: '0x49Fc2F8A6CF9bEC41d47Fd4017eF54646c97649e'
       }
     ]
-  }
+  } */
 ]

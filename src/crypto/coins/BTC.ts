@@ -1,9 +1,10 @@
-import bip32 from 'bip32'
-import bip39 from 'bip39'
+import * as bip32 from 'bip32'
+import * as bip39 from 'bip39'
 import bitcore from 'bitcore-lib'
 
 import bip44 from '../bip44'
 import { ICoin, ENetworkType } from '../index'
+
 
 const netNames = {
   mainnet: 'mainnet',
@@ -17,7 +18,7 @@ const BTC: ICoin = {
   // networkNames: netNames,
 
   networks: {
-    [netNames.mainnet]: {
+    mainnet: {
       type: ENetworkType.Mainnet,
       settings: {
         // from https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/src/networks.js
@@ -37,7 +38,7 @@ const BTC: ICoin = {
       }
     },
 
-    [netNames.testnet]: {
+    testnet: {
       type: ENetworkType.Testnet,
       settings: {
         // from https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/src/networks.js
@@ -57,12 +58,11 @@ const BTC: ICoin = {
       }
     }
   },
-  profileFromMnemonic(mnemonic, netName) {
-    const network = BTC[netName]
+  profileFromMnemonic({ mnemonic, netName, index }) {
+    const network = BTC.networks[netName]
     const { settings } = network
 
     // todo: move?
-
     const seed = bip39.mnemonicToSeedSync(mnemonic)
     const root = bip32.fromSeed(seed, {
       wif: settings.base58prefix.privateKeyWIF,
@@ -71,8 +71,8 @@ const BTC: ICoin = {
         private: settings.base58prefix.privateKeyBIP32
       },
       messagePrefix: settings.messagePrefix,
-      pubKeyHash: settings.pubKeyHash,
-      scriptHash: settings.scriptHash
+      pubKeyHash: settings.base58prefix.pubKeyHash,
+      scriptHash: settings.base58prefix.scriptHash
     })
     const derivePath = bip44.createDerivePath(network)
     const child = root.derivePath(derivePath)

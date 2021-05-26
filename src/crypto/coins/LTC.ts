@@ -1,5 +1,5 @@
-import bip32 from 'bip32'
-import bip39 from 'bip39'
+import * as bip32 from 'bip32'
+import * as bip39 from 'bip39'
 import bitcore from 'bitcore-lib'
 
 import bip44 from '../bip44'
@@ -15,8 +15,9 @@ const LTC: ICoin = {
   name: 'Litecoin',
   precision: 8, // ?
   // networkNames: netNames,
+
   networks: {
-    [netNames.mainnet]: {
+    mainnet: {
       type: ENetworkType.Mainnet,
       settings: {
         // from https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/integration/addresses.spec.ts
@@ -37,7 +38,7 @@ const LTC: ICoin = {
       }
     },
 
-    [netNames.testnet]: {
+    testnet: {
       type: ENetworkType.Testnet,
       settings: {
         // from https://github.com/trezor/trezor-common/pull/80/files
@@ -59,12 +60,12 @@ const LTC: ICoin = {
       }
     }
   },
-  profileFromMnemonic(mnemonic, netName) {
-    const network = LTC[netName]
+  profileFromMnemonic({ mnemonic, netName, index }) {
+    const network = LTC.networks[netName]
     const { settings } = network
 
     const seed = bip39.mnemonicToSeedSync(mnemonic)
-    const root = bip32.fromSeed(seed, network.bip32settings)
+    const root = bip32.fromSeed(seed /* , network.bip32settings */)
     const derivePath = bip44.createDerivePath(network)
     const child = root.derivePath(derivePath)
 
