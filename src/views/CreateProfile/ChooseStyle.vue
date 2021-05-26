@@ -38,7 +38,7 @@
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
 import { getPublicKey } from '@/utils/chifer'
 import windowParentPostMessage from '@/windowParentPostMessage'
-import { LOADING, SET_BACKGROUND } from '@/constants/createProfile'
+import { INIT_IFRAME, SET_BACKGROUND } from '@/constants/createProfile'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import { CREATE_PROFILE } from '@/constants/windowKey'
 import mnemonic from './mnemonic'
@@ -66,8 +66,8 @@ export default {
   async mounted() {
     windowParentPostMessage({
       key: CREATE_PROFILE,
-      data: {
-        type: LOADING,
+      message: {
+        type: INIT_IFRAME,
         loading: false
       }
     })
@@ -135,7 +135,7 @@ export default {
     setBackground() {
       windowParentPostMessage({
         key: CREATE_PROFILE,
-        data: {
+        message: {
           type: SET_BACKGROUND,
           selectGradient: this.selectGradient
         }
