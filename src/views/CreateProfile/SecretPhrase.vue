@@ -27,7 +27,7 @@ import { encryptData, getPublicKey } from '@/utils/chifer'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { getStorage, setStorage } from '@/utils/storage'
-import { REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
+import { REDIRECT_TO_HOME, SET_BACKGROUND, INIT_IFRAME } from '@/constants/createProfile'
 import { RECOVER_PROFILE, CREATE_PROFILE } from '@/constants/windowKey'
 import mnemonic from './mnemonic'
 
@@ -53,6 +53,17 @@ export default {
       return !mnemonic.card?.wordList
     }
   },
+  mounted() {
+    windowParentPostMessage({
+      key: RECOVER_PROFILE,
+      message: {
+        type: INIT_IFRAME,
+        payload: {
+          loading: false
+        }
+      }
+    })
+  },
   created() {
     if (this.isRecoverProfile) {
       this.words = new Array(24).fill('', 0, 24)
@@ -71,7 +82,7 @@ export default {
       if (this.isRecoverProfile) {
         windowParentPostMessage({
           key: RECOVER_PROFILE,
-          data: {
+          message: {
             type: REDIRECT_TO_HOME
           }
         })
@@ -103,7 +114,7 @@ export default {
 
       windowParentPostMessage({
         key: this.isRecoverProfile ? RECOVER_PROFILE : CREATE_PROFILE,
-        data: {
+        message: {
           type: REDIRECT_TO_HOME
         }
       })
@@ -126,9 +137,11 @@ export default {
 
         windowParentPostMessage({
           key: RECOVER_PROFILE,
-          data: {
+          message: {
             type: SET_BACKGROUND,
-            selectGradient: getUserColorTheme(publicKey)
+            payload: {
+              selectGradient: getUserColorTheme(publicKey)
+            }
           }
         })
         return resolve(true)
