@@ -92,11 +92,9 @@ export default {
         }
 
         const newProfile = await encryptData(seed, password)
-
-        const profiles = JSON.parse(getStorage('profiles') || '{}')
-        profiles[String(newProfile.publicKey.slice(0, 10))] = newProfile
-
-        setStorage('profiles', JSON.stringify(profiles))
+        const profiles = getStorage('profiles') || {}
+        profiles[newProfile.publicKey.slice(0, 10)] = newProfile
+        setStorage('profiles', profiles)
       } catch (e) {
         console.error(`Create profile reject: ${e}`)
       }
