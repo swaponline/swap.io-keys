@@ -105,7 +105,7 @@ export default Vue.extend({
     cancelCreate(): void {
       windowParentPostMessage({
         key: CREATE_PROFILE,
-        data: {
+        message: {
           type: REDIRECT_TO_HOME
         }
       })

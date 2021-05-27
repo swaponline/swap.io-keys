@@ -61,7 +61,7 @@ export default Vue.extend({
     if (this.isRecoverProfile) {
       windowParentPostMessage({
         key: RECOVER_PROFILE,
-        data: {
+        message: {
           type: INIT_IFRAME,
           loading: false
         }
