@@ -1,16 +1,20 @@
 import { randomInteger } from './randomizer'
 
-function hexToRgb(hex) {
+export type ColorHex = string
+
+export type ColorRGB = [number, number, number]
+
+function hexToRgb(hex): ColorRGB {
   if (/^#([a-f0-9]{3}){1,2}$/.test(hex)) {
     const newHex = hex.length === 4 ? `#${[hex[1], hex[1], hex[2], hex[2], hex[3], hex[3]].join('')}` : hex
 
     const c = `0x${newHex.substring(1)}`
 
     // eslint-disable-next-line no-bitwise
-    return [(c >> 16) & 255, (c >> 8) & 255, c & 255]
+    return [(+c >> 16) & 255, (+c >> 8) & 255, +c & 255]
   }
-
-  return null
+  throw new Error(`Wrong hex ${hex}`)
+  // return null
 }
 
 function rgbToHex(rgb) {
@@ -22,7 +26,7 @@ function rgbToHex(rgb) {
 
 // ! Creates an array of 1535 colors
 function generateColors() {
-  const colors = []
+  const colors: ColorHex[] = []
   for (let i = 0; i <= 255; i += 1) {
     colors.push(`#${rgbToHex([255, i, 0]).join('')}`)
   }

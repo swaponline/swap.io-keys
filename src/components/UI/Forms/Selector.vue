@@ -2,7 +2,7 @@
   <v-select v-bind="$attrs" class="form-selector" v-on="$listeners"></v-select>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'FormSelector',
   inheritAttrs: false

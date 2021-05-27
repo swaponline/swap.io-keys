@@ -1,9 +1,41 @@
 import { getMaxOfArray } from '@/utils/common'
-import { getDarkenedColor, getSecondColors, colors } from './color'
+import { getDarkenedColor, getSecondColors, colors, ColorHex } from './color'
 import { randomInteger } from './randomizer'
+
+type Rect = {
+  xOffset: number
+  yOffset: number
+  width: number
+  height: number
+  color: ColorHex
+}
+
+type Ellipse = {
+  cx: number
+  cy: number
+  rx: number
+  ry: number
+  fill: ColorHex
+}
 
 // eslint-disable-next-line import/prefer-default-export
 export class UserColorTheme {
+  DEFAULT_WIDTH_SVG: number
+
+  DEFAULT_HEIGHT_SVG: number
+
+  DEFAULT_HEIGHT_RECTANGLES: number
+
+  DEFAULT_OFFSET_RECT_X: number
+
+  DEFAULT_OFFSET_RECT_Y: number
+
+  widthRects: number[]
+
+  rectsModel: Rect[]
+
+  ellipseModel: Ellipse[]
+
   constructor() {
     this.DEFAULT_WIDTH_SVG = 200
     this.DEFAULT_HEIGHT_SVG = 120
@@ -18,7 +50,7 @@ export class UserColorTheme {
   // eslint-disable-next-line class-methods-use-this
   generateWidthRects() {
     const quantityRects = randomInteger(Math.log2(3)) + 4
-    const localWidthRects = []
+    const localWidthRects: number[] = []
     for (let i = 0; i < quantityRects; i += 1) {
       localWidthRects.push(20 + randomInteger(Math.log2(20)))
     }
@@ -90,7 +122,8 @@ export class UserColorTheme {
   }
 
   generateEllipseModel() {
-    const ellipseModels = []
+    const ellipseModels: Ellipse[] = []
+
     const quantityEllipse = 2
     let prevColorIdx = 0
 
@@ -166,7 +199,7 @@ export class UserColorTheme {
 
   generateColorBasedDominantWidth() {
     const dominateWidth = getMaxOfArray(this.widthRects)
-    let dominantColor = null
+    let dominantColor
 
     this.rectsModel.forEach(model => {
       let localWidth = model.width
