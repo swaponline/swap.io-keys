@@ -68,7 +68,9 @@ export default {
       key: CREATE_PROFILE,
       message: {
         type: INIT_IFRAME,
-        loading: false
+        payload: {
+          loading: false
+        }
       }
     })
     await this.getMnemonic()
@@ -137,7 +139,9 @@ export default {
         key: CREATE_PROFILE,
         message: {
           type: SET_BACKGROUND,
-          selectGradient: this.selectGradient
+          payload: {
+            selectGradient: this.selectGradient
+          }
         }
       })
       mnemonic.card = this.selectGradient

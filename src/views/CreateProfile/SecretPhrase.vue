@@ -58,7 +58,9 @@ export default {
       key: RECOVER_PROFILE,
       message: {
         type: INIT_IFRAME,
-        loading: false
+        payload: {
+          loading: false
+        }
       }
     })
   },
@@ -137,7 +139,9 @@ export default {
           key: RECOVER_PROFILE,
           message: {
             type: SET_BACKGROUND,
-            selectGradient: getUserColorTheme(publicKey)
+            payload: {
+              selectGradient: getUserColorTheme(publicKey)
+            }
           }
         })
         return resolve(true)
