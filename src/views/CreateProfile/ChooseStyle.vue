@@ -79,7 +79,7 @@ export default Vue.extend({
       return !this.selectGradient.background
     }
   },
-  async mounted() {
+  async mounted(): Promise<void> {
     windowParentPostMessage({
       key: CREATE_PROFILE,
       message: {
@@ -107,7 +107,7 @@ export default Vue.extend({
     cancelCreate(): void {
       windowParentPostMessage({
         key: CREATE_PROFILE,
-        data: {
+        message: {
           type: REDIRECT_TO_HOME
         }
       })

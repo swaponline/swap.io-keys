@@ -58,24 +58,20 @@ export default Vue.extend({
     }
   },
   mounted(): void {
-    windowParentPostMessage({
-      key: RECOVER_PROFILE,
-      message: {
-        type: INIT_IFRAME,
-        payload: {
-          loading: false
-        }
-      }
-    })
-  },
-  created(): void {
     if (this.isRecoverProfile) {
       windowParentPostMessage({
         key: RECOVER_PROFILE,
-        data: {
-          type: INIT_IFRAME
+        message: {
+          type: INIT_IFRAME,
+          payload: {
+            loading: false
+          }
         }
       })
+    }
+  },
+  created(): void {
+    if (this.isRecoverProfile) {
       this.words = new Array(24).fill('', 0, 24)
       return
     }
@@ -113,7 +109,7 @@ export default Vue.extend({
         }
 
         const newProfile = await encryptData(seed, password)
-        const profiles = getStorage('profiles') || {}
+        const profiles: Record<string, unknown> = getStorage('profiles') || {}
         profiles[newProfile.publicKey.slice(0, 10)] = newProfile
         setStorage('profiles', profiles)
       } catch (e) {
