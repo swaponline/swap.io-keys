@@ -57,15 +57,21 @@ export default Vue.extend({
       return !mnemonic.card?.wordList
     }
   },
-  created(): void {
+  mounted(): void {
     if (this.isRecoverProfile) {
       windowParentPostMessage({
         key: RECOVER_PROFILE,
         message: {
           type: INIT_IFRAME,
-          loading: false
+          payload: {
+            loading: false
+          }
         }
       })
+    }
+  },
+  created(): void {
+    if (this.isRecoverProfile) {
       this.words = new Array(24).fill('', 0, 24)
       return
     }
@@ -103,7 +109,7 @@ export default Vue.extend({
         }
 
         const newProfile = await encryptData(seed, password)
-        const profiles = getStorage('profiles') || {}
+        const profiles: Record<string, unknown> = getStorage('profiles') || {}
         profiles[newProfile.publicKey.slice(0, 10)] = newProfile
         setStorage('profiles', profiles)
       } catch (e) {
@@ -139,7 +145,9 @@ export default Vue.extend({
           key: RECOVER_PROFILE,
           message: {
             type: SET_BACKGROUND,
-            selectGradient: getUserColorTheme(publicKey)
+            payload: {
+              selectGradient: getUserColorTheme(publicKey)
+            }
           }
         })
         return resolve(true)
