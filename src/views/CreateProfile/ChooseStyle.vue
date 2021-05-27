@@ -79,11 +79,14 @@ export default Vue.extend({
       return !this.selectGradient.background
     }
   },
-  async mounted(): Promise<void> {
+  async mounted() {
     windowParentPostMessage({
       key: CREATE_PROFILE,
-      data: {
-        type: INIT_IFRAME
+      message: {
+        type: INIT_IFRAME,
+        payload: {
+          loading: false
+        }
       }
     })
     await this.getMnemonic()
@@ -154,9 +157,11 @@ export default Vue.extend({
     setBackground(): void {
       windowParentPostMessage({
         key: CREATE_PROFILE,
-        data: {
+        message: {
           type: SET_BACKGROUND,
-          selectGradient: this.selectGradient
+          payload: {
+            selectGradient: this.selectGradient
+          }
         }
       })
       mnemonic.card = this.selectGradient

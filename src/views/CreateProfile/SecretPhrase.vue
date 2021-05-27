@@ -57,6 +57,17 @@ export default Vue.extend({
       return !mnemonic.card?.wordList
     }
   },
+  mounted(): void {
+    windowParentPostMessage({
+      key: RECOVER_PROFILE,
+      message: {
+        type: INIT_IFRAME,
+        payload: {
+          loading: false
+        }
+      }
+    })
+  },
   created(): void {
     if (this.isRecoverProfile) {
       windowParentPostMessage({
@@ -81,7 +92,7 @@ export default Vue.extend({
       if (this.isRecoverProfile) {
         windowParentPostMessage({
           key: RECOVER_PROFILE,
-          data: {
+          message: {
             type: REDIRECT_TO_HOME
           }
         })
@@ -102,11 +113,9 @@ export default Vue.extend({
         }
 
         const newProfile = await encryptData(seed, password)
-
-        const profiles = JSON.parse(getStorage('profiles') || '{}')
-        profiles[String(newProfile.publicKey.slice(0, 10))] = newProfile
-
-        setStorage('profiles', JSON.stringify(profiles))
+        const profiles = getStorage('profiles') || {}
+        profiles[newProfile.publicKey.slice(0, 10)] = newProfile
+        setStorage('profiles', profiles)
       } catch (e) {
         console.error(`Create profile reject: ${e}`)
       }
@@ -115,7 +124,7 @@ export default Vue.extend({
 
       windowParentPostMessage({
         key: this.isRecoverProfile ? RECOVER_PROFILE : CREATE_PROFILE,
-        data: {
+        message: {
           type: REDIRECT_TO_HOME
         }
       })
@@ -138,9 +147,11 @@ export default Vue.extend({
 
         windowParentPostMessage({
           key: RECOVER_PROFILE,
-          data: {
+          message: {
             type: SET_BACKGROUND,
-            selectGradient: getUserColorTheme(publicKey)
+            payload: {
+              selectGradient: getUserColorTheme(publicKey)
+            }
           }
         })
         return resolve(true)
