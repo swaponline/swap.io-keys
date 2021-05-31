@@ -1,5 +1,6 @@
 import { hdkey } from 'ethereumjs-wallet'
 import * as bip39 from 'bip39'
+import web3utils from 'web3-utils'
 
 import { ICoin, ENetworkType } from '../index'
 
@@ -49,7 +50,7 @@ const ETH: ICoin = {
     const account = {
       privateKey,
       publicKey: publicKeyCompressed,
-      address
+      address: web3utils.toChecksumAddress(address)
     }
 
     return account

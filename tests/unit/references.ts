@@ -64,7 +64,7 @@ export const references = [
         address: 'n1diZdNDBJPhd22vuXQvsqAdsfqhaWcy7R'
       }
     ]
-  },
+  }, */
   {
     coin: 'ETH',
     network: 'mainnet',
@@ -97,5 +97,5 @@ export const references = [
         address: '0x49Fc2F8A6CF9bEC41d47Fd4017eF54646c97649e'
       }
     ]
-  } */
+  }
 ]

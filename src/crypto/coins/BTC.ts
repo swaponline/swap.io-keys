@@ -5,7 +5,6 @@ import bitcore from 'bitcore-lib'
 import bip44 from '../bip44'
 import { ICoin, ENetworkType } from '../index'
 
-
 const netNames = {
   mainnet: 'mainnet',
   testnet: 'testnet'

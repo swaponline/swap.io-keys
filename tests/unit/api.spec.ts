@@ -4,13 +4,13 @@ import { mnemonic, references } from './references'
 
 describe('createProfile', () => {
   it('Has references for the test', () => {
-    expect(references.length).toBe(0)
+    expect(references.length).toBe(2)
   })
 
-  /* references.forEach(refItem => {
-    it(`Can create a profile ${refItem.coin} - ${refItem.network}`, () => {
+  references.forEach(refItem => {
+    it(`Can create a profile: ${refItem.coin} - ${refItem.network}`, () => {
       const coin = coins[refItem.coin]
-      //const network = coin.networks[refItem.network]
+      // const network = coin.networks[refItem.network]
       const profile0 = coin.profileFromMnemonic({
         mnemonic,
         netName: refItem.network,
@@ -26,5 +26,4 @@ describe('createProfile', () => {
       expect(profile1).toStrictEqual(refItem.derived[1])
     })
   })
-  */
 })
