@@ -1,31 +1,41 @@
 import { randomInteger } from './randomizer'
 
 export type ColorHex = string
+export type ColorRGB = number[]
+type DimmingPercentage = number
 
-export type ColorRGB = [number, number, number]
-
-function hexToRgb(hex): ColorRGB {
-  if (/^#([a-f0-9]{3}){1,2}$/.test(hex)) {
-    const newHex = hex.length === 4 ? `#${[hex[1], hex[1], hex[2], hex[2], hex[3], hex[3]].join('')}` : hex
-
-    const c = `0x${newHex.substring(1)}`
-
-    // eslint-disable-next-line no-bitwise
-    return [(+c >> 16) & 255, (+c >> 8) & 255, +c & 255]
-  }
-  throw new Error(`Wrong hex ${hex}`)
-  // return null
+function isTestHex(hex: ColorHex): boolean {
+  return /^#([a-f0-9]{3}){1,2}$/.test(hex)
 }
 
-function rgbToHex(rgb) {
+function convertHex(hex: ColorHex): { r: number; g: number; b: number } {
+  if (hex && isTestHex(hex)) {
+    const tempHex = hex.replace('#', '')
+    const r = parseInt(tempHex.substring(0, 2), 16)
+    const g = parseInt(tempHex.substring(2, 4), 16)
+    const b = parseInt(tempHex.substring(4, 6), 16)
+
+    return { r, g, b }
+  }
+
+  throw new Error(`Wrong hex ${hex}`)
+}
+
+function hexToRGB(hex: ColorHex): ColorRGB {
+  const { r, g, b } = convertHex(hex)
+  return [r, g, b]
+}
+
+function rgbToHex(rgb: ColorRGB): string[] {
   return rgb.map(int => {
-    const strBase16 = parseInt(int, 10).toString(16) // Convert to a base16 string
+    const str = String(int)
+    const strBase16 = parseInt(str, 10).toString(16) // Convert to a base16 string
     return strBase16.length === 1 ? `0${strBase16}` : strBase16 // Add zero if we get only one character
   })
 }
 
 // ! Creates an array of 1535 colors
-function generateColors() {
+function generateColors(): string[] {
   const colors: ColorHex[] = []
   for (let i = 0; i <= 255; i += 1) {
     colors.push(`#${rgbToHex([255, i, 0]).join('')}`)
@@ -47,10 +57,14 @@ function generateColors() {
   }
   return colors
 }
-
 export const colors = generateColors()
 
-export function getSecondColors(prevColorIdx) {
+export const hexToRGBA = (hex: ColorHex, opacity: number): string => {
+  const { r, g, b } = convertHex(hex)
+  return `rgba(${r},${g},${b},${opacity / 100})`
+}
+
+export function getSecondColors(prevColorIdx: number): number {
   const maxNumberColors = colors.length
   const excludeSimilarSize = 256
   const excludeSimilarEnd = 256
@@ -58,43 +72,43 @@ export function getSecondColors(prevColorIdx) {
   const excludeOppositeStart = 768 - excludeSimilarSize
   const excludeOppositeEnd = 768 + excludeSimilarSize
 
-  let calculatedPositionСurrentColor = Math.round(
+  let calculatedPositionCurrentColor = Math.round(
     (randomInteger(Math.log2(256)) / 256) * (maxNumberColors - (excludeOppositeEnd - excludeOppositeStart))
   )
 
   //! если мы попали в запрещенный диапазон, выносим за предели запрещенного диапазона
-  if (excludeOppositeStart < calculatedPositionСurrentColor && calculatedPositionСurrentColor < excludeOppositeEnd) {
-    calculatedPositionСurrentColor = excludeOppositeEnd + (calculatedPositionСurrentColor - excludeOppositeStart)
+  if (excludeOppositeStart < calculatedPositionCurrentColor && calculatedPositionCurrentColor < excludeOppositeEnd) {
+    calculatedPositionCurrentColor = excludeOppositeEnd + (calculatedPositionCurrentColor - excludeOppositeStart)
   }
 
   //! Исключаем похожие цвета, выносим за предели несочетающегося диапазона
-  if (calculatedPositionСurrentColor < excludeSimilarEnd) {
-    calculatedPositionСurrentColor += excludeSimilarEnd
+  if (calculatedPositionCurrentColor < excludeSimilarEnd) {
+    calculatedPositionCurrentColor += excludeSimilarEnd
   }
 
   //! Исключаем похожие цвета за пределами массива, выносим за предели несочетающегося диапазона
-  if (calculatedPositionСurrentColor > excludeSimilarStart) {
-    calculatedPositionСurrentColor -= excludeSimilarEnd
+  if (calculatedPositionCurrentColor > excludeSimilarStart) {
+    calculatedPositionCurrentColor -= excludeSimilarEnd
   }
 
   //! Пересчет положения текущего цвета после исключения попадания в запрещенный диапазон и исключения похожих цветов
-  calculatedPositionСurrentColor = prevColorIdx + calculatedPositionСurrentColor
+  calculatedPositionCurrentColor = prevColorIdx + calculatedPositionCurrentColor
 
   //! если вышли за пределы массива, переноси в начало массива, на расстояние выхода за пределы
-  if (calculatedPositionСurrentColor > maxNumberColors - 1) {
-    calculatedPositionСurrentColor -= maxNumberColors - 1
+  if (calculatedPositionCurrentColor > maxNumberColors - 1) {
+    calculatedPositionCurrentColor -= maxNumberColors - 1
   }
-  return calculatedPositionСurrentColor
+  return calculatedPositionCurrentColor
 }
 
-/**
- *
- * @param {string} colorHex затемняемый цвет в формате HEX
- * @param {number} dimmingPercentage процент на который затемняется цвет
- */
-export function getDarkenedColor(colorHex = '', dimmingPercentage = 0) {
-  const colorRGB = hexToRgb(colorHex)
-  const darkedColor = colorRGB.map(color => color - color * (dimmingPercentage / 100))
+export function getDarkenedColor(colorHex: ColorHex, dimmingPercentage: DimmingPercentage): string {
+  const colorRGB: ColorRGB = hexToRGB(colorHex)
+  const darkedColor: ColorRGB = colorRGB.map(color => {
+    if (color || color === 0) {
+      return color - color * (dimmingPercentage / 100)
+    }
+    throw new Error(`The "color" parameter was not passed`)
+  })
   return `#${rgbToHex(darkedColor).join('')}`
 }
 

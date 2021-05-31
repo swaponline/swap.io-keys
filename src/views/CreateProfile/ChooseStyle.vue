@@ -9,17 +9,17 @@
         <div v-for="cardColor in cardColors" :key="cardColor.background" class="choose-style__card">
           <div
             class="choose-style__card-inner"
-            :class="{ 'choose-style__card-inner--select': selectGradient === cardColor }"
+            :class="{ 'choose-style__card-inner--select': userColorTheme === cardColor }"
             @click="select(cardColor)"
           >
             <div class="choose-style__card-background" :style="`background-image: ${cardColor.background}`"></div>
           </div>
-          <span v-if="selectGradient === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
+          <span v-if="userColorTheme === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
             >Complementary text
           </span>
         </div>
       </div>
-      <span v-if="selectGradient.color" class="choose-style__text" :style="`color: ${selectGradient.color}`"
+      <span v-if="userColorTheme.color" class="choose-style__text" :style="`color: ${userColorTheme.color}`"
         >Complementary text
       </span>
       <div class="choose-style__buttons">
@@ -49,15 +49,15 @@ import mnemonic from './mnemonic'
 
 const QUANTITY_CARDS = 4
 
-type SelectGradient = {
+type UserColorTheme = {
   background: string
   color: string
   wordList: Array<string>
 }
 
 type Data = {
-  selectGradient: SelectGradient
-  cardColors: Array<SelectGradient>
+  userColorTheme: UserColorTheme
+  cardColors: Array<UserColorTheme>
   publicKeys: Array<string>
 }
 
@@ -65,7 +65,7 @@ export default Vue.extend({
   name: 'ChooseStyle',
   data(): Data {
     return {
-      selectGradient: {
+      userColorTheme: {
         background: '',
         color: '',
         wordList: []
@@ -76,7 +76,7 @@ export default Vue.extend({
   },
   computed: {
     isDisabledCreateProfile(): boolean {
-      return !this.selectGradient.background
+      return !this.userColorTheme.background
     }
   },
   async mounted(): Promise<void> {
@@ -93,13 +93,13 @@ export default Vue.extend({
     this.getCards()
   },
   methods: {
-    select(color: string): void {
-      this.selectGradient = color
+    select(userColorTheme: UserColorTheme): void {
+      this.userColorTheme = userColorTheme
       this.setBackground()
     },
 
     goToSecretPhrase(): void {
-      if (this.selectGradient.wordList.length > 0) {
+      if (this.userColorTheme.wordList.length > 0) {
         this.$router.push({ name: 'SecretPhrase' })
       }
     },
@@ -116,8 +116,8 @@ export default Vue.extend({
     async getMnemonic(): Promise<void> {
       const seedsResolvers: Promise<Buffer>[] = []
       for (let i = 0; i < QUANTITY_CARDS; i += 1) {
-        this.selectGradient.wordList = generateMnemonic(256).split(' ')
-        const seed = mnemonicToSeed(this.selectGradient.wordList.join(' '))
+        this.userColorTheme.wordList = generateMnemonic(256).split(' ')
+        const seed = mnemonicToSeed(this.userColorTheme.wordList.join(' '))
         seedsResolvers.push(seed)
       }
       const seeds = await Promise.all(seedsResolvers)
@@ -132,16 +132,18 @@ export default Vue.extend({
       type listItem = {
         background: string
         color: string
+        colorSelection: string
         wordList: string[]
       }
       const list: listItem[] = []
       for (let i = 0; i < this.publicKeys.length; i += 1) {
-        const { background, color } = getUserColorTheme(this.publicKeys[i])
+        const { background, color, colorSelection } = getUserColorTheme(this.publicKeys[i])
 
         list.splice(i, 1, {
           background,
           color,
-          wordList: this.selectGradient.wordList
+          colorSelection,
+          wordList: this.userColorTheme.wordList
         })
       }
 
@@ -160,11 +162,11 @@ export default Vue.extend({
         message: {
           type: SET_BACKGROUND,
           payload: {
-            selectGradient: this.selectGradient
+            userColorTheme: this.userColorTheme
           }
         }
       })
-      mnemonic.card = this.selectGradient
+      mnemonic.card = this.userColorTheme
     }
   }
 })
