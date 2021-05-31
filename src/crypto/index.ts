@@ -22,6 +22,20 @@ export enum ENetworkType {
   Testnet = 'Testnet'
 }
 
+export enum EPreset {
+  BIP44 = 'BIP44',
+  electrum = 'electrum'
+}
+
+export interface IAddProfileParams {
+  mnemonic?: TMnemonic
+}
+
+export interface ICreateAddressesParams {
+  coin: 'BTC' | 'LTC' | 'ETH'
+  preset: EPreset
+}
+
 export interface INetwork {
   type: ENetworkType
   settings: {
