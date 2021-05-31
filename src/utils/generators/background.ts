@@ -1,5 +1,5 @@
 import { getMaxOfArray } from '@/utils/common'
-import { getDarkenedColor, getSecondColors, colors, ColorHex } from './color'
+import { getDarkenedColor, getSecondColors, colors, ColorHex, hexToRGBA } from './color'
 import { randomInteger } from './randomizer'
 
 type Rect = {
@@ -18,7 +18,14 @@ type Ellipse = {
   fill: ColorHex
 }
 
-// eslint-disable-next-line import/prefer-default-export
+type WidthRects = number[]
+
+export type ColorTheme = {
+  background: string
+  color: string
+  colorSelection: string
+}
+
 export class UserColorTheme {
   DEFAULT_WIDTH_SVG: number
 
@@ -32,6 +39,8 @@ export class UserColorTheme {
 
   widthRects: number[]
 
+  dominantColor: string
+
   rectsModel: Rect[]
 
   ellipseModel: Ellipse[]
@@ -42,15 +51,16 @@ export class UserColorTheme {
     this.DEFAULT_HEIGHT_RECTANGLES = 500
     this.DEFAULT_OFFSET_RECT_X = -100
     this.DEFAULT_OFFSET_RECT_Y = -200
+    this.dominantColor = ''
     this.widthRects = this.generateWidthRects()
     this.rectsModel = this.generateRectModel()
     this.ellipseModel = this.generateEllipseModel()
   }
 
   // eslint-disable-next-line class-methods-use-this
-  generateWidthRects() {
+  generateWidthRects(): WidthRects {
     const quantityRects = randomInteger(Math.log2(3)) + 4
-    const localWidthRects: number[] = []
+    const localWidthRects: WidthRects = []
     for (let i = 0; i < quantityRects; i += 1) {
       localWidthRects.push(20 + randomInteger(Math.log2(20)))
     }
@@ -65,7 +75,7 @@ export class UserColorTheme {
     return localWidthRects
   }
 
-  generateRectModel() {
+  generateRectModel(): Rect[] {
     let prevColorIdx = 0
     let localXOffset = 0
 
@@ -107,21 +117,22 @@ export class UserColorTheme {
     })
   }
 
-  generateRectsView() {
+  generateRectsView(): string {
     return this.rectsModel
       .map(model => {
         return `
-      <rect 
-        x="${model.xOffset}%"
-        y="${model.yOffset}%"
-        width="${model.width}%" height="${model.height}%"
-        fill="${model.color}"
-      />`
+        <rect
+          x="${model.xOffset}%"
+          y="${model.yOffset}%"
+          width="${model.width}%"
+          height="${model.height}%"
+          fill="${model.color}"
+        />`
       })
       .join('')
   }
 
-  generateEllipseModel() {
+  generateEllipseModel(): Ellipse[] {
     const ellipseModels: Ellipse[] = []
 
     const quantityEllipse = 2
@@ -155,24 +166,24 @@ export class UserColorTheme {
     return ellipseModels
   }
 
-  generateEllipseView() {
+  generateEllipseView(): string {
     return this.ellipseModel
       .map(model => {
         return `
         <ellipse
-          style="mix-blend-mode: saturation; opacity: 0.4;"
+          style="mix-blend-mode: saturation;
+          opacity: 0.4;"
           cx="${model.cx}%"
           cy="${model.cy}%"
           rx="${model.rx}%"
           ry="${model.ry}%"
           fill="${model.fill}"
-        />
-      `
+        />`
       })
       .join(``)
   }
 
-  generateBackground() {
+  generateBackground(): string {
     const angleInclination = randomInteger(Math.log2(64)) - 32
     return `
          <svg
@@ -197,25 +208,24 @@ export class UserColorTheme {
       `
   }
 
-  generateColorBasedDominantWidth() {
+  generateColorBasedDominantWidth(): string {
     const dominateWidth = getMaxOfArray(this.widthRects)
-    let dominantColor
-
     this.rectsModel.forEach(model => {
       let localWidth = model.width
 
       localWidth = localWidth > 100 ? Number((localWidth - 100).toFixed(2)) : localWidth
-      dominantColor = localWidth === dominateWidth ? model.color : dominantColor
+      this.dominantColor = localWidth === dominateWidth ? model.color : this.dominantColor
     })
 
     //! Maybe you should put 46 instead of 43. You need to decide after checking by the customer
-    return getDarkenedColor(dominantColor, 43)
+    return getDarkenedColor(this.dominantColor, 43)
   }
 
-  getColorTheme() {
+  getColorTheme(): ColorTheme {
     return {
       background: this.generateBackground(),
-      color: this.generateColorBasedDominantWidth()
+      color: this.generateColorBasedDominantWidth(),
+      colorSelection: hexToRGBA(this.dominantColor, 24)
     }
   }
 }
