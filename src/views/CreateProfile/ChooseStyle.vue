@@ -9,23 +9,26 @@
         <div v-for="cardColor in cardColors" :key="cardColor.background" class="choose-style__card">
           <div
             class="choose-style__card-inner"
-            :class="{ 'choose-style__card-inner--select': selectGradient === cardColor }"
+            :class="{ 'choose-style__card-inner--select': userColorTheme === cardColor }"
             @click="select(cardColor)"
           >
             <div class="choose-style__card-background" :style="`background-image: ${cardColor.background}`"></div>
           </div>
-          <span v-if="selectGradient === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
+          <span v-if="userColorTheme === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
             >Complementary text
           </span>
         </div>
       </div>
-      <span v-if="selectGradient.color" class="choose-style__text" :style="`color: ${selectGradient.color}`"
+      <span v-if="userColorTheme.color" class="choose-style__text" :style="`color: ${userColorTheme.color}`"
         >Complementary text
       </span>
       <div class="choose-style__buttons">
-        <swap-button class="choose-style__button" :disabled="!isDisabledCreateProfile" @click="goToSecretPhrase"
-          >Create</swap-button
-        >
+        <div class="choose-style__buttons-control">
+          <swap-button class="choose-style__button" @click="cancelCreate">Cancel</swap-button>
+          <swap-button class="choose-style__button" :disabled="isDisabledCreateProfile" @click="goToSecretPhrase"
+            >Create</swap-button
+          >
+        </div>
         <swap-button class="choose-style__button choose-style__button--text" text @click="refreshColors">
           Refresh colors
         </swap-button>
@@ -35,23 +38,36 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
 import { getPublicKey } from '@/utils/chifer'
 import windowParentPostMessage from '@/windowParentPostMessage'
-import { SET_BACKGROUND } from '@/constants/createProfile'
+import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import { CREATE_PROFILE } from '@/constants/windowKey'
 import mnemonic from './mnemonic'
 
 const QUANTITY_CARDS = 4
 
-export default {
+type UserColorTheme = {
+  background: string
+  color: string
+  wordList: Array<string>
+}
+
+type Data = {
+  userColorTheme: UserColorTheme
+  cardColors: Array<UserColorTheme>
+  publicKeys: Array<string>
+}
+
+export default Vue.extend({
   name: 'ChooseStyle',
-  data() {
+  data(): Data {
     return {
-      selectGradient: {
-        background: null,
-        color: null,
+      userColorTheme: {
+        background: '',
+        color: '',
         wordList: []
       },
       cardColors: [],
@@ -59,31 +75,49 @@ export default {
     }
   },
   computed: {
-    isDisabledCreateProfile() {
-      return !!this.selectGradient.wordList.length
+    isDisabledCreateProfile(): boolean {
+      return !this.userColorTheme.background
     }
   },
-  async mounted() {
+  async mounted(): Promise<void> {
+    windowParentPostMessage({
+      key: CREATE_PROFILE,
+      message: {
+        type: INIT_IFRAME,
+        payload: {
+          loading: false
+        }
+      }
+    })
     await this.getMnemonic()
     this.getCards()
   },
   methods: {
-    select(color) {
-      this.selectGradient = color
+    select(userColorTheme: UserColorTheme): void {
+      this.userColorTheme = userColorTheme
       this.setBackground()
     },
 
-    goToSecretPhrase() {
-      if (this.selectGradient.wordList.length > 0) {
+    goToSecretPhrase(): void {
+      if (this.userColorTheme.wordList.length > 0) {
         this.$router.push({ name: 'SecretPhrase' })
       }
     },
 
-    async getMnemonic() {
+    cancelCreate(): void {
+      windowParentPostMessage({
+        key: CREATE_PROFILE,
+        message: {
+          type: REDIRECT_TO_HOME
+        }
+      })
+    },
+
+    async getMnemonic(): Promise<void> {
       const seedsResolvers: Promise<Buffer>[] = []
       for (let i = 0; i < QUANTITY_CARDS; i += 1) {
-        this.selectGradient.wordList = generateMnemonic(256).split(' ')
-        const seed = mnemonicToSeed(this.selectGradient.wordList.join(' '))
+        this.userColorTheme.wordList = generateMnemonic(256).split(' ')
+        const seed = mnemonicToSeed(this.userColorTheme.wordList.join(' '))
         seedsResolvers.push(seed)
       }
       const seeds = await Promise.all(seedsResolvers)
@@ -94,49 +128,48 @@ export default {
       })
     },
 
-    getCards() {
+    getCards(): void {
       type listItem = {
         background: string
         color: string
+        colorSelection: string
         wordList: string[]
       }
       const list: listItem[] = []
       for (let i = 0; i < this.publicKeys.length; i += 1) {
-        const { background, color } = getUserColorTheme(this.publicKeys[i])
+        const { background, color, colorSelection } = getUserColorTheme(this.publicKeys[i])
 
         list.splice(i, 1, {
           background,
           color,
-          wordList: this.selectGradient.wordList
+          colorSelection,
+          wordList: this.userColorTheme.wordList
         })
       }
 
       this.cardColors = list
     },
 
-    async refreshColors() {
-      this.selectGradient = {
-        background: null,
-        color: null,
-        wordList: []
-      }
+    async refreshColors(): Promise<void> {
       this.publicKeys = []
       await this.getMnemonic()
       this.getCards()
     },
 
-    setBackground() {
+    setBackground(): void {
       windowParentPostMessage({
         key: CREATE_PROFILE,
-        data: {
+        message: {
           type: SET_BACKGROUND,
-          selectGradient: this.selectGradient
+          payload: {
+            userColorTheme: this.userColorTheme
+          }
         }
       })
-      mnemonic.card = this.selectGradient
+      mnemonic.card = this.userColorTheme
     }
   }
-}
+})
 </script>
 
 <style lang="scss">
@@ -305,6 +338,10 @@ export default {
     @include phone {
       margin-top: 30px;
     }
+  }
+
+  .buttons-control {
+    display: flex;
   }
 
   &__button {

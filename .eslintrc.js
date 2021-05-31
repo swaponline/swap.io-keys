@@ -31,7 +31,6 @@ module.exports = {
     'vue/v-on-function-call': ['error', 'never'],
     'vue/no-boolean-default': ['error', 'default-false'],
     'vue/padding-line-between-blocks': ['error', 'always'],
-    'vue/require-direct-export': 'error',
     'no-eq-null': 'error',
     'require-await': 'error'
   },
