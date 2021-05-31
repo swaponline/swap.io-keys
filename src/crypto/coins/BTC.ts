@@ -3,7 +3,7 @@ import * as bip39 from 'bip39'
 import bitcore from 'bitcore-lib'
 
 import bip44 from '../bip44'
-import { ICoin, ENetworkType } from '../index'
+import { ICoin, ENetworkType } from '../types'
 
 const netNames = {
   mainnet: 'mainnet',
@@ -57,9 +57,8 @@ const BTC: ICoin = {
       }
     }
   },
-  profileFromMnemonic({ mnemonic, netName, index }) {
-    const network = BTC.networks[netName]
-    const { settings } = network
+  profileFromMnemonic({ mnemonic, network, addressIndex }) {
+    const { settings } = BTC.networks[network]
 
     // todo: move?
     const seed = bip39.mnemonicToSeedSync(mnemonic)
@@ -73,21 +72,24 @@ const BTC: ICoin = {
       pubKeyHash: settings.base58prefix.pubKeyHash,
       scriptHash: settings.base58prefix.scriptHash
     })
-    const derivePath = bip44.createDerivePath(network)
+    const derivePath = bip44.createDerivePath({
+      coinIndex: settings.bip44.coinIndex,
+      addressIndex
+    })
     const child = root.derivePath(derivePath)
 
     let libNetwork
 
-    if (netName === netNames.mainnet) {
+    if (network === netNames.mainnet) {
       libNetwork = bitcore.Networks.mainnet
     }
 
-    if (netName === netNames.testnet) {
+    if (network === netNames.testnet) {
       libNetwork = bitcore.Networks.testnet
     }
 
     if (!libNetwork) {
-      throw new Error(`Unknown network: ${netName}`)
+      throw new Error(`Unknown network: ${network}`)
     }
 
     // eslint-disable-next-line new-cap
@@ -96,9 +98,9 @@ const BTC: ICoin = {
     const address = new bitcore.Address(publicKey, libNetwork)
 
     const account = {
-      privateKey,
-      publicKey,
-      address
+      privateKey: child.toWIF(),
+      publicKey: publicKey.toString(),
+      address: address.toString()
     }
 
     return account

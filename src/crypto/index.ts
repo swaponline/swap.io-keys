@@ -1,66 +1,25 @@
-/*
-seed + password + HD Path => private key
-private key => public key
-public key => public address
-*/
+import coins from './coins'
+import { TProfile } from './types'
 
-type TMnemonic = string
-type TPrivateKey = string
-type TPublicKey = string
-type TAddress = string
+/* interface IProfileFromMnemonicParams {
+  typeof coins.BTC.profileFromMnemonic ||
+  typeof coins.LTC.profileFromMnemonic
+} */
 
-type TNetworkName = string
-
-type TProfile = {
-  privateKey: TPrivateKey
-  publicKey: TPublicKey
-  address: TAddress
-}
-
-export enum ENetworkType {
-  Mainnet = 'Mainnet',
-  Testnet = 'Testnet'
-}
-
-export enum EPreset {
-  BIP44 = 'BIP44',
-  electrum = 'electrum'
-}
-
-export interface IAddProfileParams {
-  mnemonic?: TMnemonic
-}
-
-export interface ICreateAddressesParams {
-  coin: 'BTC' | 'LTC' | 'ETH'
-  preset: EPreset
-}
-
-export interface INetwork {
-  type: ENetworkType
-  settings: {
-    port: number
-    magic: number
-    messagePrefix: string
-    base58prefix: {
-      pubKeyHash: number
-      scriptHash: number
-      privateKeyWIF: number
-      publicKeyBIP32: number
-      privateKeyBIP32: number
-    }
-    bip44: {
-      coinIndex: number
-    }
+const profileFromMnemonic: (params) => TProfile = params => {
+  // todo: improve types - unreliable
+  if (params.coin === 'BTC') {
+    return coins.BTC.profileFromMnemonic(params)
   }
+  if (params.coin === 'LTC') {
+    return coins.LTC.profileFromMnemonic(params)
+  }
+  if (params.coin === 'ETH') {
+    return coins.ETH.profileFromMnemonic(params)
+  }
+  throw new Error(`Unknown coin "${params.coin}"`)
 }
 
-export interface ICoin {
-  symbol: string
-  name: string
-  precision: number
-  networks: {
-    [key: string]: INetwork
-  }
-  profileFromMnemonic: ({ mnemonic: TMnemonic, netName: TNetworkName, index: number }) => TProfile
+export default {
+  profileFromMnemonic
 }

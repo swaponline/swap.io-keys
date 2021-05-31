@@ -3,7 +3,7 @@ import * as bip39 from 'bip39'
 import bitcore from 'bitcore-lib'
 
 import bip44 from '../bip44'
-import { ICoin, ENetworkType } from '../index'
+import { ICoin, ENetworkType } from '../types'
 
 const netNames = {
   mainnet: 'mainnet',
@@ -60,26 +60,28 @@ const LTC: ICoin = {
       }
     }
   },
-  profileFromMnemonic({ mnemonic, netName, index }) {
-    const network = LTC.networks[netName]
-    const { settings } = network
+  profileFromMnemonic({ mnemonic, network, addressIndex }) {
+    const { settings } = LTC.networks[network]
 
     const seed = bip39.mnemonicToSeedSync(mnemonic)
     const root = bip32.fromSeed(seed /* , network.bip32settings */)
-    const derivePath = bip44.createDerivePath(network)
+    const derivePath = bip44.createDerivePath({
+      coinIndex: settings.bip44.coinIndex,
+      addressIndex
+    })
     const child = root.derivePath(derivePath)
 
     let libNetworkName
 
-    if (netName === netNames.mainnet) {
+    if (network === netNames.mainnet) {
       libNetworkName = 'litecoin-mainnet'
     }
-    if (netName === netNames.testnet) {
+    if (network === netNames.testnet) {
       libNetworkName = 'litecoin-testnet'
     }
 
     if (!libNetworkName) {
-      throw new Error(`Unknown network: ${netName}`)
+      throw new Error(`Unknown network: ${network}`)
     }
 
     bitcore.Networks.add({

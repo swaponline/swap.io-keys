@@ -2,7 +2,8 @@ import { hdkey } from 'ethereumjs-wallet'
 import * as bip39 from 'bip39'
 import web3utils from 'web3-utils'
 
-import { ICoin, ENetworkType } from '../index'
+import bip44 from '../bip44'
+import { ICoin, ENetworkType } from '../types'
 
 const ETH: ICoin = {
   symbol: 'ETH',
@@ -29,11 +30,16 @@ const ETH: ICoin = {
       }
     }
   },
-  profileFromMnemonic({ mnemonic, netName, index }) {
+  profileFromMnemonic({ mnemonic, addressIndex }) {
     const masterSeed = bip39.mnemonicToSeedSync(mnemonic)
     const hdwallet = hdkey.fromMasterSeed(masterSeed)
 
-    const wallet = hdwallet.derivePath(`m/44'/60'/0'/0/${index}`).getWallet()
+    const derivePath = bip44.createDerivePath({
+      coinIndex: 60,
+      addressIndex
+    })
+
+    const wallet = hdwallet.derivePath(derivePath).getWallet()
     const privateKey = wallet.getPrivateKeyString()
     const publicKey = wallet.getPublicKeyString()
     /*
