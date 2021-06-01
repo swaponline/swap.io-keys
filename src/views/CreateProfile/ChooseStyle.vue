@@ -12,7 +12,7 @@
             :class="{ 'choose-style__card-inner--select': userColorTheme === cardColor }"
             @click="select(cardColor)"
           >
-            <div class="choose-style__card-background" :style="`background-image: ${cardColor.background}`"></div>
+            <canvas ref="backgroundCanvas" class="choose-style__card-background"></canvas>
           </div>
           <span v-if="userColorTheme === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
             >Complementary text
@@ -45,6 +45,7 @@ import windowParentPostMessage from '@/windowParentPostMessage'
 import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import { CREATE_PROFILE } from '@/constants/windowKey'
+import Canvg from 'canvg'
 import mnemonic from './mnemonic'
 
 const QUANTITY_CARDS = 4
@@ -91,6 +92,10 @@ export default Vue.extend({
     })
     await this.getMnemonic()
     this.getCards()
+    window.addEventListener('resize', this.setCardsBackground)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.setCardsBackground)
   },
   methods: {
     select(userColorTheme: UserColorTheme): void {
@@ -148,6 +153,30 @@ export default Vue.extend({
       }
 
       this.cardColors = list
+      this.$nextTick(() => this.setCardsBackground())
+    },
+
+    setCardsBackground(): void {
+      this.cardColors.forEach((color, index) => {
+        const canvas = this.$refs.backgroundCanvas[index]
+        const ctx = canvas.getContext('2d')
+        const options = {
+          ignoreMouse: true,
+          ignoreAnimation: true
+        }
+
+        const { background } = color
+        // hack for scaling svg to canvas size
+        canvas.style = ''
+        const widthStr = `width="${canvas.offsetWidth}"\n`
+        const heightStr = `height="${canvas.offsetHeight}"\n`
+        const point = background.indexOf('viewBox')
+        const resSvg = background.substring(0, point) + widthStr + heightStr + background.substring(point)
+
+        const v = Canvg.fromString(ctx, resSvg, options)
+
+        v.start()
+      })
     },
 
     async refreshColors(): Promise<void> {

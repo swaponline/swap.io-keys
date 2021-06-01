@@ -188,10 +188,8 @@ export class UserColorTheme {
     return `
          <svg
             class="svg"
-            width="${this.DEFAULT_WIDTH_SVG}"
-            height="${this.DEFAULT_HEIGHT_SVG}"
+            preserveAspectRatio="none"
             viewBox="0 0 200 120"
-            preserveAspecRatio="xMaxYmax slice"
             xmlns="http://www.w3.org/2000/svg"
          >
             <defs>
