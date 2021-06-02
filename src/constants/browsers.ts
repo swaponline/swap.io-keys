@@ -1,0 +1,5 @@
+export const FIREFOX = 'Firefox'
+export const CHROME = 'Chrome'
+export const SAFARI = 'Safari'
+export const OPERA = 'Opera'
+export const IE = 'msie'
