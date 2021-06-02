@@ -157,8 +157,8 @@ export default Vue.extend({
     },
 
     setCardsBackground(): void {
-      this.cardColors.forEach((color, index) => {
-        const canvas = this.$refs.backgroundCanvas[index]
+      this.cardColors.forEach((color, i) => {
+        const canvas = this.$refs.backgroundCanvas[i]
         const ctx = canvas.getContext('2d')
         const options = {
           ignoreMouse: true,
@@ -170,12 +170,12 @@ export default Vue.extend({
         canvas.style = ''
         const widthStr = `width="${canvas.offsetWidth}"\n`
         const heightStr = `height="${canvas.offsetHeight}"\n`
-        const point = background.indexOf('viewBox')
-        const resSvg = background.substring(0, point) + widthStr + heightStr + background.substring(point)
+        const index = background.indexOf('viewBox')
+        const resSvg = background.substring(0, index) + widthStr + heightStr + background.substring(index)
 
-        const v = Canvg.fromString(ctx, resSvg, options)
+        const canvg = Canvg.fromString(ctx, resSvg, options)
 
-        v.start()
+        canvg.start()
       })
     },
 
