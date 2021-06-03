@@ -25,9 +25,14 @@
       <div class="choose-style__buttons">
         <div class="choose-style__buttons-control">
           <swap-button class="choose-style__button" @click="cancelCreate">Cancel</swap-button>
-          <swap-button class="choose-style__button" :disabled="isDisabledCreateProfile" @click="goToSecretPhrase"
-            >Create</swap-button
+          <swap-button
+            class="choose-style__button"
+            :disabled="isDisabledCreateProfile"
+            :tooltip="isDisabledCreateProfile ? 'Please pick a color scheme to proceed.' : null"
+            @click="goToSecretPhrase"
           >
+            Create
+          </swap-button>
         </div>
         <swap-button class="choose-style__button choose-style__button--text" text @click="refreshColors">
           Refresh colors
