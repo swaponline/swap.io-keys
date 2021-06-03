@@ -18,38 +18,59 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
 import InputSecretPhrase from '@/components/Profile/InputSecretPhrase.vue'
 import FormPassword from '@/components/Profile/FormPassword.vue'
-import { mnemonicToSeedSync } from 'bip39'
-import { encryptData } from '@/utils/chifer'
+import { mnemonicToSeed } from 'bip39'
+import { encryptData, getPublicKey } from '@/utils/chifer'
+import { getUserColorTheme } from '@/utils/getUserColorTheme'
+import windowParentPostMessage from '@/windowParentPostMessage'
 import { getStorage, setStorage } from '@/utils/storage'
+import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
+import { RECOVER_PROFILE, CREATE_PROFILE } from '@/constants/windowKey'
 import mnemonic from './mnemonic'
 
-export default {
+type Data = {
+  words: Array<string>
+  isWritePhrase: boolean
+  formVisible: boolean
+}
+
+export default Vue.extend({
   name: 'SecretPhrase',
   components: {
     ShowSecretPhrase,
     InputSecretPhrase,
     FormPassword
   },
-  data() {
+  data(): Data {
     return {
       words: [],
       isWritePhrase: false,
-      currentWindow: null,
-      formVisible: false,
-      resolve: null,
-      reject: null
+      formVisible: false
     }
   },
   computed: {
-    isRecoverProfile() {
+    isRecoverProfile(): boolean {
       return !mnemonic.card?.wordList
     }
   },
-  created() {
+  mounted(): void {
+    if (this.isRecoverProfile) {
+      windowParentPostMessage({
+        key: RECOVER_PROFILE,
+        message: {
+          type: INIT_IFRAME,
+          payload: {
+            loading: false
+          }
+        }
+      })
+    }
+  },
+  created(): void {
     if (this.isRecoverProfile) {
       this.words = new Array(24).fill('', 0, 24)
       return
@@ -63,41 +84,77 @@ export default {
     this.words = mnemonic.card?.wordList
   },
   methods: {
-    back() {
+    back(): void {
+      if (this.isRecoverProfile) {
+        windowParentPostMessage({
+          key: RECOVER_PROFILE,
+          message: {
+            type: REDIRECT_TO_HOME
+          }
+        })
+      }
       this.isWritePhrase = false
     },
 
-    async createProfile() {
+    async createProfile(): Promise<void> {
       try {
         const password = await new Promise((resolve, reject) => {
           this.toggleFormPassword(true, resolve, reject)
         })
 
-        const seed = mnemonicToSeedSync(this.words.join(' '))
-        const newProfile = await encryptData(seed, password)
-        const profiles = JSON.parse(getStorage('profiles')) || {}
-        profiles[newProfile.publicKey.slice(0, 10)] = newProfile
+        const seed = await mnemonicToSeed(this.words.join(' '))
 
-        setStorage('profiles', JSON.stringify(profiles))
+        if (this.isRecoverProfile) {
+          await this.recoverBackground(seed)
+        }
+
+        const newProfile = await encryptData(seed, password)
+        const profiles: Record<string, unknown> = getStorage('profiles') || {}
+        profiles[newProfile.publicKey.slice(0, 10)] = newProfile
+        setStorage('profiles', profiles)
       } catch (e) {
         console.error(`Create profile reject: ${e}`)
       }
 
       this.toggleFormPassword(false)
+
+      windowParentPostMessage({
+        key: this.isRecoverProfile ? RECOVER_PROFILE : CREATE_PROFILE,
+        message: {
+          type: REDIRECT_TO_HOME
+        }
+      })
     },
 
-    toggleFormPassword(visible, resolve = null, reject = null) {
+    toggleFormPassword(visible: boolean, resolve = null, reject = null): void {
       this.formVisible = visible
       this.resolve = resolve
       this.reject = reject
     },
 
-    recoverProfile(recoverWords) {
+    recoverProfile(recoverWords: Array<string>): void {
       this.words = recoverWords
       this.createProfile()
+    },
+
+    recoverBackground(seed: string): Promise<boolean> {
+      return new Promise(resolve => {
+        const publicKey = getPublicKey(seed)
+
+        windowParentPostMessage({
+          key: RECOVER_PROFILE,
+          message: {
+            type: SET_BACKGROUND,
+            payload: {
+              selectGradient: getUserColorTheme(publicKey)
+            }
+          }
+        })
+        return resolve(true)
+      })
     }
   }
-}
+})
 </script>
 
 <style lang="scss">

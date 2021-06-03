@@ -9,27 +9,27 @@
         <div v-for="cardColor in cardColors" :key="cardColor.background" class="choose-style__card">
           <div
             class="choose-style__card-inner"
-            :class="{ 'choose-style__card-inner--select': selectGradient === cardColor }"
+            :class="{ 'choose-style__card-inner--select': userColorTheme === cardColor }"
             @click="select(cardColor)"
           >
-            <div
-              class="choose-style__card-background"
-              :style="`background: linear-gradient(${cardColor.background});`"
-            ></div>
+            <canvas ref="backgroundCanvas" class="choose-style__card-background"></canvas>
           </div>
-          <span v-if="selectGradient === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
+          <span v-if="userColorTheme === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
             >Complementary text
           </span>
         </div>
       </div>
-      <span v-if="selectGradient.color" class="choose-style__text" :style="`color: ${selectGradient.color}`"
+      <span v-if="userColorTheme.color" class="choose-style__text" :style="`color: ${userColorTheme.color}`"
         >Complementary text
       </span>
       <div class="choose-style__buttons">
-        <swap-button class="choose-style__button" :disabled="!isDisabledCreateProfile" @click="goToSecretPhrase"
-          >Create</swap-button
-        >
-        <swap-button class="choose-style__button choose-style__button--text" text @click="getCards">
+        <div class="choose-style__buttons-control">
+          <swap-button class="choose-style__button" @click="cancelCreate">Cancel</swap-button>
+          <swap-button class="choose-style__button" :disabled="isDisabledCreateProfile" @click="goToSecretPhrase"
+            >Create</swap-button
+          >
+        </div>
+        <swap-button class="choose-style__button choose-style__button--text" text @click="refreshColors">
           Refresh colors
         </swap-button>
       </div>
@@ -37,66 +37,168 @@
   </div>
 </template>
 
-<script>
-import { generateColor, getGradient } from '@/utils/generators'
-import { generateMnemonic } from 'bip39'
+<script lang="ts">
+import Vue from 'vue'
+import { generateMnemonic, mnemonicToSeed } from 'bip39'
+import { getPublicKey } from '@/utils/chifer'
 import windowParentPostMessage from '@/windowParentPostMessage'
+import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
+import { getUserColorTheme } from '@/utils/getUserColorTheme'
+import { CREATE_PROFILE } from '@/constants/windowKey'
+import Canvg from 'canvg'
 import mnemonic from './mnemonic'
 
-export default {
+const QUANTITY_CARDS = 4
+
+type UserColorTheme = {
+  background: string
+  color: string
+  wordList: Array<string>
+}
+
+type Data = {
+  userColorTheme: UserColorTheme
+  cardColors: Array<UserColorTheme>
+  publicKeys: Array<string>
+}
+
+export default Vue.extend({
   name: 'ChooseStyle',
-  data() {
+  data(): Data {
     return {
-      selectGradient: {
+      userColorTheme: {
         background: '',
         color: '',
         wordList: []
       },
-      cardColors: []
+      cardColors: [],
+      publicKeys: []
     }
   },
   computed: {
-    isDisabledCreateProfile() {
-      return !!this.selectGradient.wordList.length
+    isDisabledCreateProfile(): boolean {
+      return !this.userColorTheme.background
     }
   },
-  mounted() {
+  async mounted(): Promise<void> {
+    windowParentPostMessage({
+      key: CREATE_PROFILE,
+      message: {
+        type: INIT_IFRAME,
+        payload: {
+          loading: false
+        }
+      }
+    })
+    await this.getMnemonic()
     this.getCards()
+    window.addEventListener('resize', this.setCardsBackground)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.setCardsBackground)
   },
   methods: {
-    select(color) {
-      this.selectGradient = color
+    select(userColorTheme: UserColorTheme): void {
+      this.userColorTheme = userColorTheme
       this.setBackground()
     },
-    goToSecretPhrase() {
-      if (this.selectGradient.wordList.length > 0) {
+
+    goToSecretPhrase(): void {
+      if (this.userColorTheme.wordList.length > 0) {
         this.$router.push({ name: 'SecretPhrase' })
       }
     },
-    getCards() {
-      this.selectGradient = {
-        background: '',
-        color: '',
-        wordList: []
+
+    cancelCreate(): void {
+      windowParentPostMessage({
+        key: CREATE_PROFILE,
+        message: {
+          type: REDIRECT_TO_HOME
+        }
+      })
+    },
+
+    async getMnemonic(): Promise<void> {
+      const seedsResolvers: Promise<Buffer>[] = []
+      for (let i = 0; i < QUANTITY_CARDS; i += 1) {
+        this.userColorTheme.wordList = generateMnemonic(256).split(' ')
+        const seed = mnemonicToSeed(this.userColorTheme.wordList.join(' '))
+        seedsResolvers.push(seed)
       }
-      const list = []
-      for (let i = 0; i < 4; i += 1) {
-        const wordList = generateMnemonic(256).split(' ')
-        const color = generateColor()
+      const seeds = await Promise.all(seedsResolvers)
+
+      seeds.forEach(seed => {
+        const publicKey = getPublicKey(seed)
+        this.publicKeys.push(publicKey)
+      })
+    },
+
+    getCards(): void {
+      type listItem = {
+        background: string
+        color: string
+        colorSelection: string
+        wordList: string[]
+      }
+      const list: listItem[] = []
+      for (let i = 0; i < this.publicKeys.length; i += 1) {
+        const { background, color, colorSelection } = getUserColorTheme(this.publicKeys[i])
+
         list.splice(i, 1, {
-          background: getGradient(color),
+          background,
           color,
-          wordList
+          colorSelection,
+          wordList: this.userColorTheme.wordList
         })
       }
+
       this.cardColors = list
+      this.$nextTick(() => this.setCardsBackground())
     },
-    setBackground() {
-      windowParentPostMessage({ key: 'CreateProfile', selectGradient: this.selectGradient })
-      mnemonic.card = this.selectGradient
+
+    setCardsBackground(): void {
+      this.cardColors.forEach((color, i) => {
+        const canvas = this.$refs.backgroundCanvas[i]
+        const ctx = canvas.getContext('2d')
+        const options = {
+          ignoreMouse: true,
+          ignoreAnimation: true
+        }
+
+        const { background } = color
+        // hack for scaling svg to canvas size
+        canvas.style = ''
+        const widthStr = `width="${canvas.offsetWidth}"\n`
+        const heightStr = `height="${canvas.offsetHeight}"\n`
+        const index = background.indexOf('viewBox')
+        const resSvg = background.substring(0, index) + widthStr + heightStr + background.substring(index)
+
+        const canvg = Canvg.fromString(ctx, resSvg, options)
+
+        canvg.start()
+      })
+    },
+
+    async refreshColors(): Promise<void> {
+      this.publicKeys = []
+      await this.getMnemonic()
+      this.getCards()
+    },
+
+    setBackground(): void {
+      windowParentPostMessage({
+        key: CREATE_PROFILE,
+        message: {
+          type: SET_BACKGROUND,
+          payload: {
+            userColorTheme: this.userColorTheme
+          }
+        }
+      })
+      mnemonic.card = this.userColorTheme
     }
   }
-}
+})
 </script>
 
 <style lang="scss">
@@ -198,6 +300,7 @@ export default {
     padding: 5px 5px;
     border-radius: 20px;
     border: 5px solid transparent;
+    cursor: pointer;
 
     &--select {
       border-color: $--grey;
@@ -205,6 +308,7 @@ export default {
   }
 
   &__card-background {
+    background-size: 100% 100%;
     border-radius: 12px;
     width: 100%;
     height: 120px;
@@ -263,6 +367,10 @@ export default {
     @include phone {
       margin-top: 30px;
     }
+  }
+
+  .buttons-control {
+    display: flex;
   }
 
   &__button {
