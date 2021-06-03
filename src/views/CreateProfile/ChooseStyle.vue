@@ -24,12 +24,7 @@
       </span>
       <div class="choose-style__buttons">
         <div class="choose-style__buttons-control">
-          <swap-button
-            v-tooltip="{ content: 'Please pick a color scheme to proceed.', delay: { show: 500, hide: 100 } }"
-            class="choose-style__button"
-            @click="cancelCreate"
-            >Cancel</swap-button
-          >
+          <swap-button class="choose-style__button" @click="cancelCreate">Cancel</swap-button>
           <swap-button
             class="choose-style__button"
             :disabled="isDisabledCreateProfile"
@@ -56,7 +51,6 @@ import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/creat
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import { CREATE_PROFILE } from '@/constants/windowKey'
 import Canvg from 'canvg'
-import VPopover from 'v-tooltip'
 import mnemonic from './mnemonic'
 
 const QUANTITY_CARDS = 4
