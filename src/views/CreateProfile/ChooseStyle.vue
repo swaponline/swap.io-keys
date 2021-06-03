@@ -164,7 +164,6 @@ export default Vue.extend({
     },
 
     setCardsBackground(): void {
-      console.log(this.cardColors.length)
       this.cardColors.forEach((color, i) => {
         const canvas = this.$refs.backgroundCanvas[i]
         const ctx = canvas.getContext('2d')
