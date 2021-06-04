@@ -8,6 +8,19 @@
           console.log($(e.target).data('href'))
           $('#testIframe').attr('src', libUrl + $(e.target).data('href'))
         })
+        $(window).on('message', (event) => {
+          console.log('jquery message>>>>', event)
+        })
+      })
+      window.addEventListener('message', (event) => {
+        console.log('>>>>> message in', event, event.origin)
+        //if (event.origin !== process.env.VUE_APP_HOME_URL) return
+        const key = event.data.key || 'default'
+        switch (key) {
+          default: {
+            console.warn(event.data)
+          }
+        }
       })
     </script>
   </head>

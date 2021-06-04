@@ -31,6 +31,7 @@ function checkingIframeAndDomain(location: string): boolean {
 messageHandler()
 windowParentPostMessage({ key: 'createWindow' })
 
+console.log('>>>>>', process.env.VUE_APP_HOME_URL)
 if (browserName === FIREFOX) {
   shouldCreateIframe = checkingIframeAndDomain(document.referrer.substring(0, document.referrer.length - 1))
 } else {

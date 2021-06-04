@@ -9,7 +9,9 @@ export default data => {
     throw new Error('No `window.parent.postMessage`')
   }
   if (homeUrl) {
-    window.parent.postMessage(data, homeUrl)
+    console.log('>>>>', document.referrer,window.location, window.location.ancestorOrigins)
+    console.log(`📤 (sendMessage) ${homeUrl} ${JSON.stringify(data)}`)
+    window.parent.postMessage(data, '*')
   } else {
     console.log(`📤 (mocked) ${JSON.stringify(data)}`)
   }
