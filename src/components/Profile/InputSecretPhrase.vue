@@ -23,12 +23,19 @@
       <swap-button
         v-if="isRecoverProfile"
         class="input-secret-phrase__button"
-        :disabled="!isDisabledRecover"
+        :disabled="isDisabledRecover"
+        :tooltip="isDisabledRecover ? 'Complete your secret phrase.' : null"
         @click="recover"
       >
         Recover
       </swap-button>
-      <swap-button v-else class="input-secret-phrase__button" :disabled="!isDisabledCreate" @click="create">
+      <swap-button
+        v-else
+        class="input-secret-phrase__button"
+        :disabled="isDisabledCreate"
+        :tooltip="isDisabledCreate ? 'Complete your secret phrase.' : null"
+        @click="create"
+      >
         Create
       </swap-button>
     </div>
@@ -58,13 +65,13 @@ export default {
     isDisabledCreate() {
       const a = this.words.toString()
       const b = this.wordsWrapper.toString()
-      return a === b
+      return a !== b
     },
     isDisabledRecover() {
       return (
         this.wordsWrapper.length !== 0 &&
-        this.wordsWrapper.every(word => {
-          return word !== ''
+        this.wordsWrapper.some(word => {
+          return word === ''
         })
       )
     },

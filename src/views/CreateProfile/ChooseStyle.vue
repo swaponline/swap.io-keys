@@ -12,7 +12,7 @@
             :class="{ 'choose-style__card-inner--select': userColorTheme === cardColor }"
             @click="select(cardColor)"
           >
-            <div class="choose-style__card-background" :style="`background-image: ${cardColor.background}`"></div>
+            <canvas ref="backgroundCanvas" class="choose-style__card-background"></canvas>
           </div>
           <span v-if="userColorTheme === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
             >Complementary text
@@ -25,9 +25,14 @@
       <div class="choose-style__buttons">
         <div class="choose-style__buttons-control">
           <swap-button class="choose-style__button" @click="cancelCreate">Cancel</swap-button>
-          <swap-button class="choose-style__button" :disabled="isDisabledCreateProfile" @click="goToSecretPhrase"
-            >Create</swap-button
+          <swap-button
+            class="choose-style__button"
+            :disabled="isDisabledCreateProfile"
+            :tooltip="isDisabledCreateProfile ? 'Please pick a color scheme to proceed.' : null"
+            @click="goToSecretPhrase"
           >
+            Create
+          </swap-button>
         </div>
         <swap-button class="choose-style__button choose-style__button--text" text @click="refreshColors">
           Refresh colors
@@ -45,6 +50,7 @@ import windowParentPostMessage from '@/windowParentPostMessage'
 import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import { CREATE_PROFILE } from '@/constants/windowKey'
+import Canvg from 'canvg'
 import mnemonic from './mnemonic'
 
 const QUANTITY_CARDS = 4
@@ -59,6 +65,7 @@ type Data = {
   userColorTheme: UserColorTheme
   cardColors: Array<UserColorTheme>
   publicKeys: Array<string>
+  isRefreshing: boolean
 }
 
 export default Vue.extend({
@@ -71,7 +78,8 @@ export default Vue.extend({
         wordList: []
       },
       cardColors: [],
-      publicKeys: []
+      publicKeys: [],
+      isRefreshing: false
     }
   },
   computed: {
@@ -91,6 +99,10 @@ export default Vue.extend({
     })
     await this.getMnemonic()
     this.getCards()
+    window.addEventListener('resize', this.setCardsBackground)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.setCardsBackground)
   },
   methods: {
     select(userColorTheme: UserColorTheme): void {
@@ -148,12 +160,40 @@ export default Vue.extend({
       }
 
       this.cardColors = list
+      this.$nextTick(() => this.setCardsBackground())
+    },
+
+    setCardsBackground(): void {
+      this.cardColors.forEach((color, i) => {
+        const canvas = this.$refs.backgroundCanvas[i]
+        const ctx = canvas.getContext('2d')
+        const options = {
+          ignoreMouse: true,
+          ignoreAnimation: true
+        }
+
+        const { background } = color
+        // hack for scaling svg to canvas size
+        canvas.style = ''
+        const widthStr = `width="${canvas.offsetWidth}"\n`
+        const heightStr = `height="${canvas.offsetHeight}"\n`
+        const index = background.indexOf('viewBox')
+        const resSvg = background.substring(0, index) + widthStr + heightStr + background.substring(index)
+
+        const canvg = Canvg.fromString(ctx, resSvg, options)
+
+        canvg.start()
+      })
     },
 
     async refreshColors(): Promise<void> {
-      this.publicKeys = []
-      await this.getMnemonic()
-      this.getCards()
+      if (!this.isRefreshing) {
+        this.isRefreshing = true
+        this.publicKeys = []
+        await this.getMnemonic()
+        this.getCards()
+        this.isRefreshing = false
+      }
     },
 
     setBackground(): void {
