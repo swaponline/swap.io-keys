@@ -65,6 +65,7 @@ type Data = {
   userColorTheme: UserColorTheme
   cardColors: Array<UserColorTheme>
   publicKeys: Array<string>
+  isRefreshing: boolean
 }
 
 export default Vue.extend({
@@ -77,7 +78,8 @@ export default Vue.extend({
         wordList: []
       },
       cardColors: [],
-      publicKeys: []
+      publicKeys: [],
+      isRefreshing: false
     }
   },
   computed: {
@@ -185,9 +187,13 @@ export default Vue.extend({
     },
 
     async refreshColors(): Promise<void> {
-      this.publicKeys = []
-      await this.getMnemonic()
-      this.getCards()
+      if (!this.isRefreshing) {
+        this.isRefreshing = true
+        this.publicKeys = []
+        await this.getMnemonic()
+        this.getCards()
+        this.isRefreshing = false
+      }
     },
 
     setBackground(): void {
