@@ -25,6 +25,7 @@ export enum ENetworkType {
 export enum EPreset {
   BIP44 = 'BIP44',
   electrum = 'electrum'
+  // electrum-ltc = 'electrum-ltc'
 }
 
 export interface IAddProfileParams {

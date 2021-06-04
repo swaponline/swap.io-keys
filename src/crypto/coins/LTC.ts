@@ -13,8 +13,7 @@ const netNames = {
 const LTC: ICoin = {
   symbol: 'LTC',
   name: 'Litecoin',
-  precision: 8, // ?
-  // networkNames: netNames,
+  precision: 8,
 
   networks: {
     mainnet: {
@@ -51,8 +50,8 @@ const LTC: ICoin = {
           pubKeyHash: 0x6f,
           scriptHash: 0xc4,
           privateKeyWIF: 0xef,
-          publicKeyBIP32: 0x043587cf,
-          privateKeyBIP32: 0x04358394
+          publicKeyBIP32: 0x043587cf, // todo: change
+          privateKeyBIP32: 0x04358394 // todo: change
         },
         bip44: {
           coinIndex: 1
@@ -102,9 +101,10 @@ const LTC: ICoin = {
     const address = new bitcore.Address(publicKey, libNetwork)
 
     const account = {
-      privateKey,
-      publicKey,
-      address
+      // privateKey: privateKey.toString(),
+      privateKey: '', // todo: fix privateKey
+      publicKey: publicKey.toString(),
+      address: address.toString()
     }
 
     return account
