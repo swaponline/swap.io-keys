@@ -22,6 +22,8 @@ module.exports = {
     '@typescript-eslint/semi': ['error', 'never'],
     'comma-dangle': 'off',
     '@typescript-eslint/comma-dangle': ['error', 'never'],
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
     'arrow-parens': ['error', 'as-needed'],
     'vue/max-len': ['error', { code: 120, template: 120, ignoreHTMLAttributeValues: false }],
     'vue/component-name-in-template-casing': ['error', 'kebab-case', { registeredComponentsOnly: false }],
