@@ -72,7 +72,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit-": "echo 'Run linter...' && lint-staged && echo 'Run unit tests...' && npm run test:unit"
+      "pre-commit": "echo 'Run linter...' && lint-staged && echo 'Run unit tests...' && npm run test:unit"
     }
   },
   "lint-staged": {
