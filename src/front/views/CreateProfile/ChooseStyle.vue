@@ -45,11 +45,11 @@
 <script lang="ts">
 import Vue from 'vue'
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
-import { getPublicKey } from '@/utils/chifer'
-import windowParentPostMessage from '@/windowParentPostMessage'
-import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
-import { getUserColorTheme } from '@/utils/getUserColorTheme'
-import { CREATE_PROFILE } from '@/constants/windowKey'
+import { getPublicKey } from '@/front/utils/chifer'
+import windowParentPostMessage from '@/front/windowParentPostMessage'
+import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/front/constants/createProfile'
+import { getUserColorTheme } from '@/front/utils/getUserColorTheme'
+import { CREATE_PROFILE } from '@/front/constants/windowKey'
 import Canvg from 'canvg'
 import mnemonic from './mnemonic'
 

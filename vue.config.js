@@ -15,17 +15,24 @@ module.exports = {
   css: {
     loaderOptions: {
       scss: {
-        prependData: '@import "~@/assets/scss/vars"; @import "~@/assets/scss/media";'
+        prependData: '@import "~@/front/assets/scss/vars"; @import "~@/front/assets/scss/media";'
       }
     }
   },
   transpileDependencies: ['vuetify'],
 
+  pages: {
+    index: {
+      entry: 'src/front/main.ts',
+      template: 'public/index.html'
+    }
+  },
+
   pluginOptions: {
     lintStyleOnBuild: false,
     stylelint: {},
     svgSprite: {
-      dir: 'src/assets/icons',
+      dir: 'src/front/assets/icons',
       test: /\.(svg)(\?.*)?$/,
       loaderOptions: {
         extract: true,

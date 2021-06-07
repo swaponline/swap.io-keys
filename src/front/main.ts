@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import vuetify from '@/plugins/vuetify'
-import { FIREFOX } from '@/constants/browsers'
+import vuetify from '@/front/plugins/vuetify'
+import { FIREFOX } from '@/front/constants/browsers'
 import UaParser from 'ua-parser-js'
 import VTooltip from 'v-tooltip'
 import App from './App.vue'
@@ -9,7 +9,7 @@ import store from './store'
 import messageHandler from './messageHandler'
 import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
-import '@/assets/scss/base.scss'
+import '@/front/assets/scss/base.scss'
 
 Vue.use(VTooltip)
 Vue.use(UI)

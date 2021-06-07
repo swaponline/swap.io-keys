@@ -1,4 +1,4 @@
-import { getMaxOfArray } from '@/utils/common'
+import { getMaxOfArray } from '@/front/utils/common'
 import { getDarkenedColor, getSecondColors, colors, ColorHex, hexToRGBA } from './color'
 import { randomInteger } from './randomizer'
 

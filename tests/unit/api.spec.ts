@@ -1,4 +1,4 @@
-import crypto from '@/crypto'
+import crypto from '@/common/crypto'
 
 const mnemonic = 'sudden expire elegant spend they peanut search giggle battle gas sister atom'
 

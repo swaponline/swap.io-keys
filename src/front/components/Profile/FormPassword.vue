@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import FormTextField from '@/components/UI/Forms/TextField.vue'
+import FormTextField from '@/front/components/UI/Forms/TextField.vue'
 
 export default {
   name: 'FormWrapper',

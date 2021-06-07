@@ -41,7 +41,7 @@ export default {
     name: {
       immediate: true,
       async handler(val) {
-        this.icon = await import(`@/assets/icons/${val}.svg`)
+        this.icon = await import(`@/front/assets/icons/${val}.svg`)
       }
     }
   }

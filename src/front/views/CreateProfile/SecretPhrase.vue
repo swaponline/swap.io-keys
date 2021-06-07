@@ -20,16 +20,16 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
-import InputSecretPhrase from '@/components/Profile/InputSecretPhrase.vue'
-import FormPassword from '@/components/Profile/FormPassword.vue'
+import ShowSecretPhrase from '@/front/components/Profile/ShowSecretPhrase.vue'
+import InputSecretPhrase from '@/front/components/Profile/InputSecretPhrase.vue'
+import FormPassword from '@/front/components/Profile/FormPassword.vue'
 import { mnemonicToSeed } from 'bip39'
-import { encryptData, getPublicKey } from '@/utils/chifer'
-import { getUserColorTheme } from '@/utils/getUserColorTheme'
-import windowParentPostMessage from '@/windowParentPostMessage'
-import { getStorage, setStorage } from '@/utils/storage'
-import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
-import { RECOVER_PROFILE, CREATE_PROFILE } from '@/constants/windowKey'
+import { encryptData, getPublicKey } from '@/front/utils/chifer'
+import { getUserColorTheme } from '@/front/utils/getUserColorTheme'
+import windowParentPostMessage from '@/front/windowParentPostMessage'
+import { getStorage, setStorage } from '@/front/utils/storage'
+import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/front/constants/createProfile'
+import { RECOVER_PROFILE, CREATE_PROFILE } from '@/front/constants/windowKey'
 import mnemonic from './mnemonic'
 
 type Data = {
