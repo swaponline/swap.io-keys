@@ -150,7 +150,7 @@ export class UserColorTheme {
 
       const { xOffset: cx } = initialEllipseModel[i]
       const cy = randomInteger(Math.log2(40)) + 40
-      const rx = randomInteger(Math.log2(20)) + 15
+      const rx = randomInteger(Math.log2(20)) + 5
       const ry = rx * 3
       const fill = colors[colorIdx]
 
@@ -184,7 +184,7 @@ export class UserColorTheme {
   }
 
   generateBackground(): string {
-    const angleInclination = randomInteger(Math.log2(128)) - 64
+    const angleInclination = randomInteger(Math.log2(64)) - 32
     return `
          <svg
             class="svg"
