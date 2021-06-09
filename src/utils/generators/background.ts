@@ -150,7 +150,7 @@ export class UserColorTheme {
 
       const { xOffset: cx } = initialEllipseModel[i]
       const cy = randomInteger(Math.log2(40)) + 40
-      const rx = randomInteger(Math.log2(20)) + 5
+      const rx = randomInteger(Math.log2(20)) + 10
       const ry = rx * 3
       const fill = colors[colorIdx]
 
