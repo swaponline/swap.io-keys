@@ -171,8 +171,8 @@ export class UserColorTheme {
       .map(model => {
         return `
         <ellipse
-          style="mix-blend-mode: saturation;
-          opacity: 0.4;"
+          style="mix-blend-mode: multiply;
+          opacity: 0.9;"
           cx="${model.cx}%"
           cy="${model.cy}%"
           rx="${model.rx}%"
@@ -184,7 +184,7 @@ export class UserColorTheme {
   }
 
   generateBackground(): string {
-    const angleInclination = randomInteger(Math.log2(64)) - 32
+    const angleInclination = randomInteger(Math.log2(128)) - 64
     return `
          <svg
             class="svg"
@@ -194,7 +194,7 @@ export class UserColorTheme {
          >
             <defs>
                <filter id="f1" x="0" y="0">
-               <feGaussianBlur in="SourceGraphic" stdDeviation="20" />
+               <feGaussianBlur in="SourceGraphic" stdDeviation="50" />
                </filter>
                <filter id="f2" x="0" y="0"></filter>
             </defs>
