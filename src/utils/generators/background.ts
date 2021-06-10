@@ -23,7 +23,7 @@ type WidthRects = number[]
 export type ColorTheme = {
   background: string
   color: string
-  colorSelection: string
+  selectionColor: string
 }
 
 export class UserColorTheme {
@@ -223,7 +223,7 @@ export class UserColorTheme {
     return {
       background: this.generateBackground(),
       color: this.generateColorBasedDominantWidth(),
-      colorSelection: hexToRGBA(this.dominantColor, 24)
+      selectionColor: hexToRGBA(this.dominantColor, 24)
     }
   }
 }
