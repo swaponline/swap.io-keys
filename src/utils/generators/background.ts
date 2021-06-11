@@ -150,7 +150,7 @@ export class UserColorTheme {
 
       const { xOffset: cx } = initialEllipseModel[i]
       const cy = randomInteger(Math.log2(40)) + 40
-      const rx = randomInteger(Math.log2(20)) + 15
+      const rx = randomInteger(Math.log2(20)) + 10
       const ry = rx * 3
       const fill = colors[colorIdx]
 
@@ -171,8 +171,8 @@ export class UserColorTheme {
       .map(model => {
         return `
         <ellipse
-          style="mix-blend-mode: saturation;
-          opacity: 0.4;"
+          style="mix-blend-mode: multiply;
+          opacity: 0.9;"
           cx="${model.cx}%"
           cy="${model.cy}%"
           rx="${model.rx}%"
@@ -194,7 +194,7 @@ export class UserColorTheme {
          >
             <defs>
                <filter id="f1" x="0" y="0">
-               <feGaussianBlur in="SourceGraphic" stdDeviation="20" />
+               <feGaussianBlur in="SourceGraphic" stdDeviation="50" />
                </filter>
                <filter id="f2" x="0" y="0"></filter>
             </defs>
