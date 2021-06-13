@@ -76,7 +76,7 @@ export default Vue.extend({
         background: '',
         color: '',
         wordList: []
-      },
+      } as UserColorTheme,
       cardColors: [],
       publicKeys: [],
       isRefreshing: false
@@ -202,7 +202,7 @@ export default Vue.extend({
         message: {
           type: SET_BACKGROUND,
           payload: {
-            userColorTheme: this.userColorTheme
+            userColorTheme: { ...this.userColorTheme, isSelecting: true }
           }
         }
       })

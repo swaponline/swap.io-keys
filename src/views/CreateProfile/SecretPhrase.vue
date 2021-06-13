@@ -8,13 +8,13 @@
         <input-secret-phrase
           :words="words"
           :is-recover-profile="isRecoverProfile"
-          @create="createProfile"
+          @create="toggleFormPassword(true)"
           @recover="recoverProfile"
           @back="back"
         ></input-secret-phrase>
       </template>
     </div>
-    <form-password v-if="formVisible" @close="reject" @submit="resolve" />
+    <form-password v-if="formVisible" @close="toggleFormPassword(false)" @submit="createProfile" />
   </div>
 </template>
 
@@ -96,12 +96,9 @@ export default Vue.extend({
       this.isWritePhrase = false
     },
 
-    async createProfile(): Promise<void> {
+    async createProfile(password: string): Promise<void> {
       try {
-        const password = await new Promise((resolve, reject) => {
-          this.toggleFormPassword(true, resolve, reject)
-        })
-
+        this.toggleFormPassword(false)
         const seed = await mnemonicToSeed(this.words.join(' '))
 
         if (this.isRecoverProfile) {
@@ -112,6 +109,18 @@ export default Vue.extend({
         const profiles: Record<string, unknown> = getStorage('profiles') || {}
         profiles[newProfile.publicKey.slice(0, 10)] = newProfile
         setStorage('profiles', profiles)
+
+        if (!this.isRecoverProfile) {
+          windowParentPostMessage({
+            key: CREATE_PROFILE,
+            message: {
+              type: SET_BACKGROUND,
+              payload: {
+                userColorTheme: { ...mnemonic.card, isSelection: false }
+              }
+            }
+          })
+        }
       } catch (e) {
         console.error(`Create profile reject: ${e}`)
       }
@@ -126,10 +135,8 @@ export default Vue.extend({
       })
     },
 
-    toggleFormPassword(visible: boolean, resolve = null, reject = null): void {
+    toggleFormPassword(visible: boolean): void {
       this.formVisible = visible
-      this.resolve = resolve
-      this.reject = reject
     },
 
     recoverProfile(recoverWords: Array<string>): void {
@@ -146,7 +153,7 @@ export default Vue.extend({
           message: {
             type: SET_BACKGROUND,
             payload: {
-              selectGradient: getUserColorTheme(publicKey)
+              userColorTheme: getUserColorTheme(publicKey)
             }
           }
         })

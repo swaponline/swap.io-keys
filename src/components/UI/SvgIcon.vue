@@ -8,32 +8,37 @@
 </template>
 
 <script lang="ts">
-export default {
+import Vue, { PropType } from 'vue'
+
+type Data = {
+  icon: Record<string, unknown>
+}
+export default Vue.extend({
   name: 'SvgIcon',
   props: {
     name: {
-      type: String,
+      type: String as PropType<string>,
       required: true
     },
     title: {
-      type: String,
+      type: String as PropType<string>,
       default: null
     }
   },
-  data() {
+  data(): Data {
     return {
       icon: {}
     }
   },
   computed: {
-    iconPath() {
+    iconPath(): string {
       if (Object.prototype.hasOwnProperty.call(this.icon, 'default')) {
         const icon = this.icon.default
         return `#${icon.id}`
       }
       return `#`
     },
-    className() {
+    className(): string {
       return `svg-icon svg-icon--${this.name}`
     }
   },
@@ -45,5 +50,5 @@ export default {
       }
     }
   }
-}
+})
 </script>

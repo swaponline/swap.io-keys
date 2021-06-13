@@ -9,33 +9,50 @@
 </template>
 
 <script lang="ts">
-export default {
+import Vue, { PropType } from 'vue'
+
+type TooltipParams = Record<string, unknown>
+type Classes = Record<string, boolean>
+
+export default Vue.extend({
   name: 'SwapButton',
   inheritAttrs: false,
   props: {
-    text: { type: Boolean, default: false },
-    disabled: { type: Boolean, default: false },
-    tooltip: { type: String, default: '' },
-    tooltipParams: { type: Object, default: () => ({}) }
+    text: {
+      type: Boolean as PropType<boolean>,
+      default: false
+    },
+    disabled: {
+      type: Boolean as PropType<boolean>,
+      default: false
+    },
+    tooltip: {
+      type: String as PropType<string>,
+      default: ''
+    },
+    tooltipParams: {
+      type: Object as PropType<TooltipParams>,
+      default: () => ({})
+    }
   },
   computed: {
-    classes() {
+    classes(): Classes {
       const base = 'swap-button'
       return {
         [`${base}__text`]: this.text,
         [`${base}__disabled`]: this.disabled
-      }
+      } as Classes
     },
-    computedTooltipParams() {
+    computedTooltipParams(): TooltipParams {
       const defaultParams = {
         delay: { show: 500, hide: 100 },
         placement: 'top-start'
       }
 
-      return { ...defaultParams, ...this.tooltipParams, content: this.tooltip }
+      return { ...defaultParams, ...this.tooltipParams, content: this.tooltip } as TooltipParams
     }
   }
-}
+})
 </script>
 
 <style lang="scss">
