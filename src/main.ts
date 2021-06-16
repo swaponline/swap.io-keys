@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import vuetify from '@/plugins/vuetify'
 import { FIREFOX } from '@/constants/browsers'
 import UaParser from 'ua-parser-js'
 import VTooltip from 'v-tooltip'
@@ -37,7 +36,6 @@ if (shouldCreateIframe) {
   new Vue({
     router,
     store,
-    vuetify,
     render: h => h(App)
   }).$mount('#app')
 }

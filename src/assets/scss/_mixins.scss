@@ -1,0 +1,11 @@
+@mixin transparent-autofill {
+  /* Change Autocomplete styles in Chrome */
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    border: none;
+    -webkit-text-fill-color: inherit;
+    -webkit-box-shadow: 0 0 0 1000px transparent inset;
+    transition: background-color 50000s ease-in-out 0s;
+  }
+}

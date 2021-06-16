@@ -2,10 +2,15 @@
   <div class="form-password">
     <form class="form-password__content" @submit.prevent="submit">
       <h3 class="form-password__title">Придумайте пароль</h3>
-      <form-text-field v-model="password" placeholder="Введите пароль" />
-      <form-text-field v-model="confirmPassword" placeholder="Подтвердите пароль" />
+      <swap-input v-model="password" type="password" class="form-password__input" placeholder="Введите пароль" />
+      <swap-input
+        v-model="confirmPassword"
+        type="password"
+        class="form-password__input"
+        placeholder="Подтвердите пароль"
+      />
       <div class="form-password__buttons">
-        <swap-button class="form-password__button" type="submit" :disabled="!isConfirmPassowrd">
+        <swap-button class="form-password__button" type="submit" :disabled="!isConfirmPassword">
           Подтвердить
         </swap-button>
         <swap-button :disabled="isCancelDisabled" class="form-password__button" @click="close">
@@ -17,20 +22,23 @@
 </template>
 
 <script lang="ts">
-import FormTextField from '@/components/UI/Forms/TextField.vue'
+import Vue, { PropType } from 'vue'
 
-export default {
+type Data = {
+  isCancelDisabled: boolean
+  password: string
+  confirmPassword: string
+}
+
+export default Vue.extend({
   name: 'FormWrapper',
-  components: {
-    FormTextField
-  },
   props: {
     withConfirm: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: false
     }
   },
-  data() {
+  data(): Data {
     return {
       isCancelDisabled: false,
       password: '',
@@ -38,24 +46,24 @@ export default {
     }
   },
   computed: {
-    isConfirmPassowrd() {
+    isConfirmPassword(): boolean {
       return this.password.trim().length > 5 && this.confirmPassword === this.password
     }
   },
   methods: {
-    submit() {
-      if (this.isConfirmPassowrd) {
+    submit(): void {
+      if (this.isConfirmPassword) {
         this.$emit('submit', this.password)
         this.isCancelDisabled = true
         this.password = ''
         this.confirmPassword = ''
       }
     },
-    close() {
+    close(): void {
       this.$emit('close')
     }
   }
-}
+})
 </script>
 
 <style lang="scss">
@@ -70,6 +78,14 @@ export default {
   min-height: 100%;
   width: 100%;
   overflow: auto;
+
+  &__input {
+    width: 100%;
+
+    &:not(:last-child) {
+      margin-bottom: 15px;
+    }
+  }
 
   &__content {
     display: flex;

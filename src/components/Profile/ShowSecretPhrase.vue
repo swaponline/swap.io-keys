@@ -1,10 +1,10 @@
 <template>
   <div class="show-secret-phrase">
     <header class="show-secret-phrase__header">
-      Your secret phrase
-      <v-btn class="show-secret-phrase__back-button" large icon @click="back">
-        <v-icon>mdi-chevron-left</v-icon>
-      </v-btn>
+      <button class="show-secret-phrase__back-button" @click="back">
+        <svg-icon class="show-secret-phrase__icon-back" name="i_back"></svg-icon>
+      </button>
+      <h1 class="show-secret-phrase__title">Your secret phrase</h1>
     </header>
     <div class="show-secret-phrase__words">
       <span v-for="(word, i) in words" :key="word + i" class="show-secret-phrase__word"> {{ i + 1 }}. {{ word }} </span>
@@ -19,20 +19,33 @@
 </template>
 
 <script lang="ts">
-export default {
+import Vue, { PropType } from 'vue'
+
+type Data = {
+  value: string
+}
+
+export default Vue.extend({
   name: 'ShowSecretPhrase',
   props: {
     words: {
-      type: Array,
-      default: () => []
+      type: Array as PropType<string[]>,
+      default: (): string[] => {
+        return []
+      }
+    }
+  },
+  data(): Data {
+    return {
+      value: ''
     }
   },
   methods: {
-    back() {
+    back(): void {
       this.$router.push({ name: 'ChooseStyle' })
     }
   }
-}
+})
 </script>
 
 <style lang="scss">
@@ -50,28 +63,37 @@ export default {
   }
 
   &__header {
-    position: relative;
     width: 100%;
-    font-weight: $--font-weight-semi-bold;
-    font-size: $--font-size-extra-title;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  &__title {
+    font-weight: $--font-weight-semi-bold;
+    font-size: $--font-size-extra-title;
+    text-align: center;
+    width: 100%;
 
     @include tablet {
-      width: 100%;
       font-size: $--font-size-subtitle;
     }
   }
 
   &__back-button {
-    position: absolute;
+    width: 24px;
+    height: 24px;
+    margin-left: -5px;
     display: none;
-    left: -12px;
 
     @include tablet {
-      display: inline-block;
+      display: block;
     }
+  }
+
+  &__icon-back {
+    width: inherit;
+    height: inherit;
   }
 
   &__words {

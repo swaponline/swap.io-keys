@@ -190,6 +190,7 @@ export default {
     margin-left: 2px;
     margin-bottom: 2px;
     outline: none;
+    border: none;
   }
 
   &__buttons {
