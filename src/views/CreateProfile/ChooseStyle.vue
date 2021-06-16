@@ -144,17 +144,17 @@ export default Vue.extend({
       type listItem = {
         background: string
         color: string
-        colorSelection: string
+        selectionColor: string
         wordList: string[]
       }
       const list: listItem[] = []
       for (let i = 0; i < this.publicKeys.length; i += 1) {
-        const { background, color, colorSelection } = getUserColorTheme(this.publicKeys[i])
+        const { background, color, selectionColor } = getUserColorTheme(this.publicKeys[i])
 
         list.splice(i, 1, {
           background,
           color,
-          colorSelection,
+          selectionColor,
           wordList: this.userColorTheme.wordList
         })
       }
