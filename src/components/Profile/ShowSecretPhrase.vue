@@ -21,7 +21,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 
-type Date = {
+type Data = {
   value: string
 }
 
@@ -35,7 +35,7 @@ export default Vue.extend({
       }
     }
   },
-  data(): Date {
+  data(): Data {
     return {
       value: ''
     }

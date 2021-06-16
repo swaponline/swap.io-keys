@@ -64,7 +64,7 @@ export default Vue.extend({
       return this.type as InputType
     },
     textOfSwitch(): string {
-      return this.isPasswordVisible ? 'Скрыть' : 'Показать'
+      return this.isPasswordVisible ? 'Hide' : 'Show'
     },
     classes() {
       return [
@@ -91,15 +91,10 @@ export default Vue.extend({
 
   methods: {
     handleInput(value): void {
-      if (this.type === 'number') {
-        this.localValue = value || null
-        this.$emit('input', this.localValue)
-      } else {
-        this.localValue = value
-        this.$emit('input', this.localValue)
-      }
+      this.localValue = value
+      this.$emit('input', this.localValue)
     },
-    togglePassword() {
+    togglePassword(): void {
       this.isPasswordVisible = !this.isPasswordVisible
     },
     focus() {
