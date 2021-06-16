@@ -59,7 +59,7 @@ export default Vue.extend({
 .swap-button {
   position: relative;
   min-height: 52px;
-  min-width: 142px !important;
+  width: 100%;
   border-radius: $--main-border-radius;
   text-transform: none;
   background-color: $--light-grey;

@@ -1,30 +1,35 @@
 <template>
-  <div class="choose-style">
-    <div class="choose-style__inner">
-      <header class="choose-style__header">
-        <h1 class="choose-style__title">Choose title</h1>
-        <span class="choose-style__subtitle">it cannot be changed later</span>
-      </header>
-      <div class="choose-style__cards">
-        <div v-for="cardColor in cardColors" :key="cardColor.background" class="choose-style__card">
-          <div
-            class="choose-style__card-inner"
-            :class="{ 'choose-style__card-inner--select': userColorTheme === cardColor }"
-            @click="select(cardColor)"
-          >
-            <canvas ref="backgroundCanvas" class="choose-style__card-background"></canvas>
+  <match-media v-slot="{ desktop, tablet }">
+    <div class="choose-style">
+      <div class="choose-style__inner">
+        <header class="choose-style__header">
+          <h1 class="choose-style__title">Choose style</h1>
+          <span class="choose-style__subtitle">it cannot be changed later</span>
+        </header>
+        <div class="choose-style__cards">
+          <div v-for="cardColor in cardColors" :key="cardColor.background" class="choose-style__card">
+            <div
+              class="choose-style__card-inner"
+              :class="{ 'choose-style__card-inner--select': userColorTheme === cardColor }"
+              @click="select(cardColor)"
+            >
+              <canvas ref="backgroundCanvas" class="choose-style__card-background"></canvas>
+            </div>
+            <span
+              v-if="desktop && userColorTheme === cardColor"
+              class="choose-style__card-text"
+              :style="`color: ${cardColor.color}`"
+              >Complementary text
+            </span>
           </div>
-          <span v-if="userColorTheme === cardColor" class="choose-style__card-text" :style="`color: ${cardColor.color}`"
-            >Complementary text
-          </span>
         </div>
-      </div>
-      <span v-if="userColorTheme.color" class="choose-style__text" :style="`color: ${userColorTheme.color}`"
-        >Complementary text
-      </span>
-      <div class="choose-style__buttons">
-        <div class="choose-style__buttons-control">
-          <swap-button class="choose-style__button" @click="cancelCreate">Cancel</swap-button>
+        <span
+          v-if="tablet"
+          :class="['choose-style__text', userColorTheme.color && 'choose-style__text--selected']"
+          :style="`color: ${userColorTheme.color}`"
+          >Complementary text
+        </span>
+        <div class="choose-style__buttons">
           <swap-button
             class="choose-style__button"
             :disabled="isDisabledCreateProfile"
@@ -33,21 +38,22 @@
           >
             Create
           </swap-button>
+          <swap-button class="choose-style__button choose-style__button--text" text @click="refreshColors">
+            Refresh colors
+          </swap-button>
         </div>
-        <swap-button class="choose-style__button choose-style__button--text" text @click="refreshColors">
-          Refresh colors
-        </swap-button>
       </div>
     </div>
-  </div>
+  </match-media>
 </template>
 
 <script lang="ts">
+import { MatchMedia } from 'vue-component-media-queries'
 import Vue from 'vue'
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
 import { getPublicKey } from '@/utils/chifer'
 import windowParentPostMessage from '@/windowParentPostMessage'
-import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
+import { INIT_IFRAME, SET_BACKGROUND } from '@/constants/createProfile'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import { CREATE_PROFILE } from '@/constants/windowKey'
 import Canvg from 'canvg'
@@ -70,6 +76,9 @@ type Data = {
 
 export default Vue.extend({
   name: 'ChooseStyle',
+  components: {
+    MatchMedia
+  },
   data(): Data {
     return {
       userColorTheme: {
@@ -88,15 +97,6 @@ export default Vue.extend({
     }
   },
   async mounted(): Promise<void> {
-    windowParentPostMessage({
-      key: CREATE_PROFILE,
-      message: {
-        type: INIT_IFRAME,
-        payload: {
-          loading: false
-        }
-      }
-    })
     await this.getMnemonic()
     this.getCards()
     window.addEventListener('resize', this.setCardsBackground)
@@ -114,15 +114,6 @@ export default Vue.extend({
       if (this.userColorTheme.wordList.length > 0) {
         this.$router.push({ name: 'SecretPhrase' })
       }
-    },
-
-    cancelCreate(): void {
-      windowParentPostMessage({
-        key: CREATE_PROFILE,
-        message: {
-          type: REDIRECT_TO_HOME
-        }
-      })
     },
 
     async getMnemonic(): Promise<void> {
@@ -161,6 +152,16 @@ export default Vue.extend({
 
       this.cardColors = list
       this.$nextTick(() => this.setCardsBackground())
+
+      windowParentPostMessage({
+        key: CREATE_PROFILE,
+        message: {
+          type: INIT_IFRAME,
+          payload: {
+            loading: false
+          }
+        }
+      })
     },
 
     setCardsBackground(): void {
@@ -214,38 +215,18 @@ export default Vue.extend({
 
 <style lang="scss">
 .choose-style {
-  width: 100%;
-  max-width: 1064px;
   height: 100%;
-  max-height: 555px;
-  margin: 20px auto;
-  background: $--white;
-  flex-grow: 1;
-  border-radius: 12px;
-  position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  @include tablet {
-    width: auto;
-    margin: 20px 20px 25px;
-    max-height: none;
-    max-width: none;
-  }
 
   &__inner {
-    position: relative;
     height: 100%;
-    min-height: 555px;
-    width: 100%;
-    padding: 40px 67px 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    padding: 40px 77px 30px;
 
     @include tablet {
       padding: 24px 20px;
       align-items: center;
+      min-height: auto;
     }
   }
 
@@ -278,17 +259,21 @@ export default Vue.extend({
   }
 
   &__cards {
-    margin: 75px -7px 20px;
+    margin: 75px 0 20px;
     display: flex;
     flex-wrap: wrap;
     width: 100%;
 
     @include tablet {
-      margin: 30px -7px 60px;
+      margin: 30px 0 60px;
     }
 
     @include phone {
-      margin: 30px -2px 10px;
+      margin: 40px 0 10px;
+    }
+
+    @include small-phone {
+      margin-top: 10px;
     }
   }
 
@@ -308,6 +293,7 @@ export default Vue.extend({
   }
 
   &__card-inner {
+    display: flex;
     padding: 5px 5px;
     border-radius: 20px;
     border: 5px solid transparent;
@@ -333,29 +319,29 @@ export default Vue.extend({
     }
   }
 
-  &__card-text {
-    display: block;
-    margin-top: 22px;
+  &__card-text,
+  &__text {
     width: 100%;
-    text-align: center;
     font-weight: $--font-weight-semi-bold;
     font-size: $--font-size-extra-small-subtitle;
+    text-align: center;
 
     @include tablet {
-      display: none;
+      font-size: $--font-size-medium;
     }
   }
 
-  &__text {
-    display: none;
-    width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: $--font-weight-semi-bold;
-    font-size: $--font-size-extra-small-subtitle;
+  &__card-text {
+    display: block;
+    margin-top: 22px;
+  }
 
-    @include tablet {
-      display: block;
+  &__text {
+    opacity: 0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+
+    &--selected {
+      opacity: 1;
     }
 
     @include phone {
@@ -378,32 +364,30 @@ export default Vue.extend({
     @include phone {
       margin-top: 30px;
     }
-  }
 
-  .buttons-control {
-    display: flex;
+    @include small-phone {
+      margin-top: 20px;
+    }
   }
 
   &__button {
-    margin: 0 5px;
-    min-width: 174px !important;
+    max-width: 174px;
+
+    &:not(:last-child) {
+      margin-bottom: 10px;
+    }
 
     &--text {
-      margin-top: 10px;
-      color: $--dark-grey !important;
+      color: $--dark-grey;
     }
 
     @include tablet {
-      margin-bottom: 10px;
+      max-width: 400px;
     }
-  }
 
-  &__iframe {
-    position: absolute;
-    clip: rect(0 0 0 0);
-    width: 1px;
-    height: 1px;
-    margin: -1px;
+    @include phone {
+      width: 100%;
+    }
   }
 }
 </style>

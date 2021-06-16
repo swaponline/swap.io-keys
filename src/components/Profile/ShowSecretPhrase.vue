@@ -2,7 +2,9 @@
   <div class="show-secret-phrase">
     <header class="show-secret-phrase__header">
       <button class="show-secret-phrase__back-button" @click="back">
-        <svg-icon class="show-secret-phrase__icon-back" name="i_back"></svg-icon>
+        <span>
+          <svg-icon class="show-secret-phrase__icon-back" name="i_back"></svg-icon>
+        </span>
       </button>
       <h1 class="show-secret-phrase__title">Your secret phrase</h1>
     </header>
@@ -50,10 +52,7 @@ export default Vue.extend({
 
 <style lang="scss">
 .show-secret-phrase {
-  position: relative;
   height: 100%;
-  min-height: 555px;
-  width: 100%;
   padding: 40px 50px 60px;
   display: flex;
   flex-direction: column;
@@ -81,19 +80,47 @@ export default Vue.extend({
   }
 
   &__back-button {
-    width: 24px;
-    height: 24px;
-    margin-left: -5px;
+    width: 44px;
+    height: 44px;
+    margin-left: -17px;
     display: none;
+    position: relative;
+
+    & > span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      border-radius: 50%;
+      opacity: 0;
+      background-color: $--light-grey;
+      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+    }
+
+    &:hover {
+      &::before {
+        opacity: 1;
+      }
+    }
 
     @include tablet {
       display: block;
+      flex: 1 0 auto;
     }
   }
 
   &__icon-back {
-    width: inherit;
-    height: inherit;
+    width: 24px;
+    height: 24px;
+    z-index: 100;
   }
 
   &__words {
@@ -122,7 +149,7 @@ export default Vue.extend({
       font-size: $--font-size-medium;
     }
 
-    @include small {
+    @include small-phone {
       font-size: $--font-size-base;
     }
   }
@@ -138,12 +165,11 @@ export default Vue.extend({
   }
 
   &__button {
-    margin: 0 5px;
-    min-width: 174px !important;
+    max-width: 174px;
 
     @include tablet {
       width: 100%;
-      margin-bottom: 10px;
+      max-width: 334px;
 
       &--hide-tablet {
         display: none;

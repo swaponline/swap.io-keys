@@ -54,7 +54,7 @@ export default Vue.extend({
   },
   computed: {
     isRecoverProfile(): boolean {
-      return !mnemonic.card?.wordList
+      return !mnemonic.card?.wordList.length
     }
   },
   mounted(): void {
@@ -166,24 +166,7 @@ export default Vue.extend({
 
 <style lang="scss">
 .secret-phrase {
-  width: 100%;
-  max-width: 1064px;
   height: 100%;
-  max-height: 555px;
-  margin: 20px auto;
-  background: $--white;
-  flex-grow: 1;
-  border-radius: 12px;
-  position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  @include tablet {
-    margin: 0 0;
-    border-radius: 0;
-    max-height: none;
-    max-width: none;
-  }
 
   &__inner {
     height: 100%;

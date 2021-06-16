@@ -167,7 +167,7 @@ export default {
       font-size: $--font-size-medium;
     }
 
-    @include small {
+    @include small-phone {
       font-size: $--font-size-base;
     }
   }
