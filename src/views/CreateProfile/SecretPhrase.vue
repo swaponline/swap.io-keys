@@ -2,7 +2,7 @@
   <div class="secret-phrase">
     <div class="secret-phrase__inner">
       <template v-if="!isRecoverProfile">
-        <show-secret-phrase v-if="!isWritePhrase" :words="words" @next="isWritePhrase = true"></show-secret-phrase>
+        <show-secret-phrase v-if="!isWritePhrase" :words="words" @next="isWritePhrase = true" />
       </template>
       <template v-if="isWritePhrase || isRecoverProfile">
         <input-secret-phrase
@@ -11,15 +11,15 @@
           @create="toggleFormPassword(true)"
           @recover="recoverProfile"
           @back="back"
-        ></input-secret-phrase>
+        />
       </template>
     </div>
-    <form-password v-if="formVisible" @close="toggleFormPassword(false)" @submit="createProfile" />
+    <form-password v-if="isPasswordFormVisible" @close="toggleFormPassword(false)" @submit="createProfile" />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue, { PropType } from 'vue'
 import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
 import InputSecretPhrase from '@/components/Profile/InputSecretPhrase.vue'
 import FormPassword from '@/components/Profile/FormPassword.vue'
@@ -28,41 +28,40 @@ import { encryptData, getPublicKey } from '@/utils/chifer'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { getStorage, setStorage } from '@/utils/storage'
-import { INIT_IFRAME, REDIRECT_TO_HOME, SET_BACKGROUND } from '@/constants/createProfile'
-import { RECOVER_PROFILE, CREATE_PROFILE } from '@/constants/windowKey'
-import mnemonic from './mnemonic'
+import { IFRAME_INITED, RECOVER_CANCELED, PROFILE_CREATED, PROFILE_RECOVERED } from '@/constants/createProfile'
+import { RECOVER_PROFILE_WINDOW, CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
+import { UserColorTheme } from '@/types.d'
 
 type Data = {
   words: Array<string>
   isWritePhrase: boolean
-  formVisible: boolean
+  isPasswordFormVisible: boolean
 }
 
 export default Vue.extend({
   name: 'SecretPhrase',
-  components: {
-    ShowSecretPhrase,
-    InputSecretPhrase,
-    FormPassword
+  components: { ShowSecretPhrase, InputSecretPhrase, FormPassword },
+  props: {
+    theme: { type: Object as PropType<UserColorTheme>, default: () => ({}) }
   },
   data(): Data {
     return {
       words: [],
       isWritePhrase: false,
-      formVisible: false
+      isPasswordFormVisible: false
     }
   },
   computed: {
     isRecoverProfile(): boolean {
-      return !mnemonic.card?.wordList.length
+      return !this.theme.wordList
     }
   },
   mounted(): void {
     if (this.isRecoverProfile) {
       windowParentPostMessage({
-        key: RECOVER_PROFILE,
+        key: RECOVER_PROFILE_WINDOW,
         message: {
-          type: INIT_IFRAME,
+          type: IFRAME_INITED,
           payload: {
             loading: false
           }
@@ -76,20 +75,15 @@ export default Vue.extend({
       return
     }
 
-    if (mnemonic.card?.wordList.length === 0) {
-      this.$router.replace({ name: 'ChooseStyle' })
-      return
-    }
-
-    this.words = mnemonic.card?.wordList
+    this.words = this.theme.wordList
   },
   methods: {
     back(): void {
       if (this.isRecoverProfile) {
         windowParentPostMessage({
-          key: RECOVER_PROFILE,
+          key: RECOVER_PROFILE_WINDOW,
           message: {
-            type: REDIRECT_TO_HOME
+            type: RECOVER_CANCELED
           }
         })
       }
@@ -101,22 +95,23 @@ export default Vue.extend({
         this.toggleFormPassword(false)
         const seed = await mnemonicToSeed(this.words.join(' '))
 
-        if (this.isRecoverProfile) {
-          await this.recoverBackground(seed)
-        }
-
         const newProfile = await encryptData(seed, password)
         const profiles: Record<string, unknown> = getStorage('profiles') || {}
-        profiles[newProfile.publicKey.slice(0, 10)] = newProfile
+        const shortKey = newProfile.publicKey.slice(0, 10)
+        profiles[shortKey] = newProfile
         setStorage('profiles', profiles)
 
-        if (!this.isRecoverProfile) {
+        if (this.isRecoverProfile) {
+          await this.recoverBackground(seed)
+        } else {
+          const { background, color, selectionColor } = this.theme
+
           windowParentPostMessage({
-            key: CREATE_PROFILE,
+            key: CREATE_PROFILE_WINDOW,
             message: {
-              type: SET_BACKGROUND,
+              type: PROFILE_CREATED,
               payload: {
-                userColorTheme: { ...mnemonic.card, isSelection: false }
+                profile: { background, color, selectionColor, publicKey: shortKey }
               }
             }
           })
@@ -126,17 +121,10 @@ export default Vue.extend({
       }
 
       this.toggleFormPassword(false)
-
-      windowParentPostMessage({
-        key: this.isRecoverProfile ? RECOVER_PROFILE : CREATE_PROFILE,
-        message: {
-          type: REDIRECT_TO_HOME
-        }
-      })
     },
 
     toggleFormPassword(visible: boolean): void {
-      this.formVisible = visible
+      this.isPasswordFormVisible = visible
     },
 
     recoverProfile(recoverWords: Array<string>): void {
@@ -147,13 +135,15 @@ export default Vue.extend({
     recoverBackground(seed: string): Promise<boolean> {
       return new Promise(resolve => {
         const publicKey = getPublicKey(seed)
+        const shortKey = publicKey.slice(0, 10)
+        const theme = getUserColorTheme(publicKey)
 
         windowParentPostMessage({
-          key: RECOVER_PROFILE,
+          key: RECOVER_PROFILE_WINDOW,
           message: {
-            type: SET_BACKGROUND,
+            type: PROFILE_RECOVERED,
             payload: {
-              userColorTheme: getUserColorTheme(publicKey)
+              profile: { ...theme, publicKey: shortKey }
             }
           }
         })
