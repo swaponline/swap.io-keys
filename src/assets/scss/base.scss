@@ -8,6 +8,11 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   font-family: $--font-base;
   font-weight: $--font-weight-regular;
