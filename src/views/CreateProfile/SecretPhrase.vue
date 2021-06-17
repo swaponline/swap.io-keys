@@ -95,15 +95,17 @@ export default Vue.extend({
         this.toggleFormPassword(false)
         const seed = await mnemonicToSeed(this.words.join(' '))
 
+        if (this.isRecoverProfile) {
+          await this.recoverBackground(seed)
+        }
+
         const newProfile = await encryptData(seed, password)
         const profiles: Record<string, unknown> = getStorage('profiles') || {}
         const shortKey = newProfile.publicKey.slice(0, 10)
         profiles[shortKey] = newProfile
         setStorage('profiles', profiles)
 
-        if (this.isRecoverProfile) {
-          await this.recoverBackground(seed)
-        } else {
+        if (!this.isRecoverProfile) {
           const { background, color, selectionColor } = this.theme
 
           windowParentPostMessage({
@@ -129,7 +131,7 @@ export default Vue.extend({
 
     recoverProfile(recoverWords: Array<string>): void {
       this.words = recoverWords
-      this.createProfile()
+      this.toggleFormPassword(true)
     },
 
     recoverBackground(seed: string): Promise<boolean> {
