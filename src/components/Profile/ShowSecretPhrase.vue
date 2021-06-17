@@ -167,6 +167,10 @@ export default Vue.extend({
   &__button {
     max-width: 174px;
 
+    &:not(:last-child) {
+      margin-right: 12px;
+    }
+
     @include tablet {
       width: 100%;
       max-width: 334px;

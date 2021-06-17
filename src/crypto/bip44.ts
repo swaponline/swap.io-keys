@@ -1,9 +1,6 @@
 type Path = string
 
-const createDerivePath = ({ coinIndex, addressIndex }: {
-  coinIndex: number,
-  addressIndex: number
-}): Path => {
+const createDerivePath = ({ coinIndex, addressIndex }: { coinIndex: number; addressIndex: number }): Path => {
   /*
   In fact, not every testnet of coins has an index of 1
   Therefore, specify the testnet coin index in the settings
