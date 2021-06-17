@@ -25,7 +25,7 @@ const queries: Queries = {
 }
 
 type Data = {
-  queries: Record<string, string>
+  queries: Queries
 }
 
 export default Vue.extend({
