@@ -1,7 +1,7 @@
 <template>
   <div class="form-password">
     <form class="form-password__content" @submit.prevent="submit">
-      <h3 class="form-password__title">Придумайте пароль</h3>
+      <h3 class="form-password__title">Create password</h3>
       <swap-input v-model="password" type="password" class="form-password__input" placeholder="Введите пароль" />
       <swap-input
         v-model="confirmPassword"
@@ -11,10 +11,10 @@
       />
       <div class="form-password__buttons">
         <swap-button class="form-password__button" type="submit" :disabled="!isConfirmPassword">
-          Подтвердить
+          Confirm
         </swap-button>
         <swap-button :disabled="isCancelDisabled" class="form-password__button" @click="close">
-          Отмена
+          Cancel
         </swap-button>
       </div>
     </form>
@@ -110,7 +110,11 @@ export default Vue.extend({
   }
 
   &__button {
-    width: calc(50% - 4px);
+    width: 174px;
+
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
   }
 }
 </style>

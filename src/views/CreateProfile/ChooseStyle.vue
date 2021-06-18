@@ -100,6 +100,16 @@ export default Vue.extend({
     await this.getMnemonic()
     this.getCards()
     window.addEventListener('resize', this.setCardsBackground)
+
+    windowParentPostMessage({
+      key: CREATE_PROFILE,
+      message: {
+        type: INIT_IFRAME,
+        payload: {
+          loading: false
+        }
+      }
+    })
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setCardsBackground)
@@ -127,6 +137,7 @@ export default Vue.extend({
 
       seeds.forEach(seed => {
         const publicKey = getPublicKey(seed)
+
         this.publicKeys.push(publicKey)
       })
     },
@@ -152,16 +163,6 @@ export default Vue.extend({
 
       this.cardColors = list
       this.$nextTick(() => this.setCardsBackground())
-
-      windowParentPostMessage({
-        key: CREATE_PROFILE,
-        message: {
-          type: INIT_IFRAME,
-          payload: {
-            loading: false
-          }
-        }
-      })
     },
 
     setCardsBackground(): void {

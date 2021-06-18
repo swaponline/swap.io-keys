@@ -1,50 +1,149 @@
 <template>
-  <div class="show-secret-phrase">
-    <header class="show-secret-phrase__header">
-      <button class="show-secret-phrase__back-button" @click="back">
-        <span>
-          <svg-icon class="show-secret-phrase__icon-back" name="i_back"></svg-icon>
-        </span>
-      </button>
-      <h1 class="show-secret-phrase__title">Your secret phrase</h1>
-    </header>
-    <div class="show-secret-phrase__words">
-      <span v-for="(word, i) in words" :key="word + i" class="show-secret-phrase__word"> {{ i + 1 }}. {{ word }} </span>
+  <match-media v-slot="{ desktop }">
+    <div class="show-secret-phrase">
+      <header class="show-secret-phrase__header">
+        <swap-button-go-back v-if="!desktop" @click="goBack" />
+        <h1 class="show-secret-phrase__title">{{ headerTitle }}</h1>
+      </header>
+      <words-table :table-matrix="tableMatrix" @change="changeTableMatrix" />
+      <div class="show-secret-phrase__buttons">
+        <swap-button v-if="desktop" class="show-secret-phrase__button" @click="goBack">
+          Back
+        </swap-button>
+        <template v-if="isWritePhrase">
+          <swap-button
+            v-if="isRecoverProfile"
+            class="show-secret-phrase__button"
+            :disabled="isDisabledRecover"
+            :tooltip="isDisabledRecover ? 'Complete your secret phrase.' : null"
+            @click="recoverProfile"
+          >
+            Recover
+          </swap-button>
+          <swap-button
+            v-else
+            class="show-secret-phrase__button"
+            :disabled="isDisabledCreate"
+            :tooltip="isDisabledCreate ? 'Complete your secret phrase.' : null"
+            @click="createProfile"
+          >
+            Create
+          </swap-button>
+        </template>
+        <template v-else>
+          <swap-button class="show-secret-phrase__button" @click="partialReplacementWordsWithInput">Next</swap-button>
+        </template>
+      </div>
     </div>
-    <div class="show-secret-phrase__buttons">
-      <swap-button class="show-secret-phrase__button show-secret-phrase__button--hide-tablet" @click="back">
-        Back
-      </swap-button>
-      <swap-button class="show-secret-phrase__button" @click="$emit('next')">Next</swap-button>
-    </div>
-  </div>
+  </match-media>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
+import { MatchMedia } from 'vue-component-media-queries'
+import WordsTable from '@/components/Profile/WordsTable.vue'
+import { randomInteger } from '@/utils/common'
+import { TableMatrix } from './types.d'
+
+const QUANTITY_INPUTS = 6
 
 type Data = {
-  value: string
+  tableMatrix: TableMatrix
+  isWritePhrase: boolean
+  localWords: string[]
 }
 
 export default Vue.extend({
   name: 'ShowSecretPhrase',
+  components: {
+    MatchMedia,
+    WordsTable
+  },
   props: {
     words: {
       type: Array as PropType<string[]>,
-      default: (): string[] => {
-        return []
-      }
+      default: (): string[] => []
+    },
+    isRecoverProfile: {
+      type: Boolean as PropType<boolean>,
+      default: false
     }
   },
   data(): Data {
     return {
-      value: ''
+      tableMatrix: [{ value: '', input: false }],
+      isWritePhrase: false,
+      localWords: []
     }
   },
+  computed: {
+    headerTitle() {
+      return this.isRecoverProfile || !this.isWritePhrase ? 'Your secret phrase' : 'Fill in the missing words'
+    },
+    isDisabledCreate() {
+      const a = this.words.toString()
+      const b = this.localWords.toString()
+      return a !== b
+    },
+    isDisabledRecover() {
+      return this.localWords.some(word => {
+        return word === ''
+      })
+    }
+  },
+  created() {
+    this.createTableMatrix()
+  },
   methods: {
-    back(): void {
+    createTableMatrix() {
+      this.tableMatrix = this.words.map(word => {
+        return {
+          value: word,
+          input: !!this.isRecoverProfile
+        }
+      })
+    },
+    createProfile() {
+      this.$emit('create')
+    },
+    changeTableMatrix(newTableMatrix: TableMatrix): void {
+      this.tableMatrix = newTableMatrix
+      this.localWords = newTableMatrix.map(item => item.value)
+    },
+    recoverProfile(): void {
+      this.$emit('recover', this.localWords)
+    },
+    restoreWords(): void {
+      this.isWritePhrase = false
+      this.createTableMatrix()
+    },
+    goToChooseStyle(): void {
       this.$router.push({ name: 'ChooseStyle' })
+    },
+    goBack(): void {
+      if (this.isWritePhrase) {
+        this.restoreWords()
+        return
+      }
+
+      this.goToChooseStyle()
+    },
+    partialReplacementWordsWithInput() {
+      this.isWritePhrase = true
+      const modifiedTableMatrix: TableMatrix = [...this.tableMatrix]
+
+      for (let i = 0; i < QUANTITY_INPUTS; i += 1) {
+        const replacementIndex = randomInteger(0, modifiedTableMatrix.length - 1)
+
+        if (modifiedTableMatrix[replacementIndex]) {
+          modifiedTableMatrix[replacementIndex] = {
+            value: '',
+            input: true
+          }
+        }
+      }
+
+      this.changeTableMatrix(modifiedTableMatrix)
     }
   }
 })
@@ -53,12 +152,16 @@ export default Vue.extend({
 <style lang="scss">
 .show-secret-phrase {
   height: 100%;
-  padding: 40px 50px 60px;
+  padding: 40px 40px 60px 70px;
   display: flex;
   flex-direction: column;
 
   @include tablet {
-    padding: 20px 20px;
+    padding: 31px 39px;
+  }
+
+  @include phone {
+    padding: 31px 15px;
   }
 
   &__header {
@@ -66,6 +169,15 @@ export default Vue.extend({
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 66px;
+
+    @include tablet {
+      margin-bottom: 55px;
+    }
+
+    @include phone {
+      margin-bottom: 30px;
+    }
   }
 
   &__title {
@@ -76,81 +188,6 @@ export default Vue.extend({
 
     @include tablet {
       font-size: $--font-size-subtitle;
-    }
-  }
-
-  &__back-button {
-    width: 44px;
-    height: 44px;
-    margin-left: -17px;
-    display: none;
-    position: relative;
-
-    & > span {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      border-radius: 50%;
-      opacity: 0;
-      background-color: $--light-grey;
-      transition: opacity 0.2s cubic-bezier(0.4, 0, 0.6, 1);
-    }
-
-    &:hover {
-      &::before {
-        opacity: 1;
-      }
-    }
-
-    @include tablet {
-      display: block;
-      flex: 1 0 auto;
-    }
-  }
-
-  &__icon-back {
-    width: 24px;
-    height: 24px;
-    z-index: 100;
-  }
-
-  &__words {
-    margin: 30px 0 20px;
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-
-    @include tablet {
-      margin-top: 0;
-    }
-  }
-
-  &__word {
-    width: calc(100% / 6);
-    font-size: $--font-size-extra-small-subtitle;
-    margin-top: 30px;
-    border-bottom: 1px solid transparent;
-
-    @include tablet {
-      margin-top: 20px;
-      width: calc(100% / 3);
-    }
-
-    @include phone {
-      font-size: $--font-size-medium;
-    }
-
-    @include small-phone {
-      font-size: $--font-size-base;
     }
   }
 
@@ -167,13 +204,13 @@ export default Vue.extend({
   &__button {
     max-width: 174px;
 
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
+
     @include tablet {
       width: 100%;
       max-width: 334px;
-
-      &--hide-tablet {
-        display: none;
-      }
     }
   }
 }

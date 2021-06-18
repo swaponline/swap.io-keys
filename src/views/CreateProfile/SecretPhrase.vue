@@ -1,19 +1,12 @@
 <template>
   <div class="secret-phrase">
-    <div class="secret-phrase__inner">
-      <template v-if="!isRecoverProfile">
-        <show-secret-phrase v-if="!isWritePhrase" :words="words" @next="isWritePhrase = true"></show-secret-phrase>
-      </template>
-      <template v-if="isWritePhrase || isRecoverProfile">
-        <input-secret-phrase
-          :words="words"
-          :is-recover-profile="isRecoverProfile"
-          @create="toggleFormPassword(true)"
-          @recover="recoverProfile"
-          @back="back"
-        ></input-secret-phrase>
-      </template>
-    </div>
+    <show-secret-phrase
+      :is-recover-profile="isRecoverProfile"
+      :words="words"
+      @create="toggleFormPassword(true)"
+      @recover="recoverProfile"
+      @back="back"
+    />
     <form-password v-if="formVisible" @close="toggleFormPassword(false)" @submit="createProfile" />
   </div>
 </template>
@@ -21,7 +14,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
-import InputSecretPhrase from '@/components/Profile/InputSecretPhrase.vue'
 import FormPassword from '@/components/Profile/FormPassword.vue'
 import { mnemonicToSeed } from 'bip39'
 import { encryptData, getPublicKey } from '@/utils/chifer'
@@ -42,7 +34,6 @@ export default Vue.extend({
   name: 'SecretPhrase',
   components: {
     ShowSecretPhrase,
-    InputSecretPhrase,
     FormPassword
   },
   data(): Data {
@@ -141,7 +132,7 @@ export default Vue.extend({
 
     recoverProfile(recoverWords: Array<string>): void {
       this.words = recoverWords
-      this.createProfile()
+      this.toggleFormPassword(true)
     },
 
     recoverBackground(seed: string): Promise<boolean> {
@@ -167,9 +158,5 @@ export default Vue.extend({
 <style lang="scss">
 .secret-phrase {
   height: 100%;
-
-  &__inner {
-    height: 100%;
-  }
 }
 </style>
