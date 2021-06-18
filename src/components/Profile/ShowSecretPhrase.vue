@@ -7,10 +7,10 @@
       </header>
       <words-table :table-matrix="tableMatrix" @change="changeTableMatrix" />
       <div class="show-secret-phrase__buttons">
-        <swap-button v-if="desktop" class="show-secret-phrase__button" @click="goBack">
+        <swap-button v-if="desktop && !isRecoverProfile" class="show-secret-phrase__button" @click="goBack">
           Back
         </swap-button>
-        <template v-if="isWritePhrase">
+        <template v-if="isWritePhrase || isRecoverProfile">
           <swap-button
             v-if="isRecoverProfile"
             class="show-secret-phrase__button"
