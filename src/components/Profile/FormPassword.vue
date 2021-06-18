@@ -2,12 +2,12 @@
   <div class="form-password">
     <form class="form-password__content" @submit.prevent="submit">
       <h3 class="form-password__title">Create password</h3>
-      <swap-input v-model="password" type="password" class="form-password__input" placeholder="Введите пароль" />
+      <swap-input v-model="password" type="password" class="form-password__input" placeholder="Password" />
       <swap-input
         v-model="confirmPassword"
         type="password"
         class="form-password__input"
-        placeholder="Подтвердите пароль"
+        placeholder="Confirm password"
       />
       <div class="form-password__buttons">
         <swap-button class="form-password__button" type="submit" :disabled="!isConfirmPassword">

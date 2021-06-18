@@ -7,33 +7,33 @@
           <span class="choose-style__subtitle">it cannot be changed later</span>
         </header>
         <div class="choose-style__cards">
-          <div v-for="cardColor in cardColors" :key="cardColor.background" class="choose-style__card">
+          <div v-for="(theme, index) in userThemes" :key="index" class="choose-style__card">
             <div
               class="choose-style__card-inner"
-              :class="{ 'choose-style__card-inner--select': userColorTheme === cardColor }"
-              @click="select(cardColor)"
+              :class="{ 'choose-style__card-inner--select': selectedTheme === theme }"
+              @click="select(theme)"
             >
               <canvas ref="backgroundCanvas" class="choose-style__card-background"></canvas>
             </div>
             <span
-              v-if="desktop && userColorTheme === cardColor"
+              v-if="desktop && selectedTheme === theme"
               class="choose-style__card-text"
-              :style="`color: ${cardColor.color}`"
+              :style="`color: ${theme.color}`"
               >Complementary text
             </span>
           </div>
         </div>
         <span
           v-if="tablet"
-          :class="['choose-style__text', userColorTheme.color && 'choose-style__text--selected']"
-          :style="`color: ${userColorTheme.color}`"
+          :class="['choose-style__text', selectedTheme.color && 'choose-style__text--selected']"
+          :style="`color: ${selectedTheme.color}`"
           >Complementary text
         </span>
         <div class="choose-style__buttons">
           <swap-button
             class="choose-style__button"
-            :disabled="isDisabledCreateProfile"
-            :tooltip="isDisabledCreateProfile ? 'Please pick a color scheme to proceed.' : null"
+            :disabled="!isThemeSelected"
+            :tooltip="!isThemeSelected ? 'Please pick a color scheme to proceed.' : null"
             @click="goToSecretPhrase"
           >
             Create
@@ -53,24 +53,19 @@ import Vue from 'vue'
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
 import { getPublicKey } from '@/utils/chifer'
 import windowParentPostMessage from '@/windowParentPostMessage'
-import { INIT_IFRAME, SET_BACKGROUND } from '@/constants/createProfile'
+import { IFRAME_INITED, THEME_SELECTED } from '@/constants/createProfile'
 import { getUserColorTheme } from '@/utils/getUserColorTheme'
-import { CREATE_PROFILE } from '@/constants/windowKey'
+import { CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
 import Canvg from 'canvg'
-import mnemonic from './mnemonic'
+import { UserColorTheme } from '@/types.d'
 
 const QUANTITY_CARDS = 4
 
-type UserColorTheme = {
-  background: string
-  color: string
-  wordList: Array<string>
-}
-
 type Data = {
-  userColorTheme: UserColorTheme
-  cardColors: Array<UserColorTheme>
-  publicKeys: Array<string>
+  selectedTheme: UserColorTheme
+
+  userThemes: Array<UserColorTheme>
+
   isRefreshing: boolean
 }
 
@@ -81,19 +76,21 @@ export default Vue.extend({
   },
   data(): Data {
     return {
-      userColorTheme: {
+      selectedTheme: {
         background: '',
         color: '',
-        wordList: []
-      } as UserColorTheme,
-      cardColors: [],
-      publicKeys: [],
+        selectionColor: '',
+        wordList: [],
+        publicKey: ''
+      },
+
+      userThemes: [],
       isRefreshing: false
     }
   },
   computed: {
-    isDisabledCreateProfile(): boolean {
-      return !this.userColorTheme.background
+    isThemeSelected(): boolean {
+      return !!this.selectedTheme.background
     }
   },
   async mounted(): Promise<void> {
@@ -102,12 +99,9 @@ export default Vue.extend({
     window.addEventListener('resize', this.setCardsBackground)
 
     windowParentPostMessage({
-      key: CREATE_PROFILE,
+      key: CREATE_PROFILE_WINDOW,
       message: {
-        type: INIT_IFRAME,
-        payload: {
-          loading: false
-        }
+        type: IFRAME_INITED
       }
     })
   },
@@ -115,58 +109,72 @@ export default Vue.extend({
     window.removeEventListener('resize', this.setCardsBackground)
   },
   methods: {
-    select(userColorTheme: UserColorTheme): void {
-      this.userColorTheme = userColorTheme
-      this.setBackground()
+    select(theme: UserColorTheme): void {
+      this.selectedTheme = theme
+
+      const { background, color, selectionColor } = theme
+      windowParentPostMessage({
+        key: CREATE_PROFILE_WINDOW,
+        message: {
+          type: THEME_SELECTED,
+          payload: {
+            theme: {
+              background,
+              color,
+              selectionColor
+            }
+          }
+        }
+      })
     },
 
     goToSecretPhrase(): void {
-      if (this.userColorTheme.wordList.length > 0) {
-        this.$router.push({ name: 'SecretPhrase' })
+      if (this.selectedTheme.wordList.length > 0) {
+        this.$router.push({ name: 'SecretPhrase', params: { theme: this.selectedTheme } })
       }
     },
 
     async getMnemonic(): Promise<void> {
       const seedsResolvers: Promise<Buffer>[] = []
+      this.userThemes = Array.from({ length: QUANTITY_CARDS }).map(() => ({
+        background: '',
+        color: '',
+        selectionColor: '',
+        wordList: [],
+        publicKey: ''
+      }))
       for (let i = 0; i < QUANTITY_CARDS; i += 1) {
-        this.userColorTheme.wordList = generateMnemonic(256).split(' ')
-        const seed = mnemonicToSeed(this.userColorTheme.wordList.join(' '))
+        this.userThemes[i].wordList = generateMnemonic(256).split(' ')
+        const seed = mnemonicToSeed(this.userThemes[i].wordList.join(' '))
         seedsResolvers.push(seed)
       }
       const seeds = await Promise.all(seedsResolvers)
 
-      seeds.forEach(seed => {
+      seeds.forEach((seed, index) => {
         const publicKey = getPublicKey(seed)
-
-        this.publicKeys.push(publicKey)
+        this.userThemes[index].publicKey = publicKey
       })
     },
 
     getCards(): void {
-      type listItem = {
-        background: string
-        color: string
-        selectionColor: string
-        wordList: string[]
-      }
-      const list: listItem[] = []
-      for (let i = 0; i < this.publicKeys.length; i += 1) {
-        const { background, color, selectionColor } = getUserColorTheme(this.publicKeys[i])
+      const list: UserColorTheme[] = []
+      for (let i = 0; i < this.userThemes.length; i += 1) {
+        const { background, color, selectionColor } = getUserColorTheme(this.userThemes[i].publicKey)
 
         list.splice(i, 1, {
+          ...this.userThemes[i],
           background,
           color,
-          selectionColor,
-          wordList: this.userColorTheme.wordList
+          selectionColor
         })
       }
 
-      this.cardColors = list
+      this.userThemes = list
       this.$nextTick(() => this.setCardsBackground())
     },
 
     setCardsBackground(): void {
-      this.cardColors.forEach((color, i) => {
+      this.userThemes.forEach((color, i) => {
         const canvas = this.$refs.backgroundCanvas[i]
         const ctx = canvas.getContext('2d')
         const options = {
@@ -191,24 +199,11 @@ export default Vue.extend({
     async refreshColors(): Promise<void> {
       if (!this.isRefreshing) {
         this.isRefreshing = true
-        this.publicKeys = []
+        this.userThemes = []
         await this.getMnemonic()
         this.getCards()
         this.isRefreshing = false
       }
-    },
-
-    setBackground(): void {
-      windowParentPostMessage({
-        key: CREATE_PROFILE,
-        message: {
-          type: SET_BACKGROUND,
-          payload: {
-            userColorTheme: { ...this.userColorTheme, isSelecting: true }
-          }
-        }
-      })
-      mnemonic.card = this.userColorTheme
     }
   }
 })
