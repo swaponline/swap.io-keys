@@ -19,12 +19,19 @@ const { name: browserName } = uaParser.getBrowser()
 let shouldCreateIframe = false
 
 function checkingIframeAndDomain(location: string): boolean {
-  return window.top !== window.self && location === process.env.VUE_APP_HOME_URL
+  /* 
+    process.env.VUE_APP_HOME_URL - это что? белый список, для которого разрешаем использовать библиотеку?
+      или домен, на котором разрешена работа библиотеки (https://keys.swap.io)
+      Если второе, то это не работает (location = адрес сайта, на котором размешен iframe)
+      Временно выключил эту проверку
+  */
+  return window.top !== window.self // && location === process.env.VUE_APP_HOME_URL
 }
 
 messageHandler()
 windowParentPostMessage({ key: 'createWindow' })
 
+console.log('>>>>>', process.env.VUE_APP_HOME_URL)
 if (browserName === FIREFOX) {
   shouldCreateIframe = checkingIframeAndDomain(document.referrer.substring(0, document.referrer.length - 1))
 } else {
@@ -40,4 +47,6 @@ if (shouldCreateIframe) {
     vuetify,
     render: h => h(App)
   }).$mount('#app')
+} else {
+  console.warn('>> Not in iframe', window.location.ancestorOrigins[0], process.env.VUE_APP_HOME_URL)
 }

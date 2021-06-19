@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      const libUrl = 'http://localhost:8081'
+      $(document).ready(() => {
+        $('#test-routes BUTTON').on('click', (e) => {
+          console.log($(e.target).data('href'))
+          $('#testIframe').attr('src', libUrl + $(e.target).data('href'))
+        })
+        $(window).on('message', (event) => {
+          console.log('jquery message>>>>', event)
+        })
+      })
+      window.addEventListener('message', (event) => {
+        console.log('>>>>> message in', event, event.origin)
+        //if (event.origin !== process.env.VUE_APP_HOME_URL) return
+        const key = event.data.key || 'default'
+        switch (key) {
+          default: {
+            console.warn(event.data)
+          }
+        }
+      })
+    </script>
+  </head>
+  <body>
+    <div id="test-routes">
+      <button data-href="/secret-phrase">/secret-phrase</button>
+      <button data-href="/choose-style">/choose-style</button>
+    </div>
+    <iframe id="testIframe" src="http://localhost:8081/" width="100%" height="100%" style="display: block; width: 100%; height: 100%;"></iframe>
+  </body>
+</html>
