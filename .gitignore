@@ -30,4 +30,3 @@ pnpm-debug.log*
 report
 
 .env*
-package-lock.json
