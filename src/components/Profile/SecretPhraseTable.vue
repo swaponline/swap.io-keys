@@ -1,39 +1,37 @@
 <template>
-  <match-media v-slot="{ desktop }">
-    <div class="show-secret-phrase">
-      <header class="show-secret-phrase__header">
-        <swap-button-go-back v-if="!desktop" @click="goBack" />
-        <h1 class="show-secret-phrase__title">{{ headerTitle }}</h1>
-      </header>
-      <words-table :table-matrix="tableMatrix" @change="changeTableMatrix" />
-      <div class="show-secret-phrase__buttons">
-        <swap-button v-if="desktop && !isRecoverProfile" class="show-secret-phrase__button" @click="goBack">
-          Back
+  <match-media v-slot="{ desktop }" class="show-secret-phrase" wrapper-tag="div">
+    <header class="show-secret-phrase__header">
+      <swap-button-go-back v-if="!desktop" @click="goBack" />
+      <h1 class="show-secret-phrase__title">{{ headerTitle }}</h1>
+    </header>
+    <words-table :table-matrix="tableMatrix" @change="changeTableMatrix" />
+    <div class="show-secret-phrase__buttons">
+      <swap-button v-if="desktop && !isRecoverProfile" class="show-secret-phrase__button" @click="goBack">
+        Back
+      </swap-button>
+      <template v-if="isWritePhrase || isRecoverProfile">
+        <swap-button
+          v-if="isRecoverProfile"
+          class="show-secret-phrase__button"
+          :disabled="isDisabledRecover"
+          :tooltip="isDisabledRecover ? 'Complete your secret phrase.' : null"
+          @click="recoverProfile"
+        >
+          Recover
         </swap-button>
-        <template v-if="isWritePhrase || isRecoverProfile">
-          <swap-button
-            v-if="isRecoverProfile"
-            class="show-secret-phrase__button"
-            :disabled="isDisabledRecover"
-            :tooltip="isDisabledRecover ? 'Complete your secret phrase.' : null"
-            @click="recoverProfile"
-          >
-            Recover
-          </swap-button>
-          <swap-button
-            v-else
-            class="show-secret-phrase__button"
-            :disabled="isDisabledCreate"
-            :tooltip="isDisabledCreate ? 'Complete your secret phrase.' : null"
-            @click="createProfile"
-          >
-            Create
-          </swap-button>
-        </template>
-        <template v-else>
-          <swap-button class="show-secret-phrase__button" @click="partialReplacementWordsWithInput">Next</swap-button>
-        </template>
-      </div>
+        <swap-button
+          v-else
+          class="show-secret-phrase__button"
+          :disabled="isDisabledCreate"
+          :tooltip="isDisabledCreate ? 'Complete your secret phrase.' : null"
+          @click="createProfile"
+        >
+          Create
+        </swap-button>
+      </template>
+      <template v-else>
+        <swap-button class="show-secret-phrase__button" @click="partialReplacementWordsWithInput">Next</swap-button>
+      </template>
     </div>
   </match-media>
 </template>
@@ -43,7 +41,7 @@ import Vue, { PropType } from 'vue'
 import { MatchMedia } from 'vue-component-media-queries'
 import WordsTable from '@/components/Profile/WordsTable.vue'
 import { randomInteger } from '@/utils/common'
-import { TableMatrix } from './types.d'
+import { TableMatrix } from './types'
 
 const QUANTITY_INPUTS = 6
 
@@ -54,7 +52,7 @@ type Data = {
 }
 
 export default Vue.extend({
-  name: 'ShowSecretPhrase',
+  name: 'SecretPhraseTable',
   components: {
     MatchMedia,
     WordsTable
@@ -132,14 +130,17 @@ export default Vue.extend({
       this.isWritePhrase = true
       const modifiedTableMatrix: TableMatrix = [...this.tableMatrix]
 
-      for (let i = 0; i < QUANTITY_INPUTS; i += 1) {
-        const replacementIndex = randomInteger(0, modifiedTableMatrix.length - 1)
+      let index = 0
+      while (index < QUANTITY_INPUTS) {
+        const replacementIndex = randomInteger(0 + 1, modifiedTableMatrix.length - 1)
+        const { value } = modifiedTableMatrix[replacementIndex]
 
-        if (modifiedTableMatrix[replacementIndex]) {
+        if (value) {
           modifiedTableMatrix[replacementIndex] = {
             value: '',
             input: true
           }
+          index += 1
         }
       }
 

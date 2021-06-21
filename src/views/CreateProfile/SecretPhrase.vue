@@ -1,6 +1,6 @@
 <template>
   <div class="secret-phrase">
-    <show-secret-phrase
+    <secret-phrase-table
       :is-recover-profile="isRecoverProfile"
       :words="words"
       @create="toggleFormPassword(true)"
@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
+import SecretPhraseTable from '@/components/Profile/SecretPhraseTable.vue'
 import FormPassword from '@/components/Profile/FormPassword.vue'
 import { mnemonicToSeed } from 'bip39'
 import { encryptData, getPublicKey } from '@/utils/chifer'
@@ -26,14 +26,13 @@ import { UserColorTheme } from '@/types.d'
 
 type Data = {
   words: Array<string>
-  isWritePhrase: boolean
   isPasswordFormVisible: boolean
 }
 
 export default Vue.extend({
   name: 'SecretPhrase',
   components: {
-    ShowSecretPhrase,
+    SecretPhraseTable,
     FormPassword
   },
   props: {
@@ -42,7 +41,6 @@ export default Vue.extend({
   data(): Data {
     return {
       words: [],
-      isWritePhrase: false,
       isPasswordFormVisible: false
     }
   },
@@ -82,7 +80,6 @@ export default Vue.extend({
           }
         })
       }
-      this.isWritePhrase = false
     },
 
     async createProfile(password: string): Promise<void> {
