@@ -41,7 +41,7 @@ import Vue, { PropType } from 'vue'
 import { MatchMedia } from 'vue-component-media-queries'
 import WordsTable from '@/components/Profile/WordsTable.vue'
 import { randomInteger } from '@/utils/common'
-import { TableMatrix } from './types'
+import { TableMatrix } from './types.d'
 
 const QUANTITY_INPUTS = 6
 
@@ -132,7 +132,7 @@ export default Vue.extend({
 
       let index = 0
       while (index < QUANTITY_INPUTS) {
-        const replacementIndex = randomInteger(0 + 1, modifiedTableMatrix.length - 1)
+        const replacementIndex = randomInteger(0, modifiedTableMatrix.length - 1)
         const { value } = modifiedTableMatrix[replacementIndex]
 
         if (value) {
