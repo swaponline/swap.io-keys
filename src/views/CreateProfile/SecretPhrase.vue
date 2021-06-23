@@ -1,27 +1,19 @@
 <template>
   <div class="secret-phrase">
-    <div class="secret-phrase__inner">
-      <template v-if="!isRecoverProfile">
-        <show-secret-phrase v-if="!isWritePhrase" :words="words" @next="isWritePhrase = true" />
-      </template>
-      <template v-if="isWritePhrase || isRecoverProfile">
-        <input-secret-phrase
-          :words="words"
-          :is-recover-profile="isRecoverProfile"
-          @create="toggleFormPassword(true)"
-          @recover="recoverProfile"
-          @back="back"
-        />
-      </template>
-    </div>
+    <secret-phrase-table
+      :is-recover-profile="isRecoverProfile"
+      :words="words"
+      @create="toggleFormPassword(true)"
+      @recover="recoverProfile"
+      @back="back"
+    />
     <form-password v-if="isPasswordFormVisible" @close="toggleFormPassword(false)" @submit="createProfile" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import ShowSecretPhrase from '@/components/Profile/ShowSecretPhrase.vue'
-import InputSecretPhrase from '@/components/Profile/InputSecretPhrase.vue'
+import SecretPhraseTable from '@/components/Profile/SecretPhraseTable.vue'
 import FormPassword from '@/components/Profile/FormPassword.vue'
 import { mnemonicToSeed } from 'bip39'
 import { encryptData, getPublicKey } from '@/utils/chifer'
@@ -34,20 +26,21 @@ import { UserColorTheme } from '@/types.d'
 
 type Data = {
   words: Array<string>
-  isWritePhrase: boolean
   isPasswordFormVisible: boolean
 }
 
 export default Vue.extend({
   name: 'SecretPhrase',
-  components: { ShowSecretPhrase, InputSecretPhrase, FormPassword },
+  components: {
+    SecretPhraseTable,
+    FormPassword
+  },
   props: {
     theme: { type: Object as PropType<UserColorTheme>, default: () => ({}) }
   },
   data(): Data {
     return {
       words: [],
-      isWritePhrase: false,
       isPasswordFormVisible: false
     }
   },
@@ -87,7 +80,6 @@ export default Vue.extend({
           }
         })
       }
-      this.isWritePhrase = false
     },
 
     async createProfile(password: string): Promise<void> {
@@ -159,9 +151,5 @@ export default Vue.extend({
 <style lang="scss">
 .secret-phrase {
   height: 100%;
-
-  &__inner {
-    height: 100%;
-  }
 }
 </style>

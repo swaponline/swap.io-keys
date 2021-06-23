@@ -63,7 +63,6 @@ export default Vue.extend({
   border-radius: $--main-border-radius;
   text-transform: none;
   background-color: $--light-grey;
-  padding: 0 16px;
   font-size: 0.875rem;
   letter-spacing: 1px;
   transition: all 0.2s;

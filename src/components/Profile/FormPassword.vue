@@ -110,7 +110,11 @@ export default Vue.extend({
   }
 
   &__button {
-    width: calc(50% - 4px);
+    width: 174px;
+
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
   }
 }
 </style>
