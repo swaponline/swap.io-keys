@@ -23,7 +23,7 @@ jobs:
       uses: bahmutov/npm-install@v1
       with:
        useLockFile: false
-    - name: еуяе build
+    - name: vue-cli-service build
       run: |
         vue-cli-service build
       env:
