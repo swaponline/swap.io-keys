@@ -10,6 +10,14 @@ import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
 import '@/assets/scss/base.scss'
 
+
+// -----
+import networks from '@/crypto/networks'
+// -----
+// @ts-ignore
+window.networks = networks
+
+
 Vue.use(VTooltip)
 Vue.use(UI)
 // Vue.config.productionTip = false

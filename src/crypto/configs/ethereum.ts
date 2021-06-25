@@ -1,8 +1,8 @@
-{
-  "name": "Ethereum network (Ropsten)",
+export default {
+  "name": "Ethereum network",
   "is_testnet": false,
   "is_ethereum": true,
-  "priority": 3,
+  "priority": 2,
   "coin": {
     "symbol": "ETH",
     "slug": "ether",

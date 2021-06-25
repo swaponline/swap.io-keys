@@ -1,4 +1,4 @@
-{
+export default {
   "name": "Binance Smart Chain",
   "inherit_from": "bitcoin",
   "is_testnet": false,
