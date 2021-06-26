@@ -7,6 +7,11 @@ interface IMessagePrifix {
   wif: string
 }
 
+interface IBip44 {
+  purpose: string
+  cointype: string
+}
+
 interface ICoin {
   symbol: string
   slug: string
@@ -20,6 +25,7 @@ class BaseAdaptor {
   private priority: number
   private prefix: IMessagePrifix
   private coin: ICoin
+  private bip44: IBip44
 
   constructor(networkConfig) {
     const {
@@ -27,12 +33,14 @@ class BaseAdaptor {
       priority,
       prefix,
       coin,
+      bip44,
     } = networkConfig
 
     this.name = name
     this.priority = priority
     this.prefix = prefix
     this.coin = coin
+    this.bip44 = bip44
   }
 
   public getCoin(): ICoin {
