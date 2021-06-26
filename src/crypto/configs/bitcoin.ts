@@ -1,5 +1,5 @@
 const network = {
-  isUTXO: true,
+  type: `utxo`,
   name: `Bitcoin network`,
   fee_max: 1000000,
   fee_min: 1024,

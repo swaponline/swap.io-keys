@@ -1,5 +1,5 @@
 const network = {
-  isEvm: true,
+  type: `evm`,
   name: `Binance Smart Chain`,
   priority: 2,
   chainId: 0x38,

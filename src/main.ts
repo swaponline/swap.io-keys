@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { FIREFOX } from '@/constants/browsers'
 import UaParser from 'ua-parser-js'
 import VTooltip from 'v-tooltip'
+import initNetworks from '@/crypto/init'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -10,14 +11,9 @@ import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
 import '@/assets/scss/base.scss'
 
-
-// -----
-import networks from '@/crypto/networks'
-// -----
+// eslint-disable-next-line
 // @ts-ignore
-window.networks = networks
-
-
+window.initNetworks = initNetworks
 Vue.use(VTooltip)
 Vue.use(UI)
 // Vue.config.productionTip = false
