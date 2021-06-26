@@ -1,11 +1,13 @@
+/* eslint-disable */
 import bitcoin from './configs/bitcoin'
-//import ethereum from './config/ethereum'
-//import ethereum_ropsten from './config/ethereum_ropsten'
-
+import ethereum from './configs/ethereum'
+import ethereumRopsten from './configs/ethereum_ropsten'
+import binance from './configs/binance'
 
 
 export default [
   bitcoin,
-  //ethereum,
-  //ethereum_ropsten,
+  ethereum,
+  ethereumRopsten,
+  binance,
 ]
