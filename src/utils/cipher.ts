@@ -1,13 +1,16 @@
 import * as bitcoin from 'bitcoinjs-lib'
 
+import { generateMnemonic, mnemonicToSeed } from 'bip39'
+
 // default params
-const DEFAULT_CIFHER_PARAMS = {
+const DEFAULT_CIPHER_PARAMS = {
   algoName: 'PBKDF2',
   hash: 'SHA-256',
   iterations: 250000,
   cipherName: 'AES-GCM',
   bits: 256
 }
+
 const DEFAULT_DERIVATION_PARAMS = {
   typeCurrency: 0,
   account: 0,
@@ -15,7 +18,11 @@ const DEFAULT_DERIVATION_PARAMS = {
   index: 0
 }
 
-let publicKey
+export const QUANTITY_MNEMONIC = 4
+
+type MnemonicPhrase = string[]
+type PublicKey = Buffer
+type Seed = Buffer
 
 // Функции трансформаторы
 const base64ToBuf = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0))
@@ -36,14 +43,18 @@ function getPasswordKey(password) {
   return window.crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey'])
 }
 
-/**
- * Получить публичный ключ, с помощью него записываем в сторадж
- * @param {string} seed
- * @returns
- */
-export const getPublicKey = seed => {
-  publicKey = bitcoin.bip32.fromSeed(seed).publicKey
-  return publicKey
+export function getMnemonicPhrase(): MnemonicPhrase {
+  return generateMnemonic(256).split(' ')
+}
+
+export async function getMnemonicToSeed(mnemonicPhrase: MnemonicPhrase): Promise<Buffer> {
+  const seed = await mnemonicToSeed(mnemonicPhrase.join(''))
+  return seed
+}
+
+// Получить публичный ключ, с помощью него записываем в сторадж
+export const getPublicKey = (seed: Buffer): Buffer => {
+  return bitcoin.bip32.fromSeed(seed).publicKey
 }
 
 /**
@@ -74,8 +85,8 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
  * @param {} params параметры для шифрования, можно менять частично
  * @returns Объект с зашифрованной
  */
-export async function encryptData(seed, password, userParams = {}) {
-  const params = { ...DEFAULT_CIFHER_PARAMS, ...userParams }
+export async function encryptData(seed: Seed, publicKey: PublicKey, password: string, userParams = {}) {
+  const params = { ...DEFAULT_CIPHER_PARAMS, ...userParams }
 
   const salt = window.crypto.getRandomValues(new Uint8Array(16))
   const iv = window.crypto.getRandomValues(new Uint8Array(12))
@@ -88,7 +99,8 @@ export async function encryptData(seed, password, userParams = {}) {
       iv
     },
     aesKey,
-    new TextEncoder().encode(seed)
+    // new TextEncoder().encode(seed)
+    seed
   )
 
   const encryptedContentArr = new Uint8Array(encryptedContent)
@@ -108,7 +120,7 @@ export async function encryptData(seed, password, userParams = {}) {
       iv: buffToHex(iv),
       text: buffToBase64(buff)
     },
-    publicKey: publicKey.toString()
+    publicKey: publicKey.toString('hex')
   }
 }
 

@@ -1,8 +1,5 @@
+import { ColorHex, ColorRGB, DimmingPercentage } from '@/types/generators'
 import { randomInteger } from './randomizer'
-
-export type ColorHex = string
-export type ColorRGB = number[]
-type DimmingPercentage = number
 
 function isTestHex(hex: ColorHex): boolean {
   return /^#([a-f0-9]{3}){1,2}$/.test(hex)
