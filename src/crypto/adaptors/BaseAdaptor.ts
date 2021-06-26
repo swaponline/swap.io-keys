@@ -1,24 +1,42 @@
+import BaseWallet from '../wallets/BaseWallet'
+
+
 interface IMessagePrifix {
   message: string
   p2pkh: string
   wif: string
 }
 
+interface ICoin {
+  symbol: string
+  slug: string
+  name: string
+  name_plural: string
+  denominator: number
+}
+
 class BaseAdaptor {
   private name: string
   private priority: number
   private prefix: IMessagePrifix
+  private coin: ICoin
 
   constructor(networkConfig) {
     const {
       name,
       priority,
       prefix,
+      coin,
     } = networkConfig
 
     this.name = name
     this.priority = priority
     this.prefix = prefix
+    this.coin = coin
+  }
+
+  public getCoin(): ICoin {
+    return this.coin
   }
 
   public getName(): string {
@@ -32,6 +50,8 @@ class BaseAdaptor {
   public getPrefix(): IMessagePrifix {
     return this.prefix
   }
+
+  public getWallet(index: number): BaseWallet|false { return false }
 }
 
 

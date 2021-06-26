@@ -11,7 +11,7 @@ const network = {
     denominator: 1e-18
   },
   rpc: ['https://bsc-dataseed.binance.org/'],
-  bip32: {
+  bip44: {
     purpose: `44'`,
     cointype: `60'`
   },

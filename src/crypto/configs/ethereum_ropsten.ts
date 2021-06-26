@@ -11,7 +11,7 @@ const network = {
     denominator: 1e-18
   },
   rpc: ['https://ropsten.infura.io/v3/5ffc47f65c4042ce847ef66a3fa70d4c'],
-  bip32: {
+  bip44: {
     purpose: `44'`,
     cointype: `60'`
   },

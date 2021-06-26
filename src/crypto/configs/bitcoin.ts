@@ -21,7 +21,7 @@ const network = {
       port: '18332'
     }
   ],
-  bip32: {
+  bip44: {
     purpose: `44'`,
     cointype: `0'`
   },
