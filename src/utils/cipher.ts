@@ -1,9 +1,16 @@
-import * as bitcoin from 'bitcoinjs-lib'
-
+import { payments, bip32 } from 'bitcoinjs-lib'
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
+import {
+  DefaultCipherParams,
+  DefaultDerivationParams,
+  MnemonicPhrase,
+  PublicKey,
+  Seed,
+  CryptoProfile
+} from '@/types/cipher'
 
 // default params
-const DEFAULT_CIPHER_PARAMS = {
+const DEFAULT_CIPHER_PARAMS: DefaultCipherParams = {
   algoName: 'PBKDF2',
   hash: 'SHA-256',
   iterations: 250000,
@@ -11,7 +18,7 @@ const DEFAULT_CIPHER_PARAMS = {
   bits: 256
 }
 
-const DEFAULT_DERIVATION_PARAMS = {
+const DEFAULT_DERIVATION_PARAMS: DefaultDerivationParams = {
   typeCurrency: 0,
   account: 0,
   change: 0,
@@ -20,26 +27,22 @@ const DEFAULT_DERIVATION_PARAMS = {
 
 export const QUANTITY_MNEMONIC = 4
 
-type MnemonicPhrase = string[]
-type PublicKey = Buffer
-type Seed = Buffer
-
 // Функции трансформаторы
-const base64ToBuf = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+const base64ToBuf = (b64: string) => Uint8Array.from(atob(b64), c => c.charCodeAt(0))
 
 const buffToBase64 = buff => btoa(String.fromCharCode.apply(null, buff))
 
 // Для сохранения соли и iv в сторадже и возвращения к Uint8Array подобному виду
 const hexToBuff = hexString => new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
 
-const buffToHex = buffer =>
+const buffToHex = (buffer: Uint8Array) =>
   Array.prototype.map.call(new Uint8Array(buffer), x => `00${x.toString(16)}`.slice(-2)).join('')
 
 function getAddress(node, network) {
-  return bitcoin.payments.p2pkh({ pubkey: node.publicKey, network }).address
+  return payments.p2pkh({ pubkey: node.publicKey, network }).address
 }
 
-function getPasswordKey(password) {
+function getPasswordKey(password: string) {
   return window.crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey'])
 }
 
@@ -54,7 +57,7 @@ export async function getMnemonicToSeed(mnemonicPhrase: MnemonicPhrase): Promise
 
 // Получить публичный ключ, с помощью него записываем в сторадж
 export const getPublicKey = (seed: Buffer): Buffer => {
-  return bitcoin.bip32.fromSeed(seed).publicKey
+  return bip32.fromSeed(seed).publicKey
 }
 
 /**
@@ -85,7 +88,12 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
  * @param {} params параметры для шифрования, можно менять частично
  * @returns Объект с зашифрованной
  */
-export async function encryptData(seed: Seed, publicKey: PublicKey, password: string, userParams = {}) {
+export async function encryptData(
+  seed: Seed,
+  publicKey: PublicKey,
+  password: string,
+  userParams = {}
+): Promise<CryptoProfile> {
   const params = { ...DEFAULT_CIPHER_PARAMS, ...userParams }
 
   const salt = window.crypto.getRandomValues(new Uint8Array(16))
@@ -179,7 +187,7 @@ export async function decryptData(encryptedData, password) {
 
 export function createAddress(seed, userParams = {}, network = undefined) {
   const params = { ...DEFAULT_DERIVATION_PARAMS, ...userParams }
-  const root = bitcoin.bip32.fromSeed(Buffer.from(seed, 'hex'), network)
+  const root = bip32.fromSeed(Buffer.from(seed, 'hex'), network)
   const child = root
     .deriveHardened(44)
     .deriveHardened(params.typeCurrency)
