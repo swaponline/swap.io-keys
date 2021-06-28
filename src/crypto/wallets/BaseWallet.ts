@@ -1,5 +1,3 @@
-import BaseAdaptor from '../adaptors/BaseAdaptor'
-
 
 interface ISendOptions {
   destination: string
@@ -9,9 +7,9 @@ interface ISendOptions {
 class BaseWallet {
   private walletIndex: number
   private address: string = ``
-  private networkAdaptor: BaseAdaptor
+  private networkAdaptor
 
-  constructor(networkAdaptor: BaseAdaptor, walletIndex: number) {
+  constructor(networkAdaptor, walletIndex: number) {
     this.walletIndex = walletIndex
     this.networkAdaptor = networkAdaptor
 

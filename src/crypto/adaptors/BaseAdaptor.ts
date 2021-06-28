@@ -26,6 +26,7 @@ class BaseAdaptor {
   private prefix: IMessagePrifix
   private coin: ICoin
   private bip44: IBip44
+  private wallets: Array<BaseWallet> = []
 
   constructor(networkConfig) {
     const {
@@ -59,6 +60,10 @@ class BaseAdaptor {
     return this.prefix
   }
 
+  public getWallets(): Array<BaseWallet> {
+    return this.wallets
+  }
+  public createWallet(index: number): BaseWallet|false { return false }
   public getWallet(index: number): BaseWallet|false { return false }
 }
 
