@@ -47,7 +47,7 @@ export function getMnemonicPhrase(): MnemonicPhrase {
   return generateMnemonic(256).split(' ')
 }
 
-export async function getMnemonicToSeed(mnemonicPhrase: MnemonicPhrase): Promise<Buffer> {
+export async function getSeedFromMnemonic(mnemonicPhrase: MnemonicPhrase): Promise<Buffer> {
   const seed = await mnemonicToSeed(mnemonicPhrase.join(''))
   return seed
 }

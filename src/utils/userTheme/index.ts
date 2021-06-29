@@ -1,4 +1,4 @@
-import { UserColorTheme } from '@/utils/generators/background'
+import { UserColorScheme } from '@/utils/generators/background'
 import { getEncryptionParameters } from '@/utils/encryptionParameters'
 import { EncryptionParameters } from '@/types/encryptionParameters'
 import { UserTheme } from '@/types/userTheme'
@@ -16,7 +16,7 @@ export async function getUserTheme(wordList?: string[]): Promise<UserTheme> {
 
   if (!publicKey) throw new Error('the key was not received')
 
-  const colorScheme: ColorScheme = new UserColorTheme(publicKey).getColorTheme()
+  const colorScheme: ColorScheme = new UserColorScheme(publicKey).getColorScheme()
 
   return {
     colorScheme,

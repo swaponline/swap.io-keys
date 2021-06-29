@@ -1,4 +1,4 @@
-import { getPublicKey, getMnemonicPhrase, getMnemonicToSeed } from '@/utils/cipher'
+import { getPublicKey, getMnemonicPhrase, getSeedFromMnemonic } from '@/utils/cipher'
 import { EncryptionParameters } from '@/types/encryptionParameters'
 
 export const getEncryptionParameters = async (wordList?: string[]): Promise<EncryptionParameters> => {
@@ -9,7 +9,7 @@ export const getEncryptionParameters = async (wordList?: string[]): Promise<Encr
     mnemonicPhrase = getMnemonicPhrase()
   }
 
-  const seed = await getMnemonicToSeed(mnemonicPhrase)
+  const seed = await getSeedFromMnemonic(mnemonicPhrase)
   const publicKey = getPublicKey(seed)
 
   return {

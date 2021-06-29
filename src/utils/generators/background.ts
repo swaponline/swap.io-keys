@@ -3,7 +3,7 @@ import { Rect, Ellipse, ColorScheme, WidthRects } from '@/types/generators'
 import { derivedRandom, randomInteger } from '@/utils/generators/randomizer'
 import { getDarkenedColor, getSecondColors, colors, hexToRGBA } from './color'
 
-export class UserColorTheme {
+export class UserColorScheme {
   DEFAULT_WIDTH_SVG: number
 
   DEFAULT_HEIGHT_SVG: number
@@ -197,7 +197,7 @@ export class UserColorTheme {
     return getDarkenedColor(this.dominantColor, 43)
   }
 
-  getColorTheme(): ColorScheme {
+  getColorScheme(): ColorScheme {
     return {
       background: this.generateBackground(),
       color: this.generateColorBasedDominantWidth(),
