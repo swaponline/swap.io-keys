@@ -32,7 +32,19 @@ module.exports = {
     'vue/no-boolean-default': ['error', 'default-false'],
     'vue/padding-line-between-blocks': ['error', 'always'],
     'no-eq-null': 'error',
-    'require-await': 'error'
+    'require-await': 'error',
+    'import/prefer-default-export': 'off',
+    'import/no-unresolved': 'off',
+    'import/extensions': [
+      'error',
+      'never',
+      {
+        ignorePackages: true,
+        pattern: {
+          vue: 'always'
+        }
+      }
+    ]
   },
   overrides: [
     {

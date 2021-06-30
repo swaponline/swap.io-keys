@@ -1,32 +1,9 @@
 import { getMaxOfArray } from '@/utils/common'
-import { getDarkenedColor, getSecondColors, colors, ColorHex, hexToRGBA } from './color'
-import { randomInteger } from './randomizer'
+import { Rect, Ellipse, ColorScheme, WidthRects } from '@/types/generators'
+import { derivedRandom, randomInteger } from '@/utils/generators/randomizer'
+import { getDarkenedColor, getSecondColors, colors, hexToRGBA } from './color'
 
-type Rect = {
-  xOffset: number
-  yOffset: number
-  width: number
-  height: number
-  color: ColorHex
-}
-
-type Ellipse = {
-  cx: number
-  cy: number
-  rx: number
-  ry: number
-  fill: ColorHex
-}
-
-type WidthRects = number[]
-
-export type ColorTheme = {
-  background: string
-  color: string
-  selectionColor: string
-}
-
-export class UserColorTheme {
+export class UserColorScheme {
   DEFAULT_WIDTH_SVG: number
 
   DEFAULT_HEIGHT_SVG: number
@@ -45,7 +22,8 @@ export class UserColorTheme {
 
   ellipseModel: Ellipse[]
 
-  constructor() {
+  constructor(publicKey: Buffer) {
+    derivedRandom(publicKey)
     this.DEFAULT_WIDTH_SVG = 200
     this.DEFAULT_HEIGHT_SVG = 120
     this.DEFAULT_HEIGHT_RECTANGLES = 500
@@ -219,7 +197,7 @@ export class UserColorTheme {
     return getDarkenedColor(this.dominantColor, 43)
   }
 
-  getColorTheme(): ColorTheme {
+  getColorScheme(): ColorScheme {
     return {
       background: this.generateBackground(),
       color: this.generateColorBasedDominantWidth(),
