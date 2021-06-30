@@ -1,16 +1,9 @@
-import { payments, bip32 } from 'bitcoinjs-lib'
+import * as bitcoin from 'bitcoinjs-lib'
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
-import {
-  DefaultCipherParams,
-  DefaultDerivationParams,
-  MnemonicPhrase,
-  PublicKey,
-  Seed,
-  CryptoProfile
-} from '@/types/cipher'
+import { CipherParams, DerivationParams, MnemonicPhrase, PublicKey, Seed, CryptoProfile } from '@/types/cipher'
 
 // default params
-const DEFAULT_CIPHER_PARAMS: DefaultCipherParams = {
+const DEFAULT_CIPHER_PARAMS: CipherParams = {
   algoName: 'PBKDF2',
   hash: 'SHA-256',
   iterations: 250000,
@@ -18,7 +11,7 @@ const DEFAULT_CIPHER_PARAMS: DefaultCipherParams = {
   bits: 256
 }
 
-const DEFAULT_DERIVATION_PARAMS: DefaultDerivationParams = {
+const DEFAULT_DERIVATION_PARAMS: DerivationParams = {
   typeCurrency: 0,
   account: 0,
   change: 0,
@@ -39,7 +32,7 @@ const buffToHex = (buffer: Uint8Array) =>
   Array.prototype.map.call(new Uint8Array(buffer), x => `00${x.toString(16)}`.slice(-2)).join('')
 
 function getAddress(node, network) {
-  return payments.p2pkh({ pubkey: node.publicKey, network }).address
+  return bitcoin.payments.p2pkh({ pubkey: node.publicKey, network }).address
 }
 
 function getPasswordKey(password: string) {
@@ -57,7 +50,7 @@ export async function getMnemonicToSeed(mnemonicPhrase: MnemonicPhrase): Promise
 
 // Получить публичный ключ, с помощью него записываем в сторадж
 export const getPublicKey = (seed: Buffer): Buffer => {
-  return bip32.fromSeed(seed).publicKey
+  return bitcoin.bip32.fromSeed(seed).publicKey
 }
 
 /**

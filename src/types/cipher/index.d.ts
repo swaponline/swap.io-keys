@@ -2,7 +2,7 @@ export type MnemonicPhrase = string[]
 export type PublicKey = Buffer | string
 export type Seed = Buffer
 
-export interface DefaultCipherParams {
+export interface CipherParams {
   algoName: string
   hash: string
   iterations: number
@@ -10,7 +10,7 @@ export interface DefaultCipherParams {
   bits: number
 }
 
-export interface DefaultDerivationParams {
+export interface DerivationParams {
   typeCurrency: number
   account: number
   change: number
