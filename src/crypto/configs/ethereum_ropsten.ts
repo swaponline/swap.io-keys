@@ -1,5 +1,6 @@
 const network = {
   type: `evm`,
+  symbol: `ethereum-ropsten`,
   name: `Ethereum network (Ropsten)`,
   priority: 3,
   chainId: 0x3,

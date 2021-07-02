@@ -1,5 +1,6 @@
 const network = {
   type: `utxo`,
+  symbol: `bitcoin`,
   name: `Bitcoin network`,
   fee_max: 1000000,
   fee_min: 1024,

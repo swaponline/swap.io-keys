@@ -1,5 +1,6 @@
 const network = {
   type: `evm`,
+  symbol: `ethereum`,
   name: `Ethereum network`,
   priority: 2,
   chainId: 0x1,
