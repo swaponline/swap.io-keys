@@ -1,47 +1,34 @@
 <template>
-  <match-media v-slot="{ desktop, tablet }">
-    <div class="choose-style">
-      <div class="choose-style__inner">
-        <header class="choose-style__header">
-          <h1 class="choose-style__title">Choose style</h1>
-          <span class="choose-style__subtitle">it cannot be changed later</span>
-        </header>
-        <div class="choose-style__cards">
-          <div v-for="(theme, index) in userThemes" :key="index" class="choose-style__card">
-            <div
-              class="choose-style__card-inner"
-              :class="{ 'choose-style__card-inner--select': selectedTheme === theme }"
-              @click="select(theme)"
-            >
-              <canvas ref="backgroundCanvas" class="choose-style__card-background"></canvas>
-            </div>
-            <span
-              v-if="desktop && selectedTheme === theme"
-              class="choose-style__card-text"
-              :style="`color: ${theme.color}`"
-              >Complementary text
-            </span>
-          </div>
-        </div>
-        <span
-          v-if="tablet"
-          :class="['choose-style__text', selectedTheme.color && 'choose-style__text--selected']"
-          :style="`color: ${selectedTheme.color}`"
-          >Complementary text
-        </span>
-        <div class="choose-style__buttons">
-          <swap-button
-            class="choose-style__button"
-            :disabled="!isThemeSelected"
-            :tooltip="!isThemeSelected ? 'Please pick a color scheme to proceed.' : null"
-            @click="goToSecretPhrase"
-          >
-            Create
-          </swap-button>
-          <swap-button class="choose-style__button choose-style__button--text" text @click="refreshColors">
-            Refresh colors
-          </swap-button>
-        </div>
+  <match-media v-slot="{ tablet }" wrapper-tag="div" class="choose-style">
+    <div class="choose-style__wrapper">
+      <header class="choose-style__header">
+        <h1 class="choose-style__title">Choose style</h1>
+        <span class="choose-style__subtitle">it cannot be changed later</span>
+      </header>
+      <div class="choose-style__cards">
+        <choose-style-card
+          v-for="({ colorScheme }, index) in userThemes"
+          :key="index"
+          :color-scheme="colorScheme"
+          :is-selected-scheme="isSelectedColorScheme(colorScheme)"
+          @select="select(index)"
+        />
+      </div>
+      <span v-if="tablet" :class="['choose-style__text', selectedColorScheme.color && 'choose-style__text--selected']"
+        >Complementary text
+      </span>
+      <div class="choose-style__buttons">
+        <swap-button
+          class="choose-style__button"
+          :disabled="!isThemeSelected"
+          :tooltip="!isThemeSelected ? 'Please pick a color scheme to proceed.' : null"
+          @click="goToSecretPhrase"
+        >
+          Create
+        </swap-button>
+        <swap-button class="choose-style__button" text @click="refreshColors">
+          Refresh colors
+        </swap-button>
       </div>
     </div>
   </match-media>
@@ -50,53 +37,57 @@
 <script lang="ts">
 import { MatchMedia } from 'vue-component-media-queries'
 import Vue from 'vue'
-import { generateMnemonic, mnemonicToSeed } from 'bip39'
-import { getPublicKey } from '@/utils/chifer'
+import ChooseStyleCard from '@/components/ChooseStyle/Card.vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
-import { IFRAME_INITED, THEME_SELECTED } from '@/constants/createProfile'
-import { getUserColorTheme } from '@/utils/getUserColorTheme'
+import { getUserTheme } from '@/utils/userTheme'
+import { UserTheme } from '@/types/userTheme'
+import { ColorScheme } from '@/types/generators'
 import { CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
-import Canvg from 'canvg'
-import { UserColorTheme } from '@/types.d'
+import { IFRAME_INITED, THEME_SELECTED } from '@/constants/createProfile'
 
-const QUANTITY_CARDS = 4
-
+type IndexOfSelectedTheme = number
 type Data = {
-  selectedTheme: UserColorTheme
+  userThemes: Array<UserTheme>
 
-  userThemes: Array<UserColorTheme>
+  selectedTheme: UserTheme
 
   isRefreshing: boolean
 }
 
+const QUANTITY_CARDS = 4
+
 export default Vue.extend({
   name: 'ChooseStyle',
   components: {
-    MatchMedia
+    MatchMedia,
+    ChooseStyleCard
   },
   data(): Data {
     return {
-      selectedTheme: {
-        background: '',
-        color: '',
-        selectionColor: '',
-        wordList: [],
-        publicKey: ''
-      },
-
       userThemes: [],
+      selectedTheme: {
+        colorScheme: {
+          background: '',
+          color: '',
+          selectionColor: ''
+        },
+        wordList: [],
+        publicKey: null,
+        seed: null
+      },
       isRefreshing: false
     }
   },
   computed: {
+    selectedColorScheme(): ColorScheme {
+      return this.selectedTheme.colorScheme as ColorScheme
+    },
     isThemeSelected(): boolean {
-      return !!this.selectedTheme.background
+      return !!this.selectedColorScheme.background
     }
   },
   async mounted(): Promise<void> {
-    await this.getMnemonic()
-    this.getCards()
-    window.addEventListener('resize', this.setCardsBackground)
+    await this.getCards()
 
     windowParentPostMessage({
       key: CREATE_PROFILE_WINDOW,
@@ -105,24 +96,22 @@ export default Vue.extend({
       }
     })
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.setCardsBackground)
-  },
   methods: {
-    select(theme: UserColorTheme): void {
-      this.selectedTheme = theme
+    isSelectedColorScheme(colorScheme: ColorScheme) {
+      return this.selectedColorScheme === colorScheme
+    },
+    select(selectedIndex: IndexOfSelectedTheme): void {
+      this.selectedTheme = this.userThemes.find((_: UserTheme, index: number) => index === selectedIndex)
 
-      const { background, color, selectionColor } = theme
+      document.documentElement.style.setProperty('--main-color', this.selectedColorScheme.color)
+      document.documentElement.style.setProperty('--selection-color', this.selectedColorScheme.selectionColor)
+
       windowParentPostMessage({
         key: CREATE_PROFILE_WINDOW,
         message: {
           type: THEME_SELECTED,
           payload: {
-            theme: {
-              background,
-              color,
-              selectionColor
-            }
+            theme: this.selectedColorScheme
           }
         }
       })
@@ -134,74 +123,21 @@ export default Vue.extend({
       }
     },
 
-    async getMnemonic(): Promise<void> {
-      const seedsResolvers: Promise<Buffer>[] = []
-      this.userThemes = Array.from({ length: QUANTITY_CARDS }).map(() => ({
-        background: '',
-        color: '',
-        selectionColor: '',
-        wordList: [],
-        publicKey: ''
-      }))
+    async getCards(): Promise<void> {
+      const userThemeResolvers: Promise<UserTheme>[] = []
+
       for (let i = 0; i < QUANTITY_CARDS; i += 1) {
-        this.userThemes[i].wordList = generateMnemonic(256).split(' ')
-        const seed = mnemonicToSeed(this.userThemes[i].wordList.join(' '))
-        seedsResolvers.push(seed)
-      }
-      const seeds = await Promise.all(seedsResolvers)
-
-      seeds.forEach((seed, index) => {
-        const publicKey = getPublicKey(seed)
-        this.userThemes[index].publicKey = publicKey
-      })
-    },
-
-    getCards(): void {
-      const list: UserColorTheme[] = []
-      for (let i = 0; i < this.userThemes.length; i += 1) {
-        const { background, color, selectionColor } = getUserColorTheme(this.userThemes[i].publicKey)
-
-        list.splice(i, 1, {
-          ...this.userThemes[i],
-          background,
-          color,
-          selectionColor
-        })
+        const userTheme: Promise<UserTheme> = getUserTheme()
+        userThemeResolvers.push(userTheme)
       }
 
-      this.userThemes = list
-      this.$nextTick(() => this.setCardsBackground())
-    },
-
-    setCardsBackground(): void {
-      this.userThemes.forEach((color, i) => {
-        const canvas = this.$refs.backgroundCanvas[i]
-        const ctx = canvas.getContext('2d')
-        const options = {
-          ignoreMouse: true,
-          ignoreAnimation: true
-        }
-
-        const { background } = color
-        // hack for scaling svg to canvas size
-        canvas.style = ''
-        const widthStr = `width="${canvas.offsetWidth}"\n`
-        const heightStr = `height="${canvas.offsetHeight}"\n`
-        const index = background.indexOf('viewBox')
-        const resSvg = background.substring(0, index) + widthStr + heightStr + background.substring(index)
-
-        const canvg = Canvg.fromString(ctx, resSvg, options)
-
-        canvg.start()
-      })
+      this.userThemes = await Promise.all(userThemeResolvers)
     },
 
     async refreshColors(): Promise<void> {
       if (!this.isRefreshing) {
         this.isRefreshing = true
-        this.userThemes = []
-        await this.getMnemonic()
-        this.getCards()
+        await this.getCards()
         this.isRefreshing = false
       }
     }
@@ -213,7 +149,7 @@ export default Vue.extend({
 .choose-style {
   height: 100%;
 
-  &__inner {
+  &__wrapper {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -273,71 +209,21 @@ export default Vue.extend({
     }
   }
 
-  &__card {
-    width: calc(25% - 14px);
-    margin: 0 7px;
-
-    @include tablet {
-      width: calc(50% - 14px);
-      margin: 9px 7px;
-    }
-
-    @include phone {
-      width: calc(50% - 4px);
-      margin: 2px;
-    }
-  }
-
-  &__card-inner {
-    display: flex;
-    padding: 5px 5px;
-    border-radius: 20px;
-    border: 5px solid transparent;
-    cursor: pointer;
-
-    &--select {
-      border-color: $--grey;
-    }
-  }
-
-  &__card-background {
-    background-size: 100% 100%;
-    border-radius: 12px;
-    width: 100%;
-    height: 120px;
-
-    @include tablet {
-      height: 145px;
-    }
-
-    @include phone {
-      height: 100px;
-    }
-  }
-
-  &__card-text,
   &__text {
     width: 100%;
+    color: var(--main-color);
     font-weight: $--font-weight-semi-bold;
     font-size: $--font-size-extra-small-subtitle;
     text-align: center;
-
-    @include tablet {
-      font-size: $--font-size-medium;
-    }
-  }
-
-  &__card-text {
-    display: block;
-    margin-top: 22px;
-  }
-
-  &__text {
     opacity: 0;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.6, 1);
 
     &--selected {
       opacity: 1;
+    }
+
+    @include tablet {
+      font-size: $--font-size-medium;
     }
 
     @include phone {
@@ -371,10 +257,6 @@ export default Vue.extend({
 
     &:not(:last-child) {
       margin-bottom: 10px;
-    }
-
-    &--text {
-      color: $--dark-grey;
     }
 
     @include tablet {

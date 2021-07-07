@@ -13,6 +13,12 @@ body {
   height: 100%;
 }
 
+// Переопределяем фон для выделенных элементов
+::selection {
+  background: var(--selection-color);
+  color: $--black;
+}
+
 body {
   font-family: $--font-base;
   font-weight: $--font-weight-regular;

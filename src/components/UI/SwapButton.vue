@@ -81,6 +81,7 @@ export default Vue.extend({
 
   &__text {
     background-color: transparent;
+    color: $--dark-grey;
 
     &:hover {
       background-color: $--light-grey;
