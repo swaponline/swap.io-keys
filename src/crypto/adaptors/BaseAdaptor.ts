@@ -28,6 +28,8 @@ class BaseAdaptor {
   private bip44: IBip44
   private wallets: Array<BaseWallet> = []
 
+  private parentAdaptor: BaseAdaptor | boolean = false
+
   constructor(networkConfig) {
     const {
       name,

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import bitcoin from './configs/bitcoin'
 import ethereum from './configs/ethereum'
-import ethereumRopsten from './configs/ethereum_ropsten'
+import ethereumRopsten from './configs/ethereum-ropsten'
 import binance from './configs/binance'
 
 
