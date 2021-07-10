@@ -40,7 +40,17 @@ function extendAdaptorConfig(options) {
 
 function initNetworks(): Array<BaseAdaptor> {
   const configsByName = {}
-  networks.forEach((networkConfig) => {
+  const configsByPriority = {}
+
+  networks.forEach((networkConfig: any) => {
+    if (configsByName[networkConfig.symbol]) {
+      throw new Error(`Fail init network configs. Network with symbol ${networkConfig.symbol} already exists`)
+    }
+    if (configsByPriority[networkConfig.priority]) {
+      console.warn(`Network with priority ${networkConfig.priority} already exists. Exists network ${configsByPriority[networkConfig.priority].symbol}. Overwrite network ${networkConfig.symbol}`)
+    } else {
+      configsByPriority[networkConfig.priority] = networkConfig
+    }
     configsByName[networkConfig.symbol] = networkConfig
   })
 
@@ -53,6 +63,8 @@ function initNetworks(): Array<BaseAdaptor> {
       configsByName,
       cycleExtendDetector: {},
     })
+    // @ts-ignore
+    extendedConfig.parent = networkConfig.parent
     console.log('>>>> extendedConfig', extendedConfig)
     switch(extendedConfig.type) {
       case `evm`:

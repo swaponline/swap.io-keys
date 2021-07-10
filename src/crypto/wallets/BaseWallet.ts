@@ -7,6 +7,8 @@ interface ISendOptions {
 class BaseWallet {
   private walletIndex: number
   private address: string = ``
+  private privateKey: string = ``
+  private publicKey: string = ``
   private networkAdaptor
 
   constructor(networkAdaptor, walletIndex: number) {
@@ -19,6 +21,22 @@ class BaseWallet {
 
   public getAddress(): string {
     return this.address
+  }
+
+  public getPrivateKey(): string {
+    return this.privateKey
+  }
+
+  public getPublicKey(): string {
+    return this.publicKey
+  }
+
+  public signMessage(message: string): string {
+    return message
+  }
+
+  public signTransaction(transaction: any): any {
+    return transaction
   }
 
   public send(options: ISendOptions): Promise<string>|false { return false }

@@ -1,11 +1,11 @@
-import coins from './coins'
+//import coins from './coins'
 import { TProfile } from './types'
 
 /* interface IProfileFromMnemonicParams {
   typeof coins.BTC.profileFromMnemonic ||
   typeof coins.LTC.profileFromMnemonic
 } */
-
+/*
 const profileFromMnemonic: (params) => TProfile = params => {
   // todo: improve types - unreliable
   if (params.coin === 'BTC') {
@@ -23,3 +23,4 @@ const profileFromMnemonic: (params) => TProfile = params => {
 export default {
   profileFromMnemonic
 }
+*/

@@ -1,8 +1,9 @@
 /* eslint-disable */
-import bitcoin from './configs/bitcoin'
-import ethereum from './configs/ethereum'
-import ethereumRopsten from './configs/ethereum-ropsten'
-import binance from './configs/binance'
+import bitcoin from './configs/bitcoin.json'
+import ethereum from './configs/ethereum.json'
+import ethereumRopsten from './configs/ethereum-ropsten.json'
+import binance from './configs/binance.json'
+import binanceTestnet from './configs/binance-testnet.json'
 
 
 export default [
@@ -10,4 +11,5 @@ export default [
   ethereum,
   ethereumRopsten,
   binance,
+  binanceTestnet,
 ]

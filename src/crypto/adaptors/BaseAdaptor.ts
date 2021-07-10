@@ -46,6 +46,10 @@ class BaseAdaptor {
     this.bip44 = bip44
   }
 
+  public setParentAdaptor(parentAdaptor: BaseAdaptor): void {
+    this.parentAdaptor = parentAdaptor
+  }
+
   public getCoin(): ICoin {
     return this.coin
   }
