@@ -35,7 +35,7 @@ if (browserName === FIREFOX) {
 }
 
 // Не разрешаем обычное открытие, только в iframe и только на определенном домене
-if (shouldCreateIframe) {
+if (shouldCreateIframe || true) {
   /* eslint-disable vue/require-name-property */
   new Vue({
     router,

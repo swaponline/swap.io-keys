@@ -24,6 +24,7 @@ class BaseAdaptor {
   private name: string
   private priority: number
   private prefix: IMessagePrifix
+  private symbol: string
   private coin: ICoin
   private bip44: IBip44
   private wallets: Array<BaseWallet> = []
@@ -35,11 +36,13 @@ class BaseAdaptor {
       name,
       priority,
       prefix,
+      symbol,
       coin,
       bip44,
     } = networkConfig
 
     this.name = name
+    this.symbol = symbol
     this.priority = priority
     this.prefix = prefix
     this.coin = coin
@@ -56,6 +59,10 @@ class BaseAdaptor {
 
   public getName(): string {
     return this.name
+  }
+
+  public getSymbol(): string {
+    return this.symbol
   }
 
   public getPriority(): number {

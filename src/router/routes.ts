@@ -14,6 +14,16 @@ const routes: Array<RouteConfig> = [
     path: '/choose-style',
     name: 'ChooseStyle',
     component: () => import(/* webpackChunkName: 'ChooseStyle' */ '@/views/CreateProfile/ChooseStyle.vue')
+  },
+  {
+    path: '/get-profiles',
+    name: 'GetProfiles',
+    component: () => import(/* webpackChunkName: 'ChooseStyle' */ '@/views/GetProfiles.vue')
+  },
+  {
+    path: '/get-networks',
+    name: 'GetNetworks',
+    component: () => import(/* webpackChunkName: 'ChooseStyle' */ '@/views/GetNetworks.vue')
   }
 ]
 
