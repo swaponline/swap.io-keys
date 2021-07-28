@@ -1,3 +1,4 @@
+/* eslint-disable */
 import initNetworks from './init'
 import BaseAdaptor from './adaptors/BaseAdaptor'
 import { getStorage, setStorage } from '@/utils/storage'
@@ -20,14 +21,37 @@ class CryptoInterface {
     return profiles
   }
 
-  public async accessProfile(profileIndex: number, password: string): Promise<CryptoProfile|boolean> {
-    const profiles: Record<string, unknown> = getStorage('profiles') || {}
-    const profilesIndexes = Object.keys(profiles)
-    if (profilesIndexes[profileIndex]) {
-      const profileData = await decryptData(profiles[profilesIndexes[profileIndex]], password)
+  public async accessProfileByKey(profileKey: string, password: string): Promise<CryptoProfile|boolean> {
+    return new Promise(async (resolve) => {
+      const profiles: Record<string, unknown> = getStorage('profiles') || {}
+
+      if (profiles[profileKey]) {
+        const profileData = await this.accessProfile(profiles[profileKey], password)
+        console.log('>>>> profileData', profileData)
+      }
+      resolve(false)
+    })
+  }
+
+  public async accessProfile(profile: unknown, password: string): Promise<CryptoProfile|boolean> {
+    return new Promise(async (resolve) => {
+      const profileData = await decryptData(profile, password)
       console.log('>>>> profileData', profileData)
-    }
-    return new CryptoProfile()
+
+      resolve(new CryptoProfile())
+    })
+  }
+
+  public async accessProfileByIndex(profileIndex: number, password: string): Promise<CryptoProfile|boolean> {
+    return new Promise(async (resolve) => {
+      const profiles: Record<string, unknown> = getStorage('profiles') || {}
+      const profilesIndexes = Object.keys(profiles)
+      if (profilesIndexes[profileIndex]) {
+        const profileData = await this.accessProfile(profiles[profilesIndexes[profileIndex]], password)
+        console.log('>>>> profileData', profileData)
+      }
+      resolve(new CryptoProfile())
+    })
   }
 
   public async createProfileFromMnemonic(mnemonic: MnemonicPhrase, password: string): Promise<CryptoProfile> {

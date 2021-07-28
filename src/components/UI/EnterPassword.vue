@@ -1,7 +1,7 @@
 <template>
   <div class="form-enter-password">
     <form class="form-enter-password__content" @submit.prevent="submit">
-      <h3 class="form-enter-password__title">Enter password</h3>
+      <h3 class="form-enter-password__title">{{ headerTitle }}</h3>
       <swap-input v-model="password" type="password" class="form-enter-password__input" placeholder="Password" />
       <div class="form-enter-password__buttons">
         <swap-button class="form-enter-password__button" type="submit">
@@ -20,6 +20,7 @@ import Vue from 'vue'
 
 type Data = {
   password: string
+  headerTitle: string
   isCancel: boolean
 }
 
@@ -29,6 +30,7 @@ export default Vue.extend({
   data(): Data {
     return {
       password: '',
+      headerTitle: 'Enter password',
       isCancel: false
     }
   },

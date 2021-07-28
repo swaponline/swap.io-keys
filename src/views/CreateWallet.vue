@@ -14,6 +14,7 @@ import CryptoInterface from '@/crypto/interface'
 type Data = {
   password: string
   isCancel: boolean
+  walletData: unknown
 }
 
 export default Vue.extend({
@@ -25,6 +26,8 @@ export default Vue.extend({
           if (event.data.type === `CreateWallet`) {
             const walletData = event.data.walletData
             console.log('>>>>> CreateWallet action', walletData)
+            this.walletData = walletData
+
           }
         }
       }
@@ -39,14 +42,19 @@ export default Vue.extend({
   data(): Data {
     return {
       password: '',
-      isCancel: false
+      isCancel: false,
+      walletData: false
     }
   },
   methods: {
     createWallet(password): void {
       if (!this.isCancel) {
         this.password = password
-        console.log('>>>>> create wallet - password submited', this.password, this.isCancel)
+        console.log('>>>>> create wallet - password submited', this.password, this.isCancel, this.walletData)
+        const cInterface = new CryptoInterface()
+        cInterface.accessProfileByKey(this.walletData.profileId, this.password).then((profile) => {
+          console.log('Accesed profile', profile)
+        })
       } else {
         windowParentPostMessage({
           key: 'CreateWalletWindow',
