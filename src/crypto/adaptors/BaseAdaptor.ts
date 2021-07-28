@@ -1,5 +1,6 @@
-import BaseWallet from '../wallets/BaseWallet'
+/* eslint-disable */
 
+import BaseWallet from '../wallets/BaseWallet'
 
 interface IMessagePrifix {
   message: string
@@ -19,6 +20,8 @@ interface ICoin {
   name_plural: string
   denominator: number
 }
+
+type Seed = Buffer
 
 class BaseAdaptor {
   private name: string
@@ -76,7 +79,9 @@ class BaseAdaptor {
   public getWallets(): Array<BaseWallet> {
     return this.wallets
   }
-  public createWallet(index: number): BaseWallet|false { return false }
+
+  public createWallet(seed: Seed, index: number): BaseWallet|false { return false }
+
   public getWallet(index: number): BaseWallet|false { return false }
 }
 

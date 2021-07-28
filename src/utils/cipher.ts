@@ -1,3 +1,6 @@
+/* eslint-disable */
+
+
 import * as bitcoin from 'bitcoinjs-lib'
 
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
@@ -124,6 +127,14 @@ export async function encryptData(seed: Seed, publicKey: PublicKey, password: st
   }
 }
 
+export function toBuffer(ab) {
+  var buf = Buffer.alloc(ab.byteLength)
+  var view = new Uint8Array(ab)
+  for (var i = 0; i < buf.length; ++i) {
+      buf[i] = view[i]
+  }
+  return buf
+}
 /**
  * Расшифровывает seed строку с помощью пароля
  * @param {*} encryptedData ОбЪект, вовзращаемый из стораджа по части publicKey
@@ -154,7 +165,7 @@ export async function decryptData(encryptedData, password) {
       aesKey,
       data
     )
-    return new TextDecoder().decode(decryptedContent)
+    return decryptedContent
   } catch (e) {
     console.log(`Error - ${e}`)
     return ''

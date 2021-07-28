@@ -26,6 +26,21 @@
     "purpose": "44",
     "cointype": "0"
   },
+  "network": {
+    "type": "mainnet",
+    "settings": {
+      "port": 0,
+      "magic": 0,
+      "messagePrefix": "\u0018Bitcoin Signed Message:\n",
+      "base58prefix": {
+        "pubKeyHash": 0,
+        "scriptHash": 5,
+        "privateKeyWIF": 128,
+        "publicKeyBIP32": 76067358,
+        "privateKeyBIP32": 76066276
+      }
+    }
+  },
   "prefix": {
     "message": "\u0018Bitcoin Signed Message:\n",
     "p2pkh": "00",

@@ -1,3 +1,4 @@
+/* eslint-disable */
 
 interface ISendOptions {
   destination: string
@@ -6,14 +7,16 @@ interface ISendOptions {
 
 class BaseWallet {
   private walletIndex: number
-  private address: string = ``
-  private privateKey: string = ``
-  private publicKey: string = ``
+  protected address: string = ``
+  protected privateKey: string = ``
+  protected publicKey: string = ``
   private networkAdaptor
+  private seed
 
-  constructor(networkAdaptor, walletIndex: number) {
+  constructor(networkAdaptor, seed, walletIndex: number) {
     this.walletIndex = walletIndex
     this.networkAdaptor = networkAdaptor
+    this.seed = seed
 
 
     // generate address

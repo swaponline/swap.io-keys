@@ -2,7 +2,7 @@
 import initNetworks from './init'
 import BaseAdaptor from './adaptors/BaseAdaptor'
 import { getStorage, setStorage } from '@/utils/storage'
-import { encryptData, decryptData, getSeedFromMnemonic, getPublicKey } from '@/utils/cipher'
+import { encryptData, toBuffer, decryptData, getSeedFromMnemonic, getPublicKey } from '@/utils/cipher'
 import CryptoProfile from './profile'
 
 type Seed = Buffer
@@ -28,17 +28,19 @@ class CryptoInterface {
       if (profiles[profileKey]) {
         const profileData = await this.accessProfile(profiles[profileKey], password)
         console.log('>>>> profileData', profileData)
+        resolve(profileData)
+      } else {
+        resolve(false)
       }
-      resolve(false)
     })
   }
 
   public async accessProfile(profile: unknown, password: string): Promise<CryptoProfile|boolean> {
     return new Promise(async (resolve) => {
-      const profileData = await decryptData(profile, password)
-      console.log('>>>> profileData', profileData)
+      const profileSeed = await decryptData(profile, password)
+      console.log('>>>> profileSeed', profileSeed)
 
-      resolve(new CryptoProfile())
+      resolve(new CryptoProfile(toBuffer(profileSeed)))
     })
   }
 
@@ -49,8 +51,10 @@ class CryptoInterface {
       if (profilesIndexes[profileIndex]) {
         const profileData = await this.accessProfile(profiles[profilesIndexes[profileIndex]], password)
         console.log('>>>> profileData', profileData)
+        resolve(profileData)
+      } else {
+        resolve(false)
       }
-      resolve(new CryptoProfile())
     })
   }
 
@@ -68,7 +72,14 @@ class CryptoInterface {
     profiles[shortKey] = newProfile
 
     setStorage('profiles', profiles)
-    return new CryptoProfile()
+    return new CryptoProfile(seed)
+  }
+
+  public getNetworkById(networkId: string): BaseAdaptor|false {
+    const founded = this.adaptors.filter((adaptor: BaseAdaptor) => {
+      return networkId.toLowerCase() === adaptor.getSymbol().toLowerCase()
+    })
+    return (founded.length) ? founded[0] : false
   }
 
   public getNetworkAdaptors(): Array<BaseAdaptor> {

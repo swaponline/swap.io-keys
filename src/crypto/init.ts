@@ -1,3 +1,4 @@
+/* eslint-disable */
 import BaseAdaptor from './adaptors/BaseAdaptor'
 import EVMAdaptor from './adaptors/EVMAdaptor'
 import UTXOAdaptor from './adaptors/UTXOAdaptor'
@@ -57,7 +58,7 @@ function initNetworks(): Array<BaseAdaptor> {
   const adaptors: Array<BaseAdaptor> = []
 
   networks.forEach((networkConfig) => {
-    console.log('>>>> source config', networkConfig)
+
     const extendedConfig = extendAdaptorConfig({
       config: networkConfig,
       configsByName,
@@ -65,7 +66,7 @@ function initNetworks(): Array<BaseAdaptor> {
     })
     // @ts-ignore
     extendedConfig.parent = networkConfig.parent
-    console.log('>>>> extendedConfig', extendedConfig)
+
     switch(extendedConfig.type) {
       case `evm`:
         adaptors.push(new EVMAdaptor(extendedConfig))
@@ -76,6 +77,7 @@ function initNetworks(): Array<BaseAdaptor> {
     }
   })
 
+  console.log('>>> network adaptors', adaptors)
   initedAdaptors = adaptors
   return adaptors
 }

@@ -52,8 +52,21 @@ export default Vue.extend({
         this.password = password
         console.log('>>>>> create wallet - password submited', this.password, this.isCancel, this.walletData)
         const cInterface = new CryptoInterface()
+        const network = cInterface.getNetworkById(this.walletData.networkId)
+        console.log('>>>> network', network)
+        
         cInterface.accessProfileByKey(this.walletData.profileId, this.password).then((profile) => {
           console.log('Accesed profile', profile)
+          // @ts-ignore
+          const wallet = profile.createWallet(network, this.walletData.walletNumber)
+          console.log('>>> wallet', wallet)
+          windowParentPostMessage({
+            key: 'CreateWalletWindow',
+            message: {
+              type: 'WalletCreated',
+              wallet
+            }
+          })
         })
       } else {
         windowParentPostMessage({
