@@ -24,6 +24,11 @@ const routes: Array<RouteConfig> = [
     path: '/get-networks',
     name: 'GetNetworks',
     component: () => import(/* webpackChunkName: 'ChooseStyle' */ '@/views/GetNetworks.vue')
+  },
+  {
+    path: '/create-wallet',
+    name: 'CreateWallet',
+    component: () => import(/* webpackChunkName: 'ChooseStyle' */ '@/views/CreateWallet.vue')
   }
 ]
 
