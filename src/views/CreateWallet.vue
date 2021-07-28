@@ -55,7 +55,7 @@ export default Vue.extend({
         const network = cInterface.getNetworkById(this.walletData.networkId)
         console.log('>>>> network', network)
         
-        cInterface.accessProfileByKey(this.walletData.profileId, this.password).then((profile) => {
+        cInterface.accessProfileByKey(this.walletData.profileId, this.password).then(async (profile) => {
           console.log('Accesed profile', profile)
           // @ts-ignore
           const wallet = profile.createWallet(network, this.walletData.walletNumber)
@@ -64,7 +64,11 @@ export default Vue.extend({
             key: 'CreateWalletWindow',
             message: {
               type: 'WalletCreated',
-              wallet
+              wallet: {
+                ... this.walletData,
+                address: wallet.getAddress(),
+                publicKey: wallet.getPublicKey()
+              }
             }
           })
         })

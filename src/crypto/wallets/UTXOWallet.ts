@@ -32,9 +32,9 @@ class UTXOWallet extends BaseWallet {
     const publicKey = bitcore.PublicKey(privateKey, utxoNetwork.name)
     const address = new bitcore.Address(publicKey, utxoNetwork.name)
 
-    this.address = address
-    this.privateKey = privateKey
-    this.publicKey = publicKey
+    this.address = address.toString()
+    this.privateKey = child.toWIF()
+    this.publicKey = publicKey.toString()
   }
 /*
   public signMessage(message: string): string {

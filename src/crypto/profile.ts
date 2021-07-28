@@ -18,9 +18,9 @@ class CryptoProfile {
     return this.wallets
   }
 
-  public createWallet(networkAdaptor: BaseAdaptor, walletNumber: number): BaseWallet| void {
+  public createWallet(networkAdaptor: BaseAdaptor, walletNumber: number): BaseWallet| false {
     const wallet = networkAdaptor.createWallet(this.seed, walletNumber)
-    console.log(wallet)
+    return wallet
   }
 
 
