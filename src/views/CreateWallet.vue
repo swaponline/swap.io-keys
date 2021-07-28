@@ -1,5 +1,8 @@
 <template>
-  <div></div>
+  <div>
+    <div>CREATE WALLET POPUP FRAME</div>
+    <enter-password :is-cancel="isCancel" :password="password" @close="cancelCreateWallet" @submit="createWallet" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -7,6 +10,11 @@
 import Vue from 'vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import CryptoInterface from '@/crypto/interface'
+
+type Data = {
+  password: string
+  isCancel: boolean
+}
 
 export default Vue.extend({
   name: 'CreateWallet',
@@ -27,6 +35,30 @@ export default Vue.extend({
         type: 'iframeInited'
       }
     })
+  },
+  data(): Data {
+    return {
+      password: '',
+      isCancel: false
+    }
+  },
+  methods: {
+    createWallet(password): void {
+      if (!this.isCancel) {
+        this.password = password
+        console.log('>>>>> create wallet - password submited', this.password, this.isCancel)
+      } else {
+        windowParentPostMessage({
+          key: 'CreateWalletWindow',
+          message: {
+            type: 'CancelCreateWallet'
+          }
+        })
+      }
+    },
+    cancelCreateWallet(): void {
+      this.isCancel = true
+    }
   }
 })
 </script>
