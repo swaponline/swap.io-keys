@@ -43,7 +43,8 @@ import { getUserTheme } from '@/utils/userTheme'
 import { UserTheme } from '@/types/userTheme'
 import { ColorScheme } from '@/types/generators'
 import { CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
-import { IFRAME_INITED, THEME_SELECTED } from '@/constants/createProfile'
+import { IFRAME_INITED, THEME_SELECTED, CANCELED } from '@/constants/createProfile'
+import { ESCAPE } from '@/constants/keyCodes'
 
 type IndexOfSelectedTheme = number
 type Data = {
@@ -87,6 +88,8 @@ export default Vue.extend({
     }
   },
   async mounted(): Promise<void> {
+    document.addEventListener('keydown', this.closeByPressingESC)
+
     await this.getCards()
 
     windowParentPostMessage({
@@ -96,7 +99,20 @@ export default Vue.extend({
       }
     })
   },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.closeByPressingESC)
+  },
   methods: {
+    closeByPressingESC({ key }) {
+      if (key === ESCAPE) {
+        windowParentPostMessage({
+          key: CREATE_PROFILE_WINDOW,
+          message: {
+            type: CANCELED
+          }
+        })
+      }
+    },
     isSelectedColorScheme(colorScheme: ColorScheme) {
       return this.selectedColorScheme === colorScheme
     },
