@@ -8,7 +8,7 @@ class EVMWallet extends BaseWallet {
 
     const hdwallet = hdkey.fromMasterSeed(seed)
     const derivePath = `m/${networkAdaptor.bip44.purpose}'/${networkAdaptor.bip44.cointype}'/0'/0/${walletIndex}`
-    console.log('>>>> derivePath', derivePath)
+
     const wallet = hdwallet.derivePath(derivePath).getWallet()
 
     this.address = `0x${wallet.getAddress().toString('hex')}`

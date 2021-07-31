@@ -27,7 +27,6 @@ class CryptoInterface {
 
       if (profiles[profileKey]) {
         const profileData = await this.accessProfile(profiles[profileKey], password)
-        console.log('>>>> profileData', profileData)
         resolve(profileData)
       } else {
         resolve(false)
@@ -38,8 +37,6 @@ class CryptoInterface {
   public async accessProfile(profile: unknown, password: string): Promise<CryptoProfile|boolean> {
     return new Promise(async (resolve) => {
       const profileSeed = await decryptData(profile, password)
-      console.log('>>>> profileSeed', profileSeed)
-
       resolve(new CryptoProfile(toBuffer(profileSeed)))
     })
   }
@@ -50,7 +47,6 @@ class CryptoInterface {
       const profilesIndexes = Object.keys(profiles)
       if (profilesIndexes[profileIndex]) {
         const profileData = await this.accessProfile(profiles[profilesIndexes[profileIndex]], password)
-        console.log('>>>> profileData', profileData)
         resolve(profileData)
       } else {
         resolve(false)
@@ -71,7 +67,6 @@ class CryptoInterface {
 
     profiles[shortKey] = newProfile
 
-    setStorage('profiles', profiles)
     return new CryptoProfile(seed)
   }
 

@@ -77,7 +77,6 @@ function initNetworks(): Array<BaseAdaptor> {
     }
   })
 
-  console.log('>>> network adaptors', adaptors)
   initedAdaptors = adaptors
   return adaptors
 }
