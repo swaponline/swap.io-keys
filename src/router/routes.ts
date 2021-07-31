@@ -18,17 +18,22 @@ const routes: Array<RouteConfig> = [
   {
     path: '/get-profiles',
     name: 'GetProfiles',
-    component: () => import(/* webpackChunkName: 'ChooseStyle' */ '@/views/GetProfiles.vue')
+    component: () => import(/* webpackChunkName: 'GetProfiles' */ '@/views/GetProfiles.vue')
   },
   {
     path: '/get-networks',
     name: 'GetNetworks',
-    component: () => import(/* webpackChunkName: 'ChooseStyle' */ '@/views/GetNetworks.vue')
+    component: () => import(/* webpackChunkName: 'GetNetworks' */ '@/views/GetNetworks.vue')
   },
   {
     path: '/create-wallet',
     name: 'CreateWallet',
-    component: () => import(/* webpackChunkName: 'ChooseStyle' */ '@/views/CreateWallet.vue')
+    component: () => import(/* webpackChunkName: 'CreateWallet' */ '@/views/CreateWallet.vue')
+  },
+  {
+    path: '/create-wallets',
+    name: 'CreateWallets',
+    component: () => import(/* webpackChunkName: 'CreateWallets' */ '@/views/CreateWallets.vue')
   }
 ]
 
