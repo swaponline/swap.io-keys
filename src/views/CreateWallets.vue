@@ -14,6 +14,7 @@ import CryptoInterface from '@/crypto/interface'
 type Data = {
   password: string
   isCancel: boolean
+  profileId: string
   walletsData: Array<unknown>
 }
 
@@ -24,8 +25,10 @@ export default Vue.extend({
       if (event.data && event.data.key && event.data.key === `CreateWalletsWindow`) {
         if (event.data && event.data.type) {
           if (event.data.type === `CreateWallets`) {
-            const walletsData = event.data.walletsData
-            console.log('>>>>> CreateWallets action', walletsData)
+            const walletsData = event.data.walletsData.wallets
+            const profileId = event.data.walletsData.profileId
+            console.log('>>>>> CreateWallets action', profileId, walletsData)
+            this.profileId = profileId
             this.walletsData = walletsData
 
           }
@@ -43,6 +46,7 @@ export default Vue.extend({
     return {
       password: '',
       isCancel: false,
+      profileId: '',
       walletsData: []
     }
   },
@@ -52,28 +56,32 @@ export default Vue.extend({
         this.password = password
         console.log('>>>>> create wallet - password submited', this.password, this.isCancel, this.walletData)
         const cInterface = new CryptoInterface()
-        const network = cInterface.getNetworkById(this.walletData.networkId)
-        console.log('>>>> network', network)
-        
-        cInterface.accessProfileByKey(this.walletData.profileId, this.password).then(async (profile) => {
 
+        
+        cInterface.accessProfileByKey(this.profileId, this.password).then(async (profile) => {
+          const wallets: Array<unknown> = []
           console.log('Accesed profile', profile)
-          // @ts-ignore
-          /*
-          const wallet = profile.createWallet(network, this.walletData.walletNumber)
-          console.log('>>> wallet', wallet)
+          this.walletsData.forEach((walletData, walletIndex) => {
+            // @ts-ignore
+            const network = cInterface.getNetworkById(walletData.networkId)
+            console.log('>>>> network', network)
+            // @ts-ignore
+            const wallet = profile.createWallet(network, walletData.walletNumber)
+            wallets.push({
+              ...walletData,
+              profileId: this.profileId,
+              address: wallet.getAddress(),
+              publicKey: wallet.getPublicKey()
+            })
+          })
+          console.log('wallets', wallets)
           windowParentPostMessage({
             key: 'CreateWalletsWindow',
             message: {
               type: 'WalletsCreated',
-              wallet: {
-                ... this.walletData,
-                address: wallet.getAddress(),
-                publicKey: wallet.getPublicKey()
-              }
+              wallets
             }
           })
-          */
         })
       } else {
         windowParentPostMessage({
