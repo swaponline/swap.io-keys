@@ -21,14 +21,9 @@ class UTXOWallet extends BaseWallet {
       pubKeyHash: utxoNetwork.settings.base58prefix.pubKeyHash,
       scriptHash: utxoNetwork.settings.base58prefix.scriptHash
     })
-    /*
-    const derivePath = bip44.createDerivePath({
-      coinIndex: networkAdaptor.bip44.purpose,
-      addressIndex: walletIndex
-    })
-    */
+
     const derivePath = `m/${networkAdaptor.bip44.purpose}'/${networkAdaptor.bip44.cointype}'/0'/0/${walletIndex}`
-    console.log('>>> derivePath', derivePath)
+
     const child = root.derivePath(derivePath)
 
     // eslint-disable-next-line new-cap

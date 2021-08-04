@@ -1,25 +1,31 @@
 {
   "type": "utxo",
-  "symbol": "bitcoin",
-  "name": "Bitcoin network",
+  "slug": "bitcoin",
+  "name": "Bitcoin",
   "fee_max": 1000000,
   "fee_min": 1024,
   "dust_amount": 1000,
+  "isTestnet": true,
   "priority": 1,
   "coin": {
     "symbol": "BTC",
     "slug": "bitcoin",
-    "name": "bitcoin",
-    "name_plural": "bitcoins",
+    "name": "Bitcoin",
+    "name_plural": "Bitcoins",
     "denominator": 1e-8
   },
+  "explorers": [
+    "https://www.blockchain.com/btc/",
+    "https://live.blockcypher.com/",
+    "https://blockchair.com/bitcoin/"
+  ],
   "rpc": [
     {
       "protocol": "http",
       "user": "user",
       "pass": "pass",
       "host": "127.0.0.1",
-      "port": "18332"
+      "port": "8333"
     }
   ],
   "bip44": {
@@ -29,8 +35,8 @@
   "network": {
     "type": "mainnet",
     "settings": {
-      "port": 0,
-      "magic": 0,
+      "port": 8333,
+      "magic": 4190024921,
       "messagePrefix": "\u0018Bitcoin Signed Message:\n",
       "base58prefix": {
         "pubKeyHash": 0,
