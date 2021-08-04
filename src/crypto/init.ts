@@ -43,16 +43,17 @@ function initNetworks(): Array<BaseAdaptor> {
   const configsByName = {}
   const configsByPriority = {}
 
+console.log('>>>> networks', networks)
   networks.forEach((networkConfig: any) => {
-    if (configsByName[networkConfig.symbol]) {
-      throw new Error(`Fail init network configs. Network with symbol ${networkConfig.symbol} already exists`)
+    if (configsByName[networkConfig.slug]) {
+      throw new Error(`Fail init network configs. Network with slug ${networkConfig.slug} already exists`)
     }
     if (configsByPriority[networkConfig.priority]) {
-      console.warn(`Network with priority ${networkConfig.priority} already exists. Exists network ${configsByPriority[networkConfig.priority].symbol}. Overwrite network ${networkConfig.symbol}`)
+      console.warn(`Network with priority ${networkConfig.priority} already exists. Exists network ${configsByPriority[networkConfig.priority].slug}. Overwrite network ${networkConfig.slug}`)
     } else {
       configsByPriority[networkConfig.priority] = networkConfig
     }
-    configsByName[networkConfig.symbol] = networkConfig
+    configsByName[networkConfig.slug] = networkConfig
   })
 
   const adaptors: Array<BaseAdaptor> = []

@@ -39,7 +39,7 @@ class BaseAdaptor {
       name,
       priority,
       prefix,
-      symbol,
+      slug: symbol,
       coin,
       bip44,
     } = networkConfig
