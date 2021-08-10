@@ -70,6 +70,64 @@ class CryptoInterface {
     return new CryptoProfile(seed)
   }
 
+  private async extendAdaptorConfig(options) {
+    const {
+      config,
+      configsByName,
+      cycleExtendDetector
+    } = options
+
+    if (config.parent) {
+      if (cycleExtendDetector[config.parent]) {
+        throw new Error(`Cycle extend config detected`)
+      } else {
+        if (!configsByName[config.parent]) {
+          configsByName[config.parent] = await this._fetchNetworkConfig(config.parent)
+        }
+        const parentConfig = configsByName[config.parent]
+        const extendedConfig = {
+          ...parentConfig,
+          ...config,
+          parent: parentConfig.parent,
+        }
+        if (parentConfig.parent) {
+          cycleExtendDetector[config.parent] = true
+          return this.extendAdaptorConfig({
+            config: extendedConfig,
+            configsByName,
+            cycleExtendDetector
+          })
+        } else {
+          return extendedConfig
+        }
+      }
+    } else {
+      return config
+    } 
+  }
+
+  public getNetworkConfig(networkId: string): Promise<unknown> {
+    return new Promise(async (resolve, reject) => {
+      const networkConfig = await this._fetchNetworkConfig(networkId)
+      const extendedConfig = this.extendAdaptorConfig({
+        config: networkConfig,
+        configsByName: {},
+        cycleExtendDetector: {},
+      })
+      // @ts-ignore
+      extendedConfig.parent = networkConfig.parent
+      resolve(extendedConfig)
+    })
+  }
+
+  public _fetchNetworkConfig(networkId: string): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      fetch(`/swap.io-networks/networks/${networkId}/info.json`)
+        .then(response => response.json())
+        .then(data => resolve(data))
+    })
+  }
+
   public getNetworkById(networkId: string): BaseAdaptor|false {
     const founded = this.adaptors.filter((adaptor: BaseAdaptor) => {
       return networkId.toLowerCase() === adaptor.getSymbol().toLowerCase()
