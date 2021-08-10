@@ -61,9 +61,8 @@ export default Vue.extend({
         cInterface.accessProfileByKey(this.profileId, this.password).then(async (profile) => {
           const wallets: Array<unknown> = []
           console.log('Accesed profile', profile)
-          this.walletsData.forEach((walletData, walletIndex) => {
-            // @ts-ignore
-            const network = cInterface.getNetworkById(walletData.networkId)
+          this.walletsData.forEach(async (walletData, walletIndex) => {
+            const network = await cInterface.getNetworkAdaptor(walletData.networkId)
             console.log('>>>> network', network)
             // @ts-ignore
             const wallet = profile.createWallet(network, walletData.walletNumber)

@@ -12,6 +12,8 @@ export default Vue.extend({
   name: 'GetNetworks',
   mounted(): void {
     const cryptoInterface = new CryptoInterface()
+    // @ToDo - remove
+    /*
     const adaptors = cryptoInterface.getNetworkAdaptors()
     const networks = adaptors.map(adaptor => {
       return {
@@ -28,6 +30,7 @@ export default Vue.extend({
         networks
       }
     })
+    */
   }
 })
 </script>

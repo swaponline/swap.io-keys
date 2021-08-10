@@ -1,6 +1,7 @@
 /* eslint-disable */
-import initNetworks from './init'
 import BaseAdaptor from './adaptors/BaseAdaptor'
+import EVMAdaptor from './adaptors/EVMAdaptor'
+import UTXOAdaptor from './adaptors/UTXOAdaptor'
 import { getStorage, setStorage } from '@/utils/storage'
 import { encryptData, toBuffer, decryptData, getSeedFromMnemonic, getPublicKey } from '@/utils/cipher'
 import CryptoProfile from './profile'
@@ -10,11 +11,7 @@ type PublicKey = Buffer
 type MnemonicPhrase = string[]
 
 class CryptoInterface {
-  private adaptors: Array<BaseAdaptor>
-
-  constructor() {
-    this.adaptors = initNetworks()
-  }
+  constructor() {}
 
   public getProfiles(): Record<string, unknown> {
     const profiles: Record<string, unknown> = getStorage('profiles') || {}
@@ -106,7 +103,7 @@ class CryptoInterface {
     } 
   }
 
-  public getNetworkConfig(networkId: string): Promise<unknown> {
+  public getNetworkConfig(networkId: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
       const networkConfig = await this._fetchNetworkConfig(networkId)
       const extendedConfig = this.extendAdaptorConfig({
@@ -120,7 +117,27 @@ class CryptoInterface {
     })
   }
 
-  public _fetchNetworkConfig(networkId: string): Promise<unknown> {
+  public getNetworkAdaptor(networkId: string): Promise<BaseAdaptor|boolean> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const config = await this.getNetworkConfig(networkId)
+        switch(config.type) {
+          case `evm`:
+            resolve(new EVMAdaptor(config))
+            break
+          case `utxo`:
+            resolve(new UTXOAdaptor(config))
+            break
+          default:
+            resolve(false)
+        }
+      } catch (e) {
+        reject(e.message)
+      }
+    })
+  }
+
+  private _fetchNetworkConfig(networkId: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       fetch(`/swap.io-networks/networks/${networkId}/info.json`)
         .then(response => response.json())
@@ -128,7 +145,9 @@ class CryptoInterface {
     })
   }
 
-  public getNetworkById(networkId: string): BaseAdaptor|false {
+/*
+  public getNetworkById(networkId: string): BaseAdaptor|boolean {
+    
     const founded = this.adaptors.filter((adaptor: BaseAdaptor) => {
       return networkId.toLowerCase() === adaptor.getSymbol().toLowerCase()
     })
@@ -138,7 +157,7 @@ class CryptoInterface {
   public getNetworkAdaptors(): Array<BaseAdaptor> {
     return this.adaptors
   }
-
+*/
   public getNetworkByCoin(coinslug: string): Array<BaseAdaptor> {
     return []
   }

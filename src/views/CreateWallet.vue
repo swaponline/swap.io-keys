@@ -48,38 +48,41 @@ export default Vue.extend({
   },
   methods: {
     createWallet(password): void {
-      if (!this.isCancel) {
-        this.password = password
-        console.log('>>>>> create wallet - password submited', this.password, this.isCancel, this.walletData)
-        const cInterface = new CryptoInterface()
-        const network = cInterface.getNetworkById(this.walletData.networkId)
-        console.log('>>>> network', network)
-        
-        cInterface.accessProfileByKey(this.walletData.profileId, this.password).then(async (profile) => {
-          console.log('Accesed profile', profile)
-          // @ts-ignore
-          const wallet = profile.createWallet(network, this.walletData.walletNumber)
-          console.log('>>> wallet', wallet)
+      new Promise(async (resolve) => {
+        if (!this.isCancel) {
+          this.password = password
+          console.log('>>>>> create wallet - password submited', this.password, this.isCancel, this.walletData)
+          const cInterface = new CryptoInterface()
+          const network = await cInterface.getNetworkAdaptor(this.walletData.networkId)
+          console.log('>>>> network', network)
+          
+          cInterface.accessProfileByKey(this.walletData.profileId, this.password).then(async (profile) => {
+            console.log('Accesed profile', profile)
+            // @ts-ignore
+            const wallet = profile.createWallet(network, this.walletData.walletNumber)
+            console.log('>>> wallet', wallet)
+            windowParentPostMessage({
+              key: 'CreateWalletWindow',
+              message: {
+                type: 'WalletCreated',
+                wallet: {
+                  ... this.walletData,
+                  address: wallet.getAddress(),
+                  publicKey: wallet.getPublicKey()
+                }
+              }
+            })
+          })
+        } else {
           windowParentPostMessage({
             key: 'CreateWalletWindow',
             message: {
-              type: 'WalletCreated',
-              wallet: {
-                ... this.walletData,
-                address: wallet.getAddress(),
-                publicKey: wallet.getPublicKey()
-              }
+              type: 'CancelCreateWallet'
             }
           })
-        })
-      } else {
-        windowParentPostMessage({
-          key: 'CreateWalletWindow',
-          message: {
-            type: 'CancelCreateWallet'
-          }
-        })
-      }
+        }
+        resolve(true)
+      })
     },
     cancelCreateWallet(): void {
       this.isCancel = true
