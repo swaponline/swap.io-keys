@@ -11,6 +11,8 @@ type PublicKey = Buffer
 type MnemonicPhrase = string[]
 
 class CryptoInterface {
+  private chacedNetworks: Record<string, BaseAdaptor> = {}
+
   constructor() {}
 
   public getProfiles(): Record<string, unknown> {
@@ -121,15 +123,18 @@ class CryptoInterface {
     return new Promise(async (resolve, reject) => {
       try {
         const config = await this.getNetworkConfig(networkId)
+        let adaptor: BaseAdaptor|boolean = false
         switch(config.type) {
           case `evm`:
-            resolve(new EVMAdaptor(config))
+            adaptor = new EVMAdaptor(config)
             break
           case `utxo`:
-            resolve(new UTXOAdaptor(config))
+            adaptor = new UTXOAdaptor(config)
             break
-          default:
-            resolve(false)
+        }
+        if (adaptor) {
+          this.chacedNetworks[networkId] = adaptor
+          resolve(adaptor)
         }
       } catch (e) {
         reject(e.message)
@@ -145,19 +150,6 @@ class CryptoInterface {
     })
   }
 
-/*
-  public getNetworkById(networkId: string): BaseAdaptor|boolean {
-    
-    const founded = this.adaptors.filter((adaptor: BaseAdaptor) => {
-      return networkId.toLowerCase() === adaptor.getSymbol().toLowerCase()
-    })
-    return (founded.length) ? founded[0] : false
-  }
-
-  public getNetworkAdaptors(): Array<BaseAdaptor> {
-    return this.adaptors
-  }
-*/
   public getNetworkByCoin(coinslug: string): Array<BaseAdaptor> {
     return []
   }
