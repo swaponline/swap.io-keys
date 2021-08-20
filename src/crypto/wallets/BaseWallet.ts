@@ -10,6 +10,7 @@ class BaseWallet {
   protected address: string = ``
   protected privateKey: string = ``
   protected publicKey: string = ``
+  protected template: string = ``
   private networkAdaptor
   private seed
 
