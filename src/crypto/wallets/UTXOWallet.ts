@@ -33,7 +33,7 @@ console.log('>>>>>> ', utxoNetwork)
 
     console.log('>>>> seed settings', seedSettings)
     const root = bip32.fromSeed(seed, seedSettings)
-
+console.log(root)
 
     const networks = bitcore.Networks
     const ourNetwork = {
@@ -61,8 +61,15 @@ console.log('>', bitcoreNetwork)
 console.log('>>> derivePath', derivePath)
     const child = root.derivePath(derivePath)
 
-    if (templatesAddress[`${networkAdaptor.getSymbol}/default`] !== undefined) {
-      templatesAddress[`${networkAdaptor.getSymbol}/default`](child, options)
+console.log('>>>>', templatesAddress)
+    if (templatesAddress[`${networkAdaptor.getSymbol()}/default`] !== undefined) {
+      const walletData = templatesAddress[`${networkAdaptor.getSymbol()}/default`](child, {
+        ...options,
+        network: bitcoreNetwork
+      })
+      this.address = walletData.address
+      this.privateKey = walletData.privateKey
+      this.publicKey = walletData.publicKey
     } else {
       // eslint-disable-next-line new-cap
 
