@@ -12,6 +12,8 @@ class CryptoProfile {
 
   constructor(seed: Seed) {
     this.seed = seed
+    console.log('>>>> profile seed', seed)
+    console.log(Buffer.from(seed).toString('hex'))
   }
 
   public getWallets(): Array<BaseWallet> {

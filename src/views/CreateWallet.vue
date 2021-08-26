@@ -58,6 +58,7 @@ export default Vue.extend({
           
           cInterface.accessProfileByKey(this.walletData.profileId, this.password).then(async (profile) => {
             console.log('Accesed profile', profile)
+
             // @ts-ignore
             const wallet = profile.createWallet(network, this.walletData.walletNumber)
             console.log('>>> wallet', wallet)

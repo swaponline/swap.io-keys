@@ -19,6 +19,7 @@
     "canvg": "^3.0.7",
     "core-js": "^3.6.5",
     "ethereumjs-wallet": "^1.0.1",
+    "handshake-util": "^1.2.0",
     "js-base64": "^3.6.0",
     "normalize.css": "^8.0.1",
     "ua-parser-js": "^0.7.28",
