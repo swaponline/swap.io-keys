@@ -11,6 +11,8 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
+    "@polkadot/keyring": "^7.2.1",
+    "@polkadot/util-crypto": "^7.2.1",
     "axios": "^0.21.0",
     "bip32": "^2.0.6",
     "bip39": "^3.0.3",
