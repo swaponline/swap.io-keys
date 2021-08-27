@@ -2,6 +2,8 @@
 import BaseAdaptor from './adaptors/BaseAdaptor'
 import EVMAdaptor from './adaptors/EVMAdaptor'
 import UTXOAdaptor from './adaptors/UTXOAdaptor'
+import SUBSTRADEAdaptor from './adaptors/SUBSTRADEAdaptor'
+
 import { getStorage, setStorage } from '@/utils/storage'
 import { encryptData, toBuffer, decryptData, getSeedFromMnemonic, getPublicKey } from '@/utils/cipher'
 import CryptoProfile from './profile'
@@ -131,6 +133,9 @@ class CryptoInterface {
             break
           case `utxo`:
             adaptor = new UTXOAdaptor(config)
+            break
+          case `substrate`:
+            adaptor = new SUBSTRADEAdaptor(config)
             break
         }
         if (adaptor) {
