@@ -14,12 +14,6 @@ class UTXOWallet extends BaseWallet {
 
     const utxoNetwork = networkAdaptor.getUTXOConfig()
 
-    let addressGenerator = false
-    if (utxoNetwork.settings.generator) {
-      console.log('Has own generator')
-    }
-console.log('>>>>>> ', utxoNetwork)
-
     const seedSettings = {
       wif: utxoNetwork.settings.base58prefix.privateKeyWIF,
       bip32: {
@@ -31,10 +25,7 @@ console.log('>>>>>> ', utxoNetwork)
       scriptHash: utxoNetwork.settings.base58prefix.scriptHash
     }
 
-    console.log('>>>> seed settings', seedSettings)
     const root = bip32.fromSeed(seed, seedSettings)
-console.log(root)
-
     const networks = bitcore.Networks
     const ourNetwork = {
       name: `${networkAdaptor.getSymbol()}-network`,
@@ -51,7 +42,7 @@ console.log(root)
     networks.add(ourNetwork)
 
     const bitcoreNetwork = networks.get(`${networkAdaptor.getSymbol()}-network`, 'name')
-console.log('>', bitcoreNetwork)
+
     const bitcoinNetwork = networks.get('livenet', 'name')
     // need remove because of bitcore.PrivateKey() use 'privatekey' key to get network
     // for validation and bitcoin.livenet.privatekey === nextNetwork.privatekey
@@ -61,11 +52,15 @@ console.log('>', bitcoreNetwork)
 console.log('>>> derivePath', derivePath)
     const child = root.derivePath(derivePath)
 
-console.log('>>>>', templatesAddress)
     if (templatesAddress[`${networkAdaptor.getSymbol()}/default`] !== undefined) {
-      const walletData = templatesAddress[`${networkAdaptor.getSymbol()}/default`](child, {
+      const walletData = templatesAddress[`${networkAdaptor.getSymbol()}/default`]({
         ...options,
-        network: bitcoreNetwork
+        network: bitcoreNetwork,
+        derivePath,
+        seed,
+        child,
+        networkAdaptor,
+        walletIndex
       })
       this.address = walletData.address
       this.privateKey = walletData.privateKey

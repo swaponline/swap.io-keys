@@ -125,6 +125,7 @@ class CryptoInterface {
         const config = await this.getNetworkConfig(networkId)
         let adaptor: BaseAdaptor|boolean = false
         switch(config.type) {
+          case `ab`:
           case `evm`:
             adaptor = new EVMAdaptor(config)
             break
