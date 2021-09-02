@@ -5,7 +5,6 @@ import VTooltip from 'v-tooltip'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import messageHandler from './messageHandler'
 import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
 import '@/assets/scss/base.scss'
@@ -21,7 +20,6 @@ function checkingIframeAndDomain(location: string): boolean {
   return window.top !== window.self && location === process.env.VUE_APP_HOME_URL
 }
 
-messageHandler()
 windowParentPostMessage({ key: 'createWindow' })
 
 if (browserName === FIREFOX) {
