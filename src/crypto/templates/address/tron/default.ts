@@ -1,21 +1,20 @@
 /* eslint-disable */
-import bitcoin from 'bitcoinjs-lib'
-import ethUtil from 'ethereumjs-util'
-import bitcore from 'bitcore-lib'
+import * as bip32 from 'bip32'
+import * as TronWeb from 'tronweb'
 
-const generateAddress = (options) => {
-  const { child } = options
-  const privateKey = new bitcore.PrivateKey.fromWIF(child.toWIF(), options.network)
-  const publicKey = bitcore.PublicKey(privateKey, options.network)
 
-  const pubkeyBuffer = publicKey.toBuffer()
-  const ethPubkey = ethUtil.importPublic(pubkeyBuffer)
-  const addressBuffer = ethUtil.publicToAddress(ethPubkey)
-  const address = bitcoin.address.toBase58Check(addressBuffer, 0x41)
+const  generateAddress = (options) => {
+  const { seed, derivePath } = options
+  const node = bip32.fromSeed(seed)
+  const child = node.derivePath(derivePath)
+  // @ts-ignore
+  const privateKey = child.privateKey.toString('hex')
+  const publicKey = child.publicKey.toString('hex')
+  const address = TronWeb.address.fromPrivateKey(privateKey)
 
   return {
-    privateKey: privateKey.toWIF(),
-    publicKey: pubkeyBuffer.toString(),
+    privateKey,
+    publicKey,
     address,
   }
 }
