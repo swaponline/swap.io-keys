@@ -45,6 +45,9 @@ import { ColorScheme } from '@/types/generators'
 import { CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
 import { IFRAME_INITED, THEME_SELECTED, CANCELED } from '@/constants/createProfile'
 import { ESCAPE } from '@/constants/keyCodes'
+import { getStorage } from '@/utils/storage'
+import { THEME_KEY, DARK_THEME_KEY } from '@/constants/theme'
+import { setCSSCustomProperty } from '@/utils/common'
 
 type IndexOfSelectedTheme = number
 type Data = {
@@ -70,6 +73,7 @@ export default Vue.extend({
         colorScheme: {
           background: '',
           color: '',
+          colorForDarkTheme: '',
           selectionColor: ''
         },
         wordList: [],
@@ -113,14 +117,25 @@ export default Vue.extend({
         })
       }
     },
+
     isSelectedColorScheme(colorScheme: ColorScheme) {
       return this.selectedColorScheme === colorScheme
     },
+
+    setCustomColorCSSVariables() {
+      if (getStorage(THEME_KEY) === DARK_THEME_KEY) {
+        setCSSCustomProperty('--main-color', this.selectedColorScheme.colorForDarkTheme)
+      } else {
+        setCSSCustomProperty('--main-color', this.selectedColorScheme.color)
+      }
+
+      setCSSCustomProperty('--selection-color', this.selectedColorScheme.selectionColor)
+    },
+
     select(selectedIndex: IndexOfSelectedTheme): void {
       this.selectedTheme = this.userThemes.find((_: UserTheme, index: number) => index === selectedIndex)
 
-      document.documentElement.style.setProperty('--main-color', this.selectedColorScheme.color)
-      document.documentElement.style.setProperty('--selection-color', this.selectedColorScheme.selectionColor)
+      this.setCustomColorCSSVariables()
 
       windowParentPostMessage({
         key: CREATE_PROFILE_WINDOW,

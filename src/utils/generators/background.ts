@@ -201,6 +201,7 @@ export class UserColorScheme {
     return {
       background: this.generateBackground(),
       color: this.generateColorBasedDominantWidth(),
+      colorForDarkTheme: this.dominantColor,
       selectionColor: hexToRGBA(this.dominantColor, 24)
     }
   }
