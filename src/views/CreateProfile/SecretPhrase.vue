@@ -86,7 +86,7 @@ export default Vue.extend({
 
       const { seed, publicKey, wordList } = this.localTheme
 
-      const newProfile = await encryptData(seed, publicKey, wordList, password)
+      const newProfile = await encryptData(seed, publicKey, wordList.join(' '), password)
       const profiles: Record<string, unknown> = getStorage('profiles') || {}
       const shortKey = this.shortPublicKey
 

@@ -91,6 +91,10 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
  * @returns Объект с зашифрованной
  */
 export async function encryptData(seed: Seed, publicKey: PublicKey, wordList: string, password: string, userParams = {}) {
+  console.log('>>>> encryptData', wordList, seed)
+  const mnemonic = wordList
+  const enData = toBuffer(seed).toString('hex') + '|' + mnemonic
+  console.log('>>> enData', enData)
   const params = { ...DEFAULT_CIPHER_PARAMS, ...userParams }
 
   const salt = window.crypto.getRandomValues(new Uint8Array(16))
@@ -104,8 +108,8 @@ export async function encryptData(seed: Seed, publicKey: PublicKey, wordList: st
       iv
     },
     aesKey,
-    // new TextEncoder().encode(seed)
-    seed
+    // seed + mnemonic
+    new TextEncoder().encode(enData)
   )
 
   const encryptedContentArr = new Uint8Array(encryptedContent)
@@ -167,6 +171,7 @@ export async function decryptData(encryptedData, password) {
       aesKey,
       data
     )
+    console.log('>>>>> decryptData', decryptedContent)
     return decryptedContent
   } catch (e) {
     console.log(`Error - ${e}`)
