@@ -84,9 +84,9 @@ export default Vue.extend({
     async createProfile(password: string): Promise<void> {
       this.toggleFormPassword(false)
 
-      const { seed, publicKey } = this.localTheme
+      const { seed, publicKey, wordList } = this.localTheme
 
-      const newProfile = await encryptData(seed, publicKey, password)
+      const newProfile = await encryptData(seed, publicKey, wordList, password)
       const profiles: Record<string, unknown> = getStorage('profiles') || {}
       const shortKey = this.shortPublicKey
 

@@ -1,6 +1,8 @@
 /* eslint-disable */
 import * as edHd from 'ed25519-hd-key'
 import Keyring from '@polkadot/keyring'
+import * as bip39 from 'bip39'
+
 
 const generateAddress = (options) => {
   const {
@@ -8,6 +10,10 @@ const generateAddress = (options) => {
     walletIndex,
     seed,
   } = options
+
+  console.log('>>>> seed')
+  console.log(seed)
+  const mnemonic = bip39.entropyToMnemonic(Buffer.from(seed).toString('hex'))
 
   const derivePath = `m/${networkAdaptor.bip44.purpose}'/${networkAdaptor.bip44.cointype}'/${walletIndex}'`
   const data = edHd.derivePath(derivePath, seed)

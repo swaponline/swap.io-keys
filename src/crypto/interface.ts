@@ -58,11 +58,11 @@ class CryptoInterface {
   public async createProfileFromMnemonic(mnemonic: MnemonicPhrase, password: string): Promise<CryptoProfile> {
     const seed: Seed = await getSeedFromMnemonic(mnemonic)
     const publicKey: PublicKey = getPublicKey(seed)
-    return await this.createProfile(seed, publicKey, password)
+    return await this.createProfile(seed, publicKey, mnemonic, password)
   }
 
-  public async createProfile(seed: Seed, publicKey: PublicKey, password: string): Promise<CryptoProfile> {
-    const newProfile = await encryptData(seed, publicKey, password)
+  public async createProfile(seed: Seed, publicKey: PublicKey, mnemonic: MnemonicPhrase, password: string): Promise<CryptoProfile> {
+    const newProfile = await encryptData(seed, publicKey, mnemonic.join(` `), password)
     const profiles: Record<string, unknown> = getStorage('profiles') || {}
     const shortKey = publicKey.toString('hex').slice(0, 10)
 

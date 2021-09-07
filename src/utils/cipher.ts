@@ -90,7 +90,7 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
  * @param {} params параметры для шифрования, можно менять частично
  * @returns Объект с зашифрованной
  */
-export async function encryptData(seed: Seed, publicKey: PublicKey, password: string, userParams = {}) {
+export async function encryptData(seed: Seed, publicKey: PublicKey, wordList: string, password: string, userParams = {}) {
   const params = { ...DEFAULT_CIPHER_PARAMS, ...userParams }
 
   const salt = window.crypto.getRandomValues(new Uint8Array(16))
