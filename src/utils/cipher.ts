@@ -91,10 +91,8 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
  * @returns Объект с зашифрованной
  */
 export async function encryptData(seed: Seed, publicKey: PublicKey, wordList: string, password: string, userParams = {}) {
-  console.log('>>>> encryptData', wordList, seed)
   const mnemonic = wordList
   const enData = toBuffer(seed).toString('hex') + '|' + mnemonic
-  console.log('>>> enData', enData)
   const params = { ...DEFAULT_CIPHER_PARAMS, ...userParams }
 
   const salt = window.crypto.getRandomValues(new Uint8Array(16))
@@ -147,7 +145,7 @@ export function toBuffer(ab) {
  * @param {*} password пароль для расшифровки
  * @returns {string} seed
  */
-export async function decryptData(encryptedData, password) {
+export async function decryptData(encryptedData, password, getMnemonic = false) {
   try {
     const params = {
       algoName: encryptedData.algo.name,
@@ -171,8 +169,13 @@ export async function decryptData(encryptedData, password) {
       aesKey,
       data
     )
-    console.log('>>>>> decryptData', decryptedContent)
-    return decryptedContent
+    const enData = new TextDecoder().decode(decryptedContent)
+    console.log('>>>> enData', enData)
+    const seedAndMnemonic = enData.split(`|`)
+    if (seedAndMnemonic.length !== 2) throw new Error(`Fail decode entropy`)
+ 
+    return (getMnemonic) ? seedAndMnemonic[1] : hexToBuff(seedAndMnemonic[0])
+
   } catch (e) {
     console.log(`Error - ${e}`)
     return ''
