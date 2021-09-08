@@ -80,7 +80,7 @@ class BaseAdaptor {
     return this.wallets
   }
 
-  public createWallet(seed: Seed, index: number): BaseWallet|false { return false }
+  public createWallet(options = {}): BaseWallet|false { return false }
 
   public getWallet(index: number): BaseWallet|false { return false }
 }

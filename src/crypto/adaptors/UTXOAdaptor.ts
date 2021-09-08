@@ -17,8 +17,11 @@ class UTXOAdaptor extends BaseAdaptor {
     return this.network
   }
 
-  public createWallet(seed: Seed, index: number): BaseWallet|false{
-    const wallet = new UTXOWallet(this, seed, index)
+  public createWallet(options): BaseWallet|false{
+    const wallet = new UTXOWallet({
+      networkAdaptor: this,
+      ...options
+    })
     return wallet
   }
 }

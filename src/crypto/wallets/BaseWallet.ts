@@ -6,18 +6,30 @@ interface ISendOptions {
 }
 
 class BaseWallet {
-  private walletIndex: number
+  protected walletIndex: number
   protected address: string = ``
   protected privateKey: string = ``
   protected publicKey: string = ``
   protected template: string = ``
-  private networkAdaptor
-  private seed
+  protected networkAdaptor
+  protected seed
+  protected mnemonic
+  protected password
 
-  constructor(networkAdaptor, seed, walletIndex: number) {
+  constructor(options: any) {
+    const {
+      networkAdaptor,
+      seed,
+      mnemonic,
+      password,
+      walletIndex,
+    } = options
+
     this.walletIndex = walletIndex
     this.networkAdaptor = networkAdaptor
     this.seed = seed
+    this.mnemonic
+    this.password
 
 
     // generate address

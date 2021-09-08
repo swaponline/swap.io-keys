@@ -10,8 +10,11 @@ class EVMAdaptor extends BaseAdaptor {
     super(networkConfig)
   }
 
-  public createWallet(seed: Seed, index: number): BaseWallet|false{
-    const wallet = new EVMWallet(this, seed, index)
+  public createWallet(options): BaseWallet|false{
+    const wallet = new EVMWallet({
+      networkAdaptor: this,
+      ...options
+    })
     return wallet
   }
 }
