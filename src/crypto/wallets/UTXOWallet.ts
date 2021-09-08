@@ -9,8 +9,11 @@ import templatesAddress from '../templatesAddress'
 
 
 class UTXOWallet extends BaseWallet {
-  constructor(networkAdaptor, seed, walletIndex: number, options = {}) {
-    super(networkAdaptor, seed, walletIndex)
+  constructor(options) {
+    super(options)
+    const networkAdaptor = this.networkAdaptor
+    const seed = this.seed
+    const walletIndex = this.walletIndex
 
     const utxoNetwork = networkAdaptor.getUTXOConfig()
 
@@ -49,7 +52,7 @@ class UTXOWallet extends BaseWallet {
     networks.remove(bitcoinNetwork)
 
     const derivePath = `m/${networkAdaptor.bip44.purpose}'/${networkAdaptor.bip44.cointype}'/0'/0/${walletIndex}`
-console.log('>>> derivePath', derivePath)
+
     const child = root.derivePath(derivePath)
 
     if (templatesAddress[`${networkAdaptor.getSymbol()}/default`] !== undefined) {
@@ -57,10 +60,7 @@ console.log('>>> derivePath', derivePath)
         ...options,
         network: bitcoreNetwork,
         derivePath,
-        seed,
         child,
-        networkAdaptor,
-        walletIndex
       })
       this.address = walletData.address
       this.privateKey = walletData.privateKey
