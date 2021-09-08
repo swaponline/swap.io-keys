@@ -145,7 +145,7 @@ export function toBuffer(ab) {
  * @param {*} password пароль для расшифровки
  * @returns {string} seed
  */
-export async function decryptData(encryptedData, password, getMnemonic = false) {
+export async function decryptData(encryptedData, password, withMnemonic = false) {
   try {
     const params = {
       algoName: encryptedData.algo.name,
@@ -174,7 +174,12 @@ export async function decryptData(encryptedData, password, getMnemonic = false) 
     const seedAndMnemonic = enData.split(`|`)
     if (seedAndMnemonic.length !== 2) throw new Error(`Fail decode entropy`)
  
-    return (getMnemonic) ? seedAndMnemonic[1] : hexToBuff(seedAndMnemonic[0])
+    return (withMnemonic)
+      ? {
+        seed: hexToBuff(seedAndMnemonic[0]),
+        mnemonic: seedAndMnemonic[1]
+      }
+      : hexToBuff(seedAndMnemonic[0]) // @to-do - remove only seed
 
   } catch (e) {
     console.log(`Error - ${e}`)

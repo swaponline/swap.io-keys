@@ -9,9 +9,11 @@ type Seed = Buffer
 class CryptoProfile {
   private wallets: Array<BaseWallet> = []
   private seed: Seed
+  private mnemonic: string
 
-  constructor(seed: Seed) {
+  constructor(seed: Seed, mnemonic: string) {
     this.seed = seed
+    this.mnemonic = mnemonic
     console.log('>>>> profile seed', seed)
     console.log(Buffer.from(seed).toString('hex'))
   }
