@@ -145,7 +145,7 @@ export function toBuffer(ab) {
  * @param {*} password пароль для расшифровки
  * @returns {string} seed
  */
-export async function decryptData(encryptedData, password, withMnemonic = false) {
+export async function decryptData(encryptedData, password, withMnemonic = false): Promise<any> {
   try {
     const params = {
       algoName: encryptedData.algo.name,

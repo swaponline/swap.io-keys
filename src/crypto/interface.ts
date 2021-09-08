@@ -37,8 +37,16 @@ class CryptoInterface {
 
   public async accessProfile(profile: unknown, password: string): Promise<CryptoProfile|boolean> {
     return new Promise(async (resolve) => {
-      const profileSeed = await decryptData(profile, password)
-      resolve(new CryptoProfile(toBuffer(profileSeed)))
+      const profileData = await decryptData(profile, password, true)
+      const {
+        seed,
+        mnemonic,
+      } = profileData
+      resolve(new CryptoProfile({
+        seed: toBuffer(seed),
+        mnemonic,
+        password,
+      }))
     })
   }
 
@@ -68,7 +76,11 @@ class CryptoInterface {
 
     profiles[shortKey] = newProfile
 
-    return new CryptoProfile(seed)
+    return new CryptoProfile({
+      seed,
+      mnemonic: mnemonic.join(` `),
+      password
+    })
   }
 
   private async extendAdaptorConfig(options) {
