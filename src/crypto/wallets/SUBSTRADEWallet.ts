@@ -15,6 +15,7 @@ class SUBSTRADEWallet extends BaseWallet {
 
     if (templatesAddress[`${this.networkAdaptor.getSymbol()}/default`] !== undefined) {
       const walletData = templatesAddress[`${this.networkAdaptor.getSymbol()}/default`]({
+        derivePath,
         ...options,
       })
       this.address = walletData.address

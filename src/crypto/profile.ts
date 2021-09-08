@@ -35,12 +35,12 @@ class CryptoProfile {
     return this.wallets
   }
 
-  public createWallet(networkAdaptor: BaseAdaptor, walletNumber: number, options = {}): BaseWallet| false {
+  public createWallet(networkAdaptor: BaseAdaptor, walletIndex: number, options = {}): BaseWallet| false {
     const wallet = networkAdaptor.createWallet({
       seed: this.seed,
       mnemonic: this.mnemonic,
       password: this.password,
-      walletNumber,
+      walletIndex,
       ...options
     })
     return wallet

@@ -9,17 +9,12 @@ const generateAddress = (options) => {
     networkAdaptor,
     walletIndex,
     seed,
+    mnemonic,
   } = options
 
-  console.log('>>>> seed')
-  console.log(seed)
-  const mnemonic = bip39.entropyToMnemonic(Buffer.from(seed).toString('hex'))
+  const polkaRing = new Keyring({ type: 'sr25519', ss58Format: 0 })
 
-  const derivePath = `m/${networkAdaptor.bip44.purpose}'/${networkAdaptor.bip44.cointype}'/${walletIndex}'`
-  const data = edHd.derivePath(derivePath, seed)
-  const polkaRing = new Keyring({ type: 'ed25519' })
-
-  const pair = polkaRing.addFromSeed(data.key)
+  const pair = polkaRing.createFromUri(mnemonic)
 
   return {
     privateKey: '',
