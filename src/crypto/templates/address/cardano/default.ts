@@ -1,7 +1,8 @@
 /* eslint-disable */
-import * as Cardano from "cardano-wallet";
+// import * as Cardano from "cardano-wallet";
 
 const  generateAddress = (options) => {
+  /*
   const { seed, derivePath } = options
 
   console.log('>>>>>>>>>>>>>>>>>>>>>>>>')
@@ -30,6 +31,7 @@ const  generateAddress = (options) => {
   console.log('>>> key_pub', key_pub)
   let address = key_pub.bootstrap_era_address(settings);
   console.log('>>> address', address)
+  */
   /*
   return {
     privateKey,
