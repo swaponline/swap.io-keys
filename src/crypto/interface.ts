@@ -144,6 +144,7 @@ class CryptoInterface {
           case `evm`:
             adaptor = new EVMAdaptor(config)
             break
+          case `unknown`:
           case `eutxo`:
             adaptor = new NotStandartAdaptor(config)
             break
