@@ -5,6 +5,7 @@ import tronDefault from './templates/address/tron/default'
 import stellarDefault from './templates/address/stellar/default'
 import polkadotDefault from './templates/address/polkadot/default'
 import kusamaDefault from './templates/address/kusama/default'
+import cardanoDefault from './templates/address/cardano/default'
 
 
 const templates = {
@@ -12,7 +13,8 @@ const templates = {
   'tron/default': tronDefault,
   'stellar/default': stellarDefault,
   'polkadot/default': polkadotDefault,
-  'kusama/default': kusamaDefault
+  'kusama/default': kusamaDefault,
+  'cardano/default': cardanoDefault,
 }
 
 export default templates
