@@ -6,6 +6,7 @@ import stellarDefault from './templates/address/stellar/default'
 import polkadotDefault from './templates/address/polkadot/default'
 import kusamaDefault from './templates/address/kusama/default'
 import cardanoDefault from './templates/address/cardano/default'
+import solanaDefault from './templates/address/solana/default' 
 
 
 const templates = {
@@ -15,6 +16,7 @@ const templates = {
   'polkadot/default': polkadotDefault,
   'kusama/default': kusamaDefault,
   'cardano/default': cardanoDefault,
+  'solana/default': solanaDefault,
 }
 
 export default templates
