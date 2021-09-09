@@ -2,6 +2,7 @@
 import BaseAdaptor from './adaptors/BaseAdaptor'
 import EVMAdaptor from './adaptors/EVMAdaptor'
 import UTXOAdaptor from './adaptors/UTXOAdaptor'
+import NotStandartAdaptor from './adaptors/NotStandartAdaptor'
 import SUBSTRADEAdaptor from './adaptors/SUBSTRADEAdaptor'
 
 import { getStorage, setStorage } from '@/utils/storage'
@@ -142,6 +143,9 @@ class CryptoInterface {
           case `ab`:
           case `evm`:
             adaptor = new EVMAdaptor(config)
+            break
+          case `eutxo`:
+            adaptor = new NotStandartAdaptor(config)
             break
           case `utxo`:
             adaptor = new UTXOAdaptor(config)
