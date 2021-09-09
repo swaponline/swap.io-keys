@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div>CREATE WALLET POPUP FRAME</div>
     <enter-password :is-cancel="isCancel" :password="password" @close="cancelCreateWallet" @submit="createWallet" />
   </div>
 </template>
@@ -51,17 +50,11 @@ export default Vue.extend({
       new Promise(async (resolve) => {
         if (!this.isCancel) {
           this.password = password
-          console.log('>>>>> create wallet - password submited', this.password, this.isCancel, this.walletData)
           const cInterface = new CryptoInterface()
           const network = await cInterface.getNetworkAdaptor(this.walletData.networkId)
-          console.log('>>>> network', network)
-          
           cInterface.accessProfileByKey(this.walletData.profileId, this.password).then(async (profile) => {
-            console.log('Accesed profile', profile)
-
             // @ts-ignore
             const wallet = profile.createWallet(network, this.walletData.walletNumber)
-            console.log('>>> wallet', wallet)
             windowParentPostMessage({
               key: 'CreateWalletWindow',
               message: {

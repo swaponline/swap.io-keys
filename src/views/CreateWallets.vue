@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div>CREATE WALLET POPUP FRAME</div>
     <enter-password :is-cancel="isCancel" :password="password" @close="cancelCreateWallets" @submit="createWallets" />
   </div>
 </template>
@@ -27,7 +26,6 @@ export default Vue.extend({
           if (event.data.type === `CreateWallets`) {
             const walletsData = event.data.walletsData.wallets
             const profileId = event.data.walletsData.profileId
-            console.log('>>>>> CreateWallets action', profileId, walletsData)
             this.profileId = profileId
             this.walletsData = walletsData
 
@@ -54,16 +52,13 @@ export default Vue.extend({
     createWallets(password): void {
       if (!this.isCancel) {
         this.password = password
-        console.log('>>>>> create wallet - password submited', this.password, this.isCancel, this.walletData)
         const cInterface = new CryptoInterface()
 
         
         cInterface.accessProfileByKey(this.profileId, this.password).then(async (profile) => {
           const wallets: Array<unknown> = []
-          console.log('Accesed profile', profile)
           this.walletsData.forEach(async (walletData, walletIndex) => {
             const network = await cInterface.getNetworkAdaptor(walletData.networkId)
-            console.log('>>>> network', network)
             // @ts-ignore
             const wallet = profile.createWallet(network, walletData.walletNumber)
             wallets.push({
@@ -73,7 +68,6 @@ export default Vue.extend({
               publicKey: wallet.getPublicKey()
             })
           })
-          console.log('wallets', wallets)
           windowParentPostMessage({
             key: 'CreateWalletsWindow',
             message: {
