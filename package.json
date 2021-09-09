@@ -17,6 +17,7 @@
     "bitcoinjs-lib": "^5.2.0",
     "bitcore-lib": "^8.25.10",
     "canvg": "^3.0.7",
+    "cardano-wallet": "^1.2.2",
     "core-js": "^3.6.5",
     "ed25519-hd-key": "^1.2.0",
     "ethereumjs-wallet": "^1.0.1",
