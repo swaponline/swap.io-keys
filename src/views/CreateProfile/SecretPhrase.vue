@@ -18,9 +18,10 @@ import { encryptData } from '@/utils/cipher'
 import { getUserTheme } from '@/utils/userTheme'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { getStorage, setStorage } from '@/utils/storage'
-import { IFRAME_INITED, PROFILE_CREATED, PROFILE_RECOVERED } from '@/constants/createProfile'
+import { IFRAME_INITED, PROFILE_CREATED, PROFILE_RECOVERED, CANCELED } from '@/constants/createProfile'
 import { RECOVER_PROFILE_WINDOW, CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
 import { UserTheme } from '@/types/userTheme'
+import { ESCAPE } from '@/constants/keyCodes'
 
 type Data = {
   words: Array<string>
@@ -74,13 +75,28 @@ export default Vue.extend({
     }
   },
   created(): void {
+    document.addEventListener('keydown', this.closeByPressingESC)
+
     if (this.isRecoverProfile) {
       this.words = new Array(24).fill('', 0, 24)
       return
     }
     this.words = this.localTheme.wordList
   },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this.closeByPressingESC)
+  },
   methods: {
+    closeByPressingESC({ key }) {
+      if (key === ESCAPE) {
+        windowParentPostMessage({
+          key: this.isRecoverProfile ? RECOVER_PROFILE_WINDOW : CREATE_PROFILE_WINDOW,
+          message: {
+            type: CANCELED
+          }
+        })
+      }
+    },
     async createProfile(password: string): Promise<void> {
       this.toggleFormPassword(false)
 
