@@ -51,9 +51,8 @@ export function getMnemonicPhrase(): MnemonicPhrase {
 }
 
 export async function getSeedFromMnemonic(mnemonicPhrase: MnemonicPhrase): Promise<Buffer> {
-  console.log('>>>>> getSeedFromMnemonic', mnemonicPhrase.join(' '))
   const seed = await mnemonicToSeed(mnemonicPhrase.join(' '))
-  console.log('>>>>', seed.toString('hex'))
+
   return seed
 }
 

@@ -24,9 +24,7 @@ export default Vue.extend({
         if (event.data && event.data.type) {
           if (event.data.type === `CreateWallet`) {
             const walletData = event.data.walletData
-            console.log('>>>>> CreateWallet action', walletData)
             this.walletData = walletData
-
           }
         }
       }
