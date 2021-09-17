@@ -2,8 +2,8 @@
 
 import BaseWallet from './wallets/BaseWallet'
 import BaseAdaptor from './adaptors/BaseAdaptor'
-import { getStorage, setStorage } from '@/utils/storage'
-import { encryptData, decryptData } from '@/utils/cipher'
+import { getStorage, setStorage } from '../utils/storage'
+import { encryptData, decryptData } from '../utils/cipher'
 
 type Seed = Buffer
 interface ICryptoProfileOptions {
@@ -33,6 +33,10 @@ class CryptoProfile {
 
   public getWallets(): Array<BaseWallet> {
     return this.wallets
+  }
+
+  public createAddress(networkAdaptor: BaseAdaptor, addressIndex: number, options = {}): BaseWallet| false {
+    return this.createWallet(networkAdaptor, addressIndex, options)
   }
 
   public createWallet(networkAdaptor: BaseAdaptor, walletIndex: number, options = {}): BaseWallet| false {
