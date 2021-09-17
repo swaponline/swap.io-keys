@@ -5,8 +5,8 @@ import UTXOAdaptor from './adaptors/UTXOAdaptor'
 import NotStandartAdaptor from './adaptors/NotStandartAdaptor'
 import SUBSTRADEAdaptor from './adaptors/SUBSTRADEAdaptor'
 
-import { getStorage, setStorage } from '@/utils/storage'
-import { encryptData, toBuffer, decryptData, getSeedFromMnemonic, getPublicKey } from '@/utils/cipher'
+import { getStorage, setStorage } from '../utils/storage'
+import { encryptData, toBuffer, decryptData, getSeedFromMnemonic, getPublicKey } from '../utils/cipher'
 import CryptoProfile from './profile'
 
 type Seed = Buffer
