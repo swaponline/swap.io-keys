@@ -1,11 +1,13 @@
 <template>
-  <div class="words-table">
+  <div class="secret-phrase-table">
     <template v-for="({ value, input }, index) in tableMatrix">
-      <label v-if="input" :key="index" class="words-table__label">
-        <span>{{ index + 1 }}. </span>
-        <input :value="value" class="words-table__input" @input="setValue(index, $event.target.value)" />
+      <label v-if="input" :key="index" class="secret-phrase-table__label">
+        <span class="secret-phrase-table__number">{{ index + 1 }}. </span>
+        <input :value="value" class="secret-phrase-table__input" @input="setValue(index, $event.target.value)" />
       </label>
-      <span v-else :key="index" class="words-table__word">{{ index + 1 }}. {{ value }}</span>
+      <div v-else :key="index" class="secret-phrase-table__word">
+        <span class="secret-phrase-table__number">{{ index + 1 }}.</span> {{ value }}
+      </div>
     </template>
   </div>
 </template>
@@ -49,46 +51,53 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.words-table {
+.secret-phrase-table {
   width: 100%;
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-gap: 31px 0;
+  grid-gap: 14px;
   font-size: $--font-size-table-word;
 
   @include tablet {
     grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 32px 40px;
+    grid-gap: 10px 8px;
   }
 
   @include phone {
-    font-size: 18px;
-    grid-gap: 20px 5px;
-    margin-bottom: 36px;
+    font-size: $--font-size-base;
   }
 
   @include small-phone {
-    font-size: $--font-size-base;
+    font-size: $--font-size-small;
+    grid-gap: 10px 2px;
+  }
+
+  &__number {
+    color: $--dark-grey;
   }
 
   &__label {
     display: flex;
-    border-bottom: 1px solid $--black;
-    margin-right: 27px;
+    border: 2px solid var(--main-border-color);
+    border-radius: 5px;
+    padding: 4px 10px;
   }
 
   &__input {
     width: 100%;
-    margin-left: 2px;
-    margin-bottom: 2px;
-    outline: none;
+    color: var(--primary-text);
+    padding: 0;
     border: none;
+    background-color: var(--main-input-background);
   }
 
   &__word {
-    border-bottom: 1px solid transparent;
-    padding-bottom: 2px;
+    border: 2px solid transparent;
+    background-color: var(--main-button-background);
+    border-radius: 5px;
+    padding: 4px 10px;
+    color: var(--primary-text);
     white-space: nowrap;
   }
 }

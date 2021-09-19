@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { FIREFOX } from '@/constants/browsers'
-import UaParser from 'ua-parser-js'
 import VTooltip from 'v-tooltip'
+import UaParser from 'ua-parser-js'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -9,7 +9,9 @@ import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
 import '@/assets/scss/base.scss'
 
-Vue.use(VTooltip)
+Vue.use(VTooltip, {
+  defaultTrigger: window.innerWidth > 768 ? 'hover focus click' : 'click'
+})
 Vue.use(UI)
 // Vue.config.productionTip = false
 const uaParser = new UaParser()

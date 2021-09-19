@@ -1,8 +1,9 @@
 .theme--light {
   --primary-background: #{$--white};
   --primary-text: #{$--black};
-  --main-border-color: #{$--light-grey-2};
-  --main-input-background: #{$--light-grey};
+  --primary-text-disabled: #{$--grey-3};
+  --main-border-color: #{$--light-grey-7};
+  --main-input-background: #{$--white};
   --main-button-background: #{$--light-grey-2};
   --main-button-background-hover: #{$--light-grey-5};
   --main-button-active: #{$--light-grey-4};
@@ -18,8 +19,9 @@
 .theme--dark {
   --primary-background: #0f1422;
   --primary-text: #f6f6f6;
-  --main-border-color: #{$--light-grey-2-percent10};
-  --main-input-background: #20222e;
+  --primary-text-disabled: #{$--grey-3};
+  --main-border-color: #20222e;
+  --main-input-background: transparent;
   --main-button-background: #212f46;
   --main-button-background-hover: #182231;
   --main-button-background-active: #131b27;

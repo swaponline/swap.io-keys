@@ -1,74 +1,80 @@
 <template>
-  <match-media v-slot="{ tablet }" wrapper-tag="div" class="choose-style">
-    <div class="choose-style__wrapper">
-      <header class="choose-style__header">
-        <h1 class="choose-style__title">Choose style</h1>
-        <span class="choose-style__subtitle">it cannot be changed later</span>
-      </header>
-      <div class="choose-style__cards">
+  <div class="choose-style">
+    <header-profile class="choose-style__header">
+      Pick your colors
+      <template #help-text>
+        <swap-help-text class="choose-style__help-text">
+          Your own colors will protect you from phishing. Each profile has unique color scheme. Take the time to pick
+          the profile with colors of your choice.
+        </swap-help-text>
+      </template>
+    </header-profile>
+    <choose-style-cards class="choose-style__cards">
+      <template #default="{ userThemes }">
         <choose-style-card
-          v-for="({ colorScheme }, index) in userThemes"
+          v-for="(userTheme, index) in userThemes"
           :key="index"
-          :color-scheme="colorScheme"
-          :is-selected-scheme="isSelectedColorScheme(colorScheme)"
-          @select="select(index)"
+          :color-scheme="userTheme.colorScheme"
+          :is-selected-scheme="isSelectedColorScheme(userTheme.colorScheme)"
+          @select="installingTheme(userTheme)"
         />
-      </div>
-      <span v-if="tablet" :class="['choose-style__text', selectedColorScheme.color && 'choose-style__text--selected']"
-        >Complementary text
-      </span>
-      <div class="choose-style__buttons">
-        <swap-button
-          class="choose-style__button"
-          :disabled="!isThemeSelected"
-          :tooltip="!isThemeSelected ? 'Please pick a color scheme to proceed.' : null"
-          @click="goToSecretPhrase"
-        >
-          Create
-        </swap-button>
-        <swap-button class="choose-style__button" text @click="refreshColors">
-          Refresh colors
-        </swap-button>
-      </div>
+      </template>
+      <template #actions="{ refreshColors }">
+        <div class="choose-style__refresh-button-wrapper">
+          <swap-button class="choose-style__refresh-button" @click="refreshColors">
+            <svg-icon aria-label="Refresh colors" class="choose-style__refresh-icon" name="i_refresh" />
+            Refresh colors
+          </swap-button>
+        </div>
+      </template>
+    </choose-style-cards>
+
+    <div class="choose-style__buttons">
+      <swap-button class="choose-style__button" @click="back">
+        Back
+      </swap-button>
+      <swap-button
+        class="choose-style__button"
+        :disabled="!isThemeSelected"
+        :tooltip="!isThemeSelected ? 'Please pick a color scheme to proceed.' : null"
+        @click="goToSecretPhrase"
+      >
+        Next
+      </swap-button>
     </div>
-  </match-media>
+  </div>
 </template>
 
 <script lang="ts">
-import { MatchMedia } from 'vue-component-media-queries'
 import Vue from 'vue'
-import ChooseStyleCard from '@/components/ChooseStyle/Card.vue'
+import HeaderProfile from '@/components/CreateProfile/Header.vue'
+import ChooseStyleCards from '@/components/CreateProfile/ChooseStyle/Cards.vue'
+import ChooseStyleCard from '@/components/CreateProfile/ChooseStyle/Card.vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
-import { getUserTheme } from '@/utils/userTheme'
 import { UserTheme } from '@/types/userTheme'
 import { ColorScheme } from '@/types/generators'
 import { CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
-import { IFRAME_INITED, THEME_SELECTED, CANCELED } from '@/constants/createProfile'
+import { THEME_SELECTED, CANCELED } from '@/constants/createProfile'
 import { ESCAPE } from '@/constants/keyCodes'
+import { setCSSCustomProperty } from '@/utils/common'
 import { getStorage } from '@/utils/storage'
 import { THEME_KEY, DARK_THEME_KEY } from '@/constants/theme'
-import { setCSSCustomProperty } from '@/utils/common'
 
-type IndexOfSelectedTheme = number
 type Data = {
-  userThemes: Array<UserTheme>
-
   selectedTheme: UserTheme
 
   isRefreshing: boolean
 }
 
-const QUANTITY_CARDS = 4
-
 export default Vue.extend({
   name: 'ChooseStyle',
   components: {
-    MatchMedia,
+    HeaderProfile,
+    ChooseStyleCards,
     ChooseStyleCard
   },
   data(): Data {
     return {
-      userThemes: [],
       selectedTheme: {
         colorScheme: {
           background: '',
@@ -91,22 +97,21 @@ export default Vue.extend({
       return !!this.selectedColorScheme.background
     }
   },
-  async mounted(): Promise<void> {
+  mounted(): void {
     document.addEventListener('keydown', this.closeByPressingESC)
-
-    await this.getCards()
-
-    windowParentPostMessage({
-      key: CREATE_PROFILE_WINDOW,
-      message: {
-        type: IFRAME_INITED
-      }
-    })
   },
   beforeDestroy() {
     document.removeEventListener('keydown', this.closeByPressingESC)
   },
   methods: {
+    back() {
+      windowParentPostMessage({
+        key: CREATE_PROFILE_WINDOW,
+        message: {
+          type: CANCELED
+        }
+      })
+    },
     closeByPressingESC({ key }) {
       if (key === ESCAPE) {
         windowParentPostMessage({
@@ -117,23 +122,22 @@ export default Vue.extend({
         })
       }
     },
-
     isSelectedColorScheme(colorScheme: ColorScheme) {
       return this.selectedColorScheme === colorScheme
     },
 
-    setCustomColorCSSVariables() {
+    setCustomColorCSSVariables(): void {
       if (getStorage(THEME_KEY) === DARK_THEME_KEY) {
-        setCSSCustomProperty('--main-color', this.selectedColorScheme.colorForDarkTheme)
+        setCSSCustomProperty('main-color', this.selectedColorScheme.colorForDarkTheme)
       } else {
-        setCSSCustomProperty('--main-color', this.selectedColorScheme.color)
+        setCSSCustomProperty('main-color', this.selectedColorScheme.color)
       }
 
-      setCSSCustomProperty('--selection-color', this.selectedColorScheme.selectionColor)
+      setCSSCustomProperty('selection-color', this.selectedColorScheme.selectionColor)
     },
 
-    select(selectedIndex: IndexOfSelectedTheme): void {
-      this.selectedTheme = this.userThemes.find((_: UserTheme, index: number) => index === selectedIndex)
+    installingTheme(selectedUserTheme: ColorScheme): void {
+      this.selectedTheme = selectedUserTheme
 
       this.setCustomColorCSSVariables()
 
@@ -152,122 +156,94 @@ export default Vue.extend({
       if (this.selectedTheme.wordList.length > 0) {
         this.$router.push({ name: 'SecretPhrase', params: { theme: this.selectedTheme } })
       }
-    },
-
-    async getCards(): Promise<void> {
-      const userThemeResolvers: Promise<UserTheme>[] = []
-
-      for (let i = 0; i < QUANTITY_CARDS; i += 1) {
-        const userTheme: Promise<UserTheme> = getUserTheme()
-        userThemeResolvers.push(userTheme)
-      }
-
-      this.userThemes = await Promise.all(userThemeResolvers)
-    },
-
-    async refreshColors(): Promise<void> {
-      if (!this.isRefreshing) {
-        this.isRefreshing = true
-        await this.getCards()
-        this.isRefreshing = false
-      }
     }
   }
 })
 </script>
 
 <style lang="scss">
+.tooltip {
+  .tooltip-inner {
+    background: $--purple;
+    padding: 12px 14px;
+    border-radius: 12px;
+    width: 264px;
+    font-size: 15px;
+  }
+
+  .tooltip-arrow {
+    border-color: $--purple;
+  }
+}
+
 .choose-style {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 110px 40px;
 
-  &__wrapper {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    padding: 40px 77px 30px;
+  @include tablet {
+    align-items: center;
+    min-height: auto;
+    padding: 30px 25px 25px;
+  }
 
-    @include tablet {
-      padding: 24px 20px;
-      align-items: center;
-      min-height: auto;
-    }
+  @include phone {
+    padding: 28px 0 20px;
   }
 
   &__header {
-    width: 100%;
-    text-align: center;
-  }
-
-  &__title {
-    font-weight: $--font-weight-semi-bold;
-    font-size: $--font-size-extra-title;
+    margin-bottom: 44px;
 
     @include tablet {
-      width: 100%;
-      font-size: $--font-size-subtitle;
-    }
-  }
-
-  &__subtitle {
-    margin-top: 10px;
-    color: $--grey-3;
-    font-weight: $--font-weight-semi-bold;
-    font-size: $--font-size-medium;
-
-    @include tablet {
-      width: 100%;
-      text-align: left;
-      font-size: $--font-size-medium;
-    }
-  }
-
-  &__cards {
-    margin: 75px 0 20px;
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-
-    @include tablet {
-      margin: 30px 0 60px;
+      margin-bottom: 75px;
     }
 
     @include phone {
-      margin: 40px 0 10px;
+      margin-bottom: 50px;
     }
 
     @include small-phone {
-      margin-top: 10px;
+      margin-bottom: 0;
     }
   }
 
-  &__text {
-    width: 100%;
-    color: var(--main-color);
-    font-weight: $--font-weight-semi-bold;
-    font-size: $--font-size-extra-small-subtitle;
-    text-align: center;
-    opacity: 0;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+  &__help-text {
+    max-width: 462px;
+  }
 
-    &--selected {
-      opacity: 1;
-    }
+  &__refresh-button-wrapper {
+    display: flex;
+    justify-content: center;
+  }
 
-    @include tablet {
-      font-size: $--font-size-medium;
-    }
+  &__refresh-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 9px;
+    fill: var(--main-icon-color);
+    transition: $--transition-duration;
+  }
 
-    @include phone {
-      margin-top: auto;
+  &__refresh-button {
+    max-width: 135px;
+    min-height: 31px;
+    border-radius: 4px;
+    padding: 6px 10px 6px 10px;
+
+    .swap-button__content {
+      font-size: $--font-size-base;
+      font-weight: $--font-weight-semi-bold;
+      letter-spacing: initial;
+      display: flex;
     }
   }
 
   &__buttons {
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
 
     @include tablet {
       margin: auto auto 0;
@@ -275,19 +251,24 @@ export default Vue.extend({
     }
 
     @include phone {
-      margin-top: 30px;
+      max-width: 314px;
     }
 
     @include small-phone {
-      margin-top: 20px;
+      max-width: 260px;
     }
   }
 
   &__button {
     max-width: 174px;
+    min-height: 45px;
+
+    .swap-button__content {
+      font-weight: $--font-weight-semi-bold;
+    }
 
     &:not(:last-child) {
-      margin-bottom: 10px;
+      margin-right: 10px;
     }
 
     @include tablet {
