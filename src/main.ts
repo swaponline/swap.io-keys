@@ -37,3 +37,8 @@ if (shouldCreateIframe) {
     render: h => h(App)
   }).$mount('#app')
 }
+
+// TODO: Разобраться почему не работает такая реализация
+// messageHandler().then(() => {
+//   app.mount('#app') // or new Vue({ /* options */ }).mount('#app')
+// })
