@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="secret-phrase">
     <secret-phrase-show
       :is-recover-profile="isRecoverProfile"
       :words="words"
