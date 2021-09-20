@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import SecretPhraseShow from '@/components/CreateProfile/SecretPhraseShow.vue'
+import SecretPhraseShow from '@/components/CreateProfile/SecretPhrase/Show.vue'
 import FormPassword from '@/components/CreateProfile/FormPassword.vue'
 import { encryptData } from '@/utils/cipher'
 import { getUserTheme } from '@/utils/userTheme'

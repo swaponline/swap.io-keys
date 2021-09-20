@@ -3,7 +3,7 @@
     <template v-if="!phone">
       <slot></slot>
     </template>
-    <swap-button v-if="phone" v-close-popover class="swap-help-text__button" round :tooltip="text">
+    <swap-button v-else v-close-popover class="swap-help-text__button" round :tooltip="text">
       ?
     </swap-button>
   </match-media>

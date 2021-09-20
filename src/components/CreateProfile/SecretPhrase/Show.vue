@@ -45,9 +45,9 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 import HeaderProfile from '@/components/CreateProfile/Header.vue'
-import SecretPhraseTable from '@/components/CreateProfile/WordsTable.vue'
+import SecretPhraseTable from '@/components/CreateProfile/SecretPhrase/Table.vue'
 import { randomInteger } from '@/utils/common'
-import { TableMatrix } from './types'
+import { TableMatrix } from '../types'
 
 const QUANTITY_INPUTS = 6
 

@@ -44,7 +44,7 @@ export default Vue.extend({
       const base = 'swap-button'
       return {
         [`${base}__text`]: this.text,
-        [`${base}__disabled`]: this.disabled,
+        [`${base}--disabled`]: this.disabled,
         [`${base}--round`]: this.round
       } as Classes
     },
@@ -91,7 +91,7 @@ export default Vue.extend({
     }
   }
 
-  &__disabled {
+  &--disabled {
     cursor: default;
 
     .swap-button__content {

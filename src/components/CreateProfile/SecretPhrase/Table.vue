@@ -1,10 +1,17 @@
 <template>
   <div class="secret-phrase-table">
     <template v-for="({ value, input }, index) in tableMatrix">
-      <label v-if="input" :key="index" class="secret-phrase-table__label">
-        <span class="secret-phrase-table__number">{{ index + 1 }}. </span>
-        <input :value="value" class="secret-phrase-table__input" @input="setValue(index, $event.target.value)" />
-      </label>
+      <swap-input
+        v-if="input"
+        :key="index"
+        :value="value"
+        class="secret-phrase-table__input"
+        @input="setValue(index, $event)"
+      >
+        <template #prepend>
+          <span class="secret-phrase-table__number">{{ index + 1 }}. </span>
+        </template>
+      </swap-input>
       <div v-else :key="index" class="secret-phrase-table__word">
         <span class="secret-phrase-table__number">{{ index + 1 }}.</span> {{ value }}
       </div>
@@ -14,14 +21,14 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import { TableMatrix } from './types.d'
+import { TableMatrix } from '../types'
 
 type Data = {
   localTableMatrix: TableMatrix
 }
 
 export default Vue.extend({
-  name: 'WordsTable',
+  name: 'SecretPhraseTable',
   props: {
     tableMatrix: {
       type: Array as PropType<TableMatrix>,
@@ -77,25 +84,28 @@ export default Vue.extend({
     color: $--dark-grey;
   }
 
-  &__label {
-    display: flex;
-    border: 2px solid var(--main-border-color);
-    border-radius: 5px;
-    padding: 4px 10px;
-  }
-
   &__input {
     width: 100%;
-    color: var(--primary-text);
-    padding: 0;
-    border: none;
-    background-color: var(--main-input-background);
+    padding: 4px 10px;
+
+    .swap-input__elem {
+      font-size: $--font-size-table-word;
+
+      @include phone {
+        font-size: $--font-size-base;
+      }
+
+      @include small-phone {
+        font-size: $--font-size-small;
+      }
+    }
   }
 
   &__word {
+    position: relative;
     border: 2px solid transparent;
     background-color: var(--main-button-background);
-    border-radius: 5px;
+    border-radius: $--main-border-radius-small;
     padding: 4px 10px;
     color: var(--primary-text);
     white-space: nowrap;

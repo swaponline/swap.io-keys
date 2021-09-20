@@ -32,13 +32,9 @@
     margin-bottom: 20px;
 
     @include phone {
-      font-size: 26px;
+      font-size: $--font-size-small-subtitle;
       margin-right: 10px;
       margin-bottom: 0;
-    }
-
-    @include small-phone {
-      font-size: $--font-size-small-subtitle;
     }
   }
 }
