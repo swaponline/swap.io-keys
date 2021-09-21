@@ -119,7 +119,7 @@ export default Vue.extend({
     changeTableMatrix(newTableMatrix: TableMatrix): void {
       this.tableMatrix = newTableMatrix
     },
-    changeTableMatrixSel({ index, value }) {
+    changeTableMatrixCell({ index, value }) {
       this.tableMatrix[index].value = value
       this.localWords = this.tableMatrix.map(item => item.value)
     },
