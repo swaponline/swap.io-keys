@@ -23,5 +23,6 @@ export type WidthRects = number[]
 export type ColorScheme = {
   background: string
   color: string
+  colorForDarkTheme: string
   selectionColor: string
 }

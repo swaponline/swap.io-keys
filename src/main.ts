@@ -6,7 +6,6 @@ import CryptoInterface from '@/crypto/interface'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import messageHandler from './messageHandler'
 import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
 import '@/assets/scss/base.scss'
@@ -25,7 +24,6 @@ function checkingIframeAndDomain(location: string): boolean {
   return window.top !== window.self && location === process.env.VUE_APP_HOME_URL
 }
 
-messageHandler()
 windowParentPostMessage({ key: 'createWindow' })
 
 if (browserName === FIREFOX) {
@@ -43,3 +41,8 @@ if (shouldCreateIframe || true) {
     render: h => h(App)
   }).$mount('#app')
 }
+
+// TODO: Разобраться почему не работает такая реализация
+// messageHandler().then(() => {
+//   app.mount('#app') // or new Vue({ /* options */ }).mount('#app')
+// })
