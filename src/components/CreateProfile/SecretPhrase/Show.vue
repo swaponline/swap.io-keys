@@ -10,7 +10,7 @@
         </swap-help-text>
       </template>
     </header-profile>
-    <secret-phrase-table :table-matrix="tableMatrix" @change="changeTableMatrix" />
+    <secret-phrase-table :table-matrix="tableMatrix" @change="changeTableMatrixSel" />
     <div class="secret-phrase-show__buttons">
       <swap-button class="secret-phrase-show__button" @click="goBack">
         Back
@@ -118,7 +118,10 @@ export default Vue.extend({
     },
     changeTableMatrix(newTableMatrix: TableMatrix): void {
       this.tableMatrix = newTableMatrix
-      this.localWords = newTableMatrix.map(item => item.value.trim())
+    },
+    changeTableMatrixSel({ index, value }) {
+      this.tableMatrix[index].value = value
+      this.localWords = this.tableMatrix.map(item => item.value)
     },
     recoverProfile(): void {
       this.$emit('recover', this.localWords)

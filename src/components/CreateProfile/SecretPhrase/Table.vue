@@ -35,23 +35,9 @@ export default Vue.extend({
       default: () => []
     }
   },
-  data(): Data {
-    return {
-      localTableMatrix: []
-    } as Data
-  },
-  watch: {
-    tableMatrix: {
-      immediate: true,
-      handler(newTableMatrix) {
-        this.localTableMatrix = [...newTableMatrix]
-      }
-    }
-  },
   methods: {
     setValue(index: number, value: string): void {
-      this.localTableMatrix[index].value = value
-      this.$emit('change', this.localTableMatrix)
+      this.$emit('change', { index, value: value.trim() })
     }
   }
 })
