@@ -10,7 +10,7 @@
         </swap-help-text>
       </template>
     </header-profile>
-    <secret-phrase-table :table-matrix="tableMatrix" @change="changeTableMatrixSel" />
+    <secret-phrase-table :table-matrix="tableMatrix" @change="changeTableMatrixCell" />
     <div class="secret-phrase-show__buttons">
       <swap-button class="secret-phrase-show__button" @click="goBack">
         Back
@@ -54,7 +54,6 @@ const QUANTITY_INPUTS = 6
 type Data = {
   tableMatrix: TableMatrix
   isWritePhrase: boolean
-  localWords: string[]
 }
 
 export default Vue.extend({
@@ -76,8 +75,7 @@ export default Vue.extend({
   data(): Data {
     return {
       tableMatrix: [{ value: '', input: false }],
-      isWritePhrase: false,
-      localWords: []
+      isWritePhrase: false
     }
   },
   computed: {
@@ -99,6 +97,9 @@ export default Vue.extend({
       return this.localWords.some(word => {
         return word === ''
       })
+    },
+    localWords() {
+      return this.tableMatrix.map(item => item.value)
     }
   },
   created() {
@@ -121,7 +122,6 @@ export default Vue.extend({
     },
     changeTableMatrixCell({ index, value }) {
       this.tableMatrix[index].value = value
-      this.localWords = this.tableMatrix.map(item => item.value)
     },
     recoverProfile(): void {
       this.$emit('recover', this.localWords)
