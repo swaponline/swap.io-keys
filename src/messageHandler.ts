@@ -1,4 +1,5 @@
-import { THEME_KEY, SET_APP_THEME } from '@/constants/theme'
+import { THEME_KEY } from '@/constants/theme'
+import { SET_APP_THEME } from '@/constants/createProfile'
 import { setStorage } from './utils/storage'
 
 export const messageHandler = (): Promise<boolean> => {

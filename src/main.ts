@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { FIREFOX } from '@/constants/browsers'
 import VTooltip from 'v-tooltip'
 import UaParser from 'ua-parser-js'
+import CryptoInterface from '@/crypto/interface'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -9,6 +10,7 @@ import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
 import '@/assets/scss/base.scss'
 
+window.CryptoInterface = new CryptoInterface()
 Vue.use(VTooltip, {
   defaultTrigger: window.innerWidth > 768 ? 'hover focus click' : 'click'
 })
@@ -39,3 +41,8 @@ if (shouldCreateIframe) {
     render: h => h(App)
   }).$mount('#app')
 }
+
+// TODO: Разобраться почему не работает такая реализация
+// messageHandler().then(() => {
+//   app.mount('#app') // or new Vue({ /* options */ }).mount('#app')
+// })

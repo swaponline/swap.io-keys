@@ -1,3 +1,6 @@
+/* eslint-disable */
+
+
 import * as bitcoin from 'bitcoinjs-lib'
 
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
@@ -48,7 +51,8 @@ export function getMnemonicPhrase(): MnemonicPhrase {
 }
 
 export async function getSeedFromMnemonic(mnemonicPhrase: MnemonicPhrase): Promise<Buffer> {
-  const seed = await mnemonicToSeed(mnemonicPhrase.join(''))
+  const seed = await mnemonicToSeed(mnemonicPhrase.join(' '))
+
   return seed
 }
 
@@ -85,7 +89,9 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
  * @param {} params параметры для шифрования, можно менять частично
  * @returns Объект с зашифрованной
  */
-export async function encryptData(seed: Seed, publicKey: PublicKey, password: string, userParams = {}) {
+export async function encryptData(seed: Seed, publicKey: PublicKey, wordList: string, password: string, userParams = {}) {
+  const mnemonic = wordList
+  const enData = toBuffer(seed).toString('hex') + '|' + mnemonic
   const params = { ...DEFAULT_CIPHER_PARAMS, ...userParams }
 
   const salt = window.crypto.getRandomValues(new Uint8Array(16))
@@ -99,8 +105,8 @@ export async function encryptData(seed: Seed, publicKey: PublicKey, password: st
       iv
     },
     aesKey,
-    // new TextEncoder().encode(seed)
-    seed
+    // seed + mnemonic
+    new TextEncoder().encode(enData)
   )
 
   const encryptedContentArr = new Uint8Array(encryptedContent)
@@ -124,13 +130,21 @@ export async function encryptData(seed: Seed, publicKey: PublicKey, password: st
   }
 }
 
+export function toBuffer(ab) {
+  var buf = Buffer.alloc(ab.byteLength)
+  var view = new Uint8Array(ab)
+  for (var i = 0; i < buf.length; ++i) {
+      buf[i] = view[i]
+  }
+  return buf
+}
 /**
  * Расшифровывает seed строку с помощью пароля
  * @param {*} encryptedData ОбЪект, вовзращаемый из стораджа по части publicKey
  * @param {*} password пароль для расшифровки
  * @returns {string} seed
  */
-export async function decryptData(encryptedData, password) {
+export async function decryptData(encryptedData, password, withMnemonic = false): Promise<any> {
   try {
     const params = {
       algoName: encryptedData.algo.name,
@@ -154,7 +168,18 @@ export async function decryptData(encryptedData, password) {
       aesKey,
       data
     )
-    return new TextDecoder().decode(decryptedContent)
+    const enData = new TextDecoder().decode(decryptedContent)
+    console.log('>>>> enData', enData)
+    const seedAndMnemonic = enData.split(`|`)
+    if (seedAndMnemonic.length !== 2) throw new Error(`Fail decode entropy`)
+ 
+    return (withMnemonic)
+      ? {
+        seed: hexToBuff(seedAndMnemonic[0]),
+        mnemonic: seedAndMnemonic[1]
+      }
+      : hexToBuff(seedAndMnemonic[0]) // @to-do - remove only seed
+
   } catch (e) {
     console.log(`Error - ${e}`)
     return ''
