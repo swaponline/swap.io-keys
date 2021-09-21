@@ -17,7 +17,7 @@ body {
 // Переопределяем фон для выделенных элементов
 ::selection {
   background: var(--selection-color);
-  color: $--black;
+  color: var(--primary-text);
 }
 
 body {

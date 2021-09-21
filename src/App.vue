@@ -11,7 +11,7 @@ import Vue from 'vue'
 import { MediaQueryProvider } from 'vue-component-media-queries'
 import { getStorage } from '@/utils/storage'
 import { getUserSystemTheme } from '@/utils/theme'
-import { THEME_KEY, SYSTEM_THEME_KEY } from './constants/theme'
+import { THEME_KEY, SYSTEM_THEME_KEY, LIGHT_THEME_KEY } from './constants/theme'
 import { messageHandler } from './messageHandler'
 
 interface Queries {
@@ -28,7 +28,7 @@ const queries: Queries = {
   smallPhone: '(max-width: 320px)'
 }
 
-type Theme = 'light' | 'dark' | 'system' | null
+type Theme = 'light' | 'dark' | 'system'
 type Data = {
   queries: Queries
   selectedAppTheme: Theme
@@ -42,7 +42,7 @@ export default Vue.extend({
   data(): Data {
     return {
       queries,
-      selectedAppTheme: null
+      selectedAppTheme: LIGHT_THEME_KEY
     }
   },
   computed: {

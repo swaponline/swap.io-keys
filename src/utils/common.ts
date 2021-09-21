@@ -8,5 +8,5 @@ export function randomInteger(min: number, max: number): number {
 }
 
 export function setCSSCustomProperty(propertyName: string, value: string): void {
-  document.documentElement.style.setProperty(propertyName, value)
+  document.documentElement.style.setProperty(`--${propertyName}`, value)
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="secret-phrase">
-    <secret-phrase-table
+    <secret-phrase-show
       :is-recover-profile="isRecoverProfile"
       :words="words"
       @create="toggleFormPassword(true)"
@@ -12,8 +12,8 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import SecretPhraseTable from '@/components/Profile/SecretPhraseTable.vue'
-import FormPassword from '@/components/Profile/FormPassword.vue'
+import SecretPhraseShow from '@/components/CreateProfile/SecretPhrase/Show.vue'
+import FormPassword from '@/components/CreateProfile/FormPassword.vue'
 import { encryptData } from '@/utils/cipher'
 import { getUserTheme } from '@/utils/userTheme'
 import windowParentPostMessage from '@/windowParentPostMessage'
@@ -32,7 +32,7 @@ type Data = {
 export default Vue.extend({
   name: 'SecretPhrase',
   components: {
-    SecretPhraseTable,
+    SecretPhraseShow,
     FormPassword
   },
   props: {
@@ -61,6 +61,15 @@ export default Vue.extend({
       }
     }
   },
+  created(): void {
+    document.addEventListener('keydown', this.closeByPressingESC)
+
+    if (this.isRecoverProfile) {
+      this.words = new Array(24).fill('', 0, 24)
+      return
+    }
+    this.words = this.localTheme.wordList
+  },
   mounted(): void {
     if (this.isRecoverProfile) {
       windowParentPostMessage({
@@ -73,15 +82,6 @@ export default Vue.extend({
         }
       })
     }
-  },
-  created(): void {
-    document.addEventListener('keydown', this.closeByPressingESC)
-
-    if (this.isRecoverProfile) {
-      this.words = new Array(24).fill('', 0, 24)
-      return
-    }
-    this.words = this.localTheme.wordList
   },
   beforeDestroy() {
     document.removeEventListener('keydown', this.closeByPressingESC)
@@ -138,5 +138,14 @@ export default Vue.extend({
 <style lang="scss">
 .secret-phrase {
   height: 100%;
+  padding: 32px 110px 40px;
+
+  @include tablet {
+    padding: 31px 39px;
+  }
+
+  @include phone {
+    padding: 28px 10px 20px;
+  }
 }
 </style>

@@ -114,10 +114,9 @@ export default Vue.extend({
   align-items: center;
   position: relative;
   padding: 11px 8px 12px;
-  background-color: $--white;
-  border-radius: $--main-border-radius;
-  border: 1px solid $--black;
-  height: 52px;
+  background-color: var(--main-input-background);
+  border-radius: $--main-border-radius-small;
+  border: 2px solid var(--main-border-color);
   transition: border-color $--transition-duration;
 
   &:hover {
@@ -134,6 +133,7 @@ export default Vue.extend({
 .swap-input__elem {
   @include transparent-autofill;
 
+  color: var(--primary-text);
   padding: 0 8px;
   border: none;
   outline: none;
@@ -149,6 +149,12 @@ export default Vue.extend({
   color: $--grey;
   flex: 0 0 62px;
   line-height: initial;
+}
+
+.swap-input__prepend,
+.swap-input__append {
+  display: flex;
+  align-items: center;
 }
 
 input::-webkit-outer-spin-button,

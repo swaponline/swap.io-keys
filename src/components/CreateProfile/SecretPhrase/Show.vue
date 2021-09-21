@@ -1,18 +1,24 @@
 <template>
-  <match-media v-slot="{ desktop }" class="show-secret-phrase" wrapper-tag="div">
-    <header class="show-secret-phrase__header">
-      <swap-button-go-back v-if="!desktop" @click="goBack" />
-      <h1 class="show-secret-phrase__title">{{ headerTitle }}</h1>
-    </header>
-    <words-table :table-matrix="tableMatrix" @change="changeTableMatrix" />
-    <div class="show-secret-phrase__buttons">
-      <swap-button v-if="desktop && !isRecoverProfile" class="show-secret-phrase__button" @click="goBack">
+  <div class="secret-phrase-show">
+    <header-profile class="secret-phrase-show__header">
+      {{ headerTitle }}
+      <template v-if="!isRecoverProfile" #help-text>
+        <swap-help-text
+          :class="['secret-phrase-show__help-text', isWritePhrase && 'secret-phrase-show__help-text--small']"
+        >
+          {{ headerHelpText }}
+        </swap-help-text>
+      </template>
+    </header-profile>
+    <secret-phrase-table :table-matrix="tableMatrix" @change="changeTableMatrixCell" />
+    <div class="secret-phrase-show__buttons">
+      <swap-button class="secret-phrase-show__button" @click="goBack">
         Back
       </swap-button>
       <template v-if="isWritePhrase || isRecoverProfile">
         <swap-button
           v-if="isRecoverProfile"
-          class="show-secret-phrase__button"
+          class="secret-phrase-show__button"
           :disabled="isDisabledRecover"
           :tooltip="isDisabledRecover ? 'Complete your secret phrase.' : null"
           @click="recoverProfile"
@@ -21,7 +27,7 @@
         </swap-button>
         <swap-button
           v-else
-          class="show-secret-phrase__button"
+          class="secret-phrase-show__button"
           :disabled="isDisabledCreate"
           :tooltip="isDisabledCreate ? 'Complete your secret phrase.' : null"
           @click="createProfile"
@@ -30,32 +36,31 @@
         </swap-button>
       </template>
       <template v-else>
-        <swap-button class="show-secret-phrase__button" @click="partialReplacementWordsWithInput">Next</swap-button>
+        <swap-button class="secret-phrase-show__button" @click="partialReplacementWordsWithInput">Next</swap-button>
       </template>
     </div>
-  </match-media>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import { MatchMedia } from 'vue-component-media-queries'
-import WordsTable from '@/components/Profile/WordsTable.vue'
+import HeaderProfile from '@/components/CreateProfile/Header.vue'
+import SecretPhraseTable from '@/components/CreateProfile/SecretPhrase/Table.vue'
 import { randomInteger } from '@/utils/common'
-import { TableMatrix } from './types.d'
+import { TableMatrix } from '../types'
 
 const QUANTITY_INPUTS = 6
 
 type Data = {
   tableMatrix: TableMatrix
   isWritePhrase: boolean
-  localWords: string[]
 }
 
 export default Vue.extend({
-  name: 'SecretPhraseTable',
+  name: 'SecretPhraseShow',
   components: {
-    MatchMedia,
-    WordsTable
+    HeaderProfile,
+    SecretPhraseTable
   },
   props: {
     words: {
@@ -70,13 +75,18 @@ export default Vue.extend({
   data(): Data {
     return {
       tableMatrix: [{ value: '', input: false }],
-      isWritePhrase: false,
-      localWords: []
+      isWritePhrase: false
     }
   },
   computed: {
     headerTitle() {
       return this.isRecoverProfile || !this.isWritePhrase ? 'Your secret phrase' : 'Fill in the missing words'
+    },
+    headerHelpText() {
+      return !this.isWritePhrase
+        ? `Back this up on a piece of paper. Label the paper as swap.io to remind you where to use it. Do not save the
+        phrase on your device. Do not take photos of this phrase. Keep the piece of paper in a safe place.`
+        : 'Lets check your phrase safeness. We took parts of phrase. Fill empty spaces to verify.'
     },
     isDisabledCreate() {
       const a = this.words.toString()
@@ -87,6 +97,9 @@ export default Vue.extend({
       return this.localWords.some(word => {
         return word === ''
       })
+    },
+    localWords() {
+      return this.tableMatrix.map(item => item.value)
     }
   },
   created() {
@@ -97,7 +110,7 @@ export default Vue.extend({
       this.tableMatrix = this.words.map(word => {
         return {
           value: word,
-          input: !!this.isRecoverProfile
+          input: this.isRecoverProfile
         }
       })
     },
@@ -106,7 +119,9 @@ export default Vue.extend({
     },
     changeTableMatrix(newTableMatrix: TableMatrix): void {
       this.tableMatrix = newTableMatrix
-      this.localWords = newTableMatrix.map(item => item.value)
+    },
+    changeTableMatrixCell({ index, value }) {
+      this.tableMatrix[index].value = value
     },
     recoverProfile(): void {
       this.$emit('recover', this.localWords)
@@ -151,59 +166,53 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.show-secret-phrase {
+.secret-phrase-show {
   height: 100%;
-  padding: 40px 40px 60px 70px;
   display: flex;
   flex-direction: column;
 
-  @include tablet {
-    padding: 31px 39px;
-  }
-
-  @include phone {
-    padding: 31px 15px;
-  }
-
   &__header {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 66px;
+    margin-bottom: 44px;
 
     @include tablet {
-      margin-bottom: 55px;
+      margin-bottom: 75px;
     }
 
     @include phone {
+      margin-bottom: 50px;
+    }
+
+    @include small-phone {
       margin-bottom: 30px;
     }
   }
 
-  &__title {
-    font-weight: $--font-weight-semi-bold;
-    font-size: $--font-size-extra-title;
-    text-align: center;
-    width: 100%;
+  &__help-text {
+    max-width: 520px;
 
     @include tablet {
-      font-size: $--font-size-subtitle;
+      max-width: 500px;
+    }
+
+    &--small {
+      max-width: 275px;
     }
   }
 
   &__buttons {
-    margin-top: auto;
+    width: 100%;
     display: flex;
     justify-content: center;
+    margin-top: auto;
 
-    @include tablet {
-      flex-wrap: wrap-reverse;
+    @include phone {
+      max-width: 314px;
     }
   }
 
   &__button {
     max-width: 174px;
+    min-height: 45px;
 
     &:not(:last-child) {
       margin-right: 10px;

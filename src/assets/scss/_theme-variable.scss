@@ -1,11 +1,13 @@
 .theme--light {
   --primary-background: #{$--white};
   --primary-text: #{$--black};
-  --main-border-color: #{$--light-grey-2};
-  --main-input-background: #{$--light-grey};
+  --primary-text-disabled: #{$--grey-3};
+  --main-border-color: #{$--light-grey-7};
+  --main-input-background: #{$--white};
   --main-button-background: #{$--light-grey-2};
   --main-button-background-hover: #{$--light-grey-5};
   --main-button-active: #{$--light-grey-4};
+  --main-button-text-disabled: #{$--dark-grey};
   --wallets-item-background: #{$--light-grey-2};
   --secondary-text: #{$--grey};
   --main-icon-color: #{$--black};
@@ -16,13 +18,14 @@
 }
 
 .theme--dark {
-  --primary-background: #{$--dark-3};
+  --primary-background: #{$--black-3};
   --primary-text: #{$--light-grey-2};
   --main-border-color: #{$--light-grey-2-percent10};
-  --main-input-background: #{$--dark-4};
+  --main-input-background: #{$--black-3};
   --main-button-background: #{$--light-black};
   --main-button-background-hover: #{$--black-1};
   --main-button-background-active: #{$--black-2};
+  --main-button-text-disabled: #{$--dark-grey};
   --wallets-item-background: #{$--light-black};
   --secondary-text: #{$--grey};
   --main-icon-color: #{$--white};
