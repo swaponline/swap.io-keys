@@ -1,10 +1,10 @@
 <template>
   <div class="choose-style-cards">
     <div class="choose-style-cards__list">
-      <slot :userThemes="userThemes" />
+      <slot v-bind="{ userThemes }" />
     </div>
     <div class="choose-style-cards__actions">
-      <slot name="actions" :refreshColors="refreshColors" />
+      <slot name="actions" v-bind="{ refreshColors }" />
     </div>
   </div>
 </template>
@@ -19,9 +19,13 @@ import { IFRAME_INITED } from '@/constants/createProfile'
 
 const QUANTITY_CARDS = 4
 
+type Data = {
+  userThemes: UserTheme
+}
+
 export default Vue.extend({
   name: 'ChoseStyleCards',
-  data() {
+  data(): Data {
     return {
       userThemes: []
     }

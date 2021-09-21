@@ -109,7 +109,7 @@ export default Vue.extend({
       this.tableMatrix = this.words.map(word => {
         return {
           value: word,
-          input: !!this.isRecoverProfile
+          input: this.isRecoverProfile
         }
       })
     },
@@ -118,7 +118,7 @@ export default Vue.extend({
     },
     changeTableMatrix(newTableMatrix: TableMatrix): void {
       this.tableMatrix = newTableMatrix
-      this.localWords = newTableMatrix.map(item => item.value)
+      this.localWords = newTableMatrix.map(item => item.value.trim())
     },
     recoverProfile(): void {
       this.$emit('recover', this.localWords)

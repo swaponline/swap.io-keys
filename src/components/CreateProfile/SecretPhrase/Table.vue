@@ -50,7 +50,7 @@ export default Vue.extend({
   },
   methods: {
     setValue(index: number, value: string): void {
-      this.localTableMatrix[index].value = value.trim()
+      this.localTableMatrix[index].value = value
       this.$emit('change', this.localTableMatrix)
     }
   }

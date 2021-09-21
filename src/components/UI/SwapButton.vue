@@ -95,7 +95,7 @@ export default Vue.extend({
     cursor: default;
 
     .swap-button__content {
-      color: var(--primary-text-disabled);
+      color: var(--main-button-text-disabled);
     }
 
     &:hover {
