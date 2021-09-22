@@ -20,7 +20,7 @@ import { IFRAME_INITED } from '@/constants/createProfile'
 const QUANTITY_CARDS = 4
 
 type Data = {
-  userThemes: UserTheme
+  userThemes: UserTheme[]
 }
 
 export default Vue.extend({
