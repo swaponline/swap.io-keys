@@ -11,6 +11,12 @@ interface ICryptoProfileOptions {
   mnemonic: string
   password: string
 }
+interface ISignedMessage {
+  message: string
+  pubkey: string
+  sign: string
+}
+
 class CryptoProfile {
   private wallets: Array<BaseWallet> = []
   private seed: Seed
@@ -50,7 +56,19 @@ class CryptoProfile {
     return wallet
   }
 
+  public signMessage(message: string): ISignedMessage | boolean {
+    /*
+        const hash  = this.app.env.web3.utils.soliditySha3(JSON.stringify(message))
+    const sign  = this.app.env.web3.eth.accounts.sign(hash, this.app.services.auth.accounts.eth.privateKey)
 
+    return sign
+    */
+    return false
+  }
+
+  public verifyMessage(signedMessage: ISignedMessage): boolean {
+    return false
+  }
 }
 
 

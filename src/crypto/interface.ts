@@ -14,7 +14,7 @@ type PublicKey = Buffer
 type MnemonicPhrase = string[]
 
 class CryptoInterface {
-  private chacedNetworks: Record<string, BaseAdaptor> = {}
+  private cachedNetworks: Record<string, BaseAdaptor> = {}
 
   constructor() {}
 
@@ -156,7 +156,7 @@ class CryptoInterface {
             break
         }
         if (adaptor) {
-          this.chacedNetworks[networkId] = adaptor
+          this.cachedNetworks[networkId] = adaptor
           resolve(adaptor)
         }
       } catch (e) {
