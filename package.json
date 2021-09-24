@@ -75,7 +75,8 @@
     "stylelint-scss": "^3.18.0",
     "svg-sprite-loader": "^5.0.0",
     "typescript": "~4.1.5",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "web3": "^1.5.1"
   },
   "husky": {
     "hooks": {
