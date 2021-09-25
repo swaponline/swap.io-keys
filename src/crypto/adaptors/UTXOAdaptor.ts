@@ -2,6 +2,7 @@
 import BaseAdaptor from './BaseAdaptor'
 import BaseWallet from '../wallets/BaseWallet'
 import UTXOWallet from '../wallets/UTXOWallet'
+import { ISignedMessage } from '../types'
 
 type Seed = Buffer
 
@@ -23,6 +24,14 @@ class UTXOAdaptor extends BaseAdaptor {
       ...options
     })
     return wallet
+  }
+
+  public signMessage(options = {}): ISignedMessage|false {
+    return false
+  }
+
+  public validateMessage(signedMessage: ISignedMessage): Boolean {
+    return false
   }
 }
 
