@@ -27,15 +27,25 @@ class EVMAdaptor extends BaseAdaptor {
     } = options
     //@ts-ignore
     const signWallet: BaseWallet = this.createWallet(options)
-    console.log('>>> signWallet', signWallet)
+
     const signWalletPrvKey = signWallet.getPrivateKey()
-    console.log('>>> signWalletPrvKey', signWalletPrvKey)
+
     const privateKey = EthUtil.toBuffer(signWalletPrvKey)
     const hashedMessage = EthUtil.keccak(Buffer.from(message, 'utf8'))
     const signature = EthUtil.ecsign(hashedMessage, privateKey)
-    console.log('>>>. signature', signature)
-    console.log(signature.toString())
-    return false
+
+    const compactSig = EthUtil.toCompactSig(
+      signature.v,
+      signature.r,
+      signature.s
+    )
+
+    return {
+      message,
+      pubkey: signWallet.getPublicKey(),
+      address: signWallet.getAddress(),
+      sign: compactSig
+    }
   }
 }
 

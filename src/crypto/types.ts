@@ -59,6 +59,7 @@ export interface INetwork {
 export interface ISignedMessage {
   message: string
   pubkey: string
+  address: string
   sign: string
 }
 
