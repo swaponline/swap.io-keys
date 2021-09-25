@@ -47,6 +47,7 @@ class CryptoInterface {
         seed: toBuffer(seed),
         mnemonic,
         password,
+        cInterface: this
       }))
     })
   }
@@ -80,7 +81,8 @@ class CryptoInterface {
     return new CryptoProfile({
       seed,
       mnemonic: mnemonic.join(` `),
-      password
+      password,
+      cInterface: this
     })
   }
 
