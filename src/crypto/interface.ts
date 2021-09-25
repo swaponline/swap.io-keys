@@ -9,6 +9,8 @@ import { getStorage, setStorage } from '../utils/storage'
 import { encryptData, toBuffer, decryptData, getSeedFromMnemonic, getPublicKey } from '../utils/cipher'
 import CryptoProfile from './profile'
 
+import { ISignedMessage } from './types'
+
 type Seed = Buffer
 type PublicKey = Buffer
 type MnemonicPhrase = string[]
@@ -136,7 +138,7 @@ class CryptoInterface {
     })
   }
 
-  public getNetworkAdaptor(networkId: string): Promise<BaseAdaptor|boolean> {
+  public getNetworkAdaptor(networkId: string): Promise<BaseAdaptor> {
     return new Promise(async (resolve, reject) => {
       try {
         const config = await this.getNetworkConfig(networkId)
@@ -172,6 +174,16 @@ class CryptoInterface {
       fetch(`/swap.io-networks/networks/${networkId}/info.json`)
         .then(response => response.json())
         .then(data => resolve(data))
+    })
+  }
+
+  public validateMessage(signedMessage: ISignedMessage): Promise<Boolean> {
+    return new Promise( async (resolve, reject) => {
+      const { network } = signedMessage
+
+      const networkAdaptor: BaseAdaptor = await this.getNetworkAdaptor(network)
+      const isValid = networkAdaptor.validateMessage(signedMessage)
+      resolve(isValid)
     })
   }
 

@@ -6,6 +6,8 @@ import CryptoInterface from './interface'
 import { getStorage, setStorage } from '../utils/storage'
 import { encryptData, decryptData } from '../utils/cipher'
 import { signMessage as defaultSignMessage } from './templates/signMessage/default'
+import { ISignedMessage } from './types'
+
 
 type Seed = Buffer
 interface ICryptoProfileOptions {
@@ -14,11 +16,7 @@ interface ICryptoProfileOptions {
   password: string
   cInterface: CryptoInterface
 }
-interface ISignedMessage {
-  message: string
-  pubkey: string
-  sign: string
-}
+
 
 class CryptoProfile {
   private wallets: Array<BaseWallet> = []
@@ -63,21 +61,6 @@ class CryptoProfile {
   }
 
   public signMessage(networkAdaptor: BaseAdaptor, message: string): ISignedMessage | boolean {
-    /*
-    const signWallet = networkAdaptor.createWallet({
-      seed: this.seed,
-      mnemonic: this.mnemonic,
-      password: this.password,
-      walletIndex,
-      ...options
-    })
-    */
-    /*
-        const hash  = this.app.env.web3.utils.soliditySha3(JSON.stringify(message))
-    const sign  = this.app.env.web3.eth.accounts.sign(hash, this.app.services.auth.accounts.eth.privateKey)
-
-    return sign
-    */
     const signedMessage = networkAdaptor.signMessage({
       seed: this.seed,
       mnemonic: this.mnemonic,
@@ -85,12 +68,7 @@ class CryptoProfile {
       walletIndex: 0,
       message
     })
-    console.log('>>> signedMessage', signedMessage)
     return signedMessage
-  }
-
-  public verifyMessage(signedMessage: ISignedMessage): boolean {
-    return false
   }
 }
 

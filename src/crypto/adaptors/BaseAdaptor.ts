@@ -88,6 +88,8 @@ class BaseAdaptor {
   public getWallet(index: number): BaseWallet|false { return false }
 
   public signMessage(options = {}): ISignedMessage|false { return false }
+
+  public validateMessage(signedMessage: ISignedMessage): Boolean { return false }
 }
 
 
