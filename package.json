@@ -57,6 +57,7 @@
     "@vue/eslint-config-typescript": "^7.0.0",
     "@vue/test-utils": "^1.1.0",
     "babel-eslint": "^10.1.0",
+    "bitcoinjs-message": "^2.2.0",
     "deepmerge": "^4.2.2",
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.22.1",
