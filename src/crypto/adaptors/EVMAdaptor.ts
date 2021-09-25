@@ -44,12 +44,28 @@ class EVMAdaptor extends BaseAdaptor {
       message,
       pubkey: signWallet.getPublicKey(),
       address: signWallet.getAddress(),
-      sign: compactSig
+      sign: compactSig,
+      network: this.getSymbol()
     }
   }
 
   public validateMessage(signedMessage: ISignedMessage): Boolean {
-    return false
+    const {
+      message,
+      pubkey,
+      address,
+      sign
+    } = signedMessage
+    const hashedMessage = EthUtil.keccak(Buffer.from(message, 'utf8'))
+    const ecdsaSignature = EthUtil.fromRpcSig(sign)
+    const publicKey = EthUtil.ecrecover(
+      hashedMessage,
+      ecdsaSignature.v,
+      EthUtil.toBuffer(ecdsaSignature.r),
+      EthUtil.toBuffer(ecdsaSignature.s)
+    )
+    const recoverdAddress = EthUtil.bufferToHex(EthUtil.pubToAddress(publicKey))
+    return (EthUtil.toChecksumAddress(address) == EthUtil.toChecksumAddress(recoverdAddress))
   }
 }
 

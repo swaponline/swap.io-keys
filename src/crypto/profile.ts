@@ -86,7 +86,7 @@ class CryptoProfile {
       message
     })
     console.log('>>> signedMessage', signedMessage)
-    return false
+    return signedMessage
   }
 
   public verifyMessage(signedMessage: ISignedMessage): boolean {

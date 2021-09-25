@@ -61,6 +61,7 @@ export interface ISignedMessage {
   pubkey: string
   address: string
   sign: string
+  network: string
 }
 
 export interface ICoin {
