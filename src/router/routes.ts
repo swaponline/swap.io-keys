@@ -34,6 +34,16 @@ const routes: Array<RouteConfig> = [
     path: '/create-wallets',
     name: 'CreateWallets',
     component: () => import(/* webpackChunkName: 'CreateWallets' */ '@/views/CreateWallets.vue')
+  },
+  {
+    path: '/sign-message',
+    name: 'SignMessage',
+    component: () => import(/* webpackChunkName: 'SignMessage' */ '@/views/SignMessage.vue')
+  },
+  {
+    path: '/validate-message',
+    name: 'ValidateMessage',
+    component: () => import(/* webpackChunkName: 'ValidateMessage' */ '@/views/ValidateMessage.vue')
   }
 ]
 

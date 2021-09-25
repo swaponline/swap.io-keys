@@ -9,12 +9,14 @@ import { getStorage, setStorage } from '../utils/storage'
 import { encryptData, toBuffer, decryptData, getSeedFromMnemonic, getPublicKey } from '../utils/cipher'
 import CryptoProfile from './profile'
 
+import { ISignedMessage } from './types'
+
 type Seed = Buffer
 type PublicKey = Buffer
 type MnemonicPhrase = string[]
 
 class CryptoInterface {
-  private chacedNetworks: Record<string, BaseAdaptor> = {}
+  private cachedNetworks: Record<string, BaseAdaptor> = {}
 
   constructor() {}
 
@@ -47,6 +49,7 @@ class CryptoInterface {
         seed: toBuffer(seed),
         mnemonic,
         password,
+        cInterface: this
       }))
     })
   }
@@ -80,7 +83,8 @@ class CryptoInterface {
     return new CryptoProfile({
       seed,
       mnemonic: mnemonic.join(` `),
-      password
+      password,
+      cInterface: this
     })
   }
 
@@ -134,7 +138,7 @@ class CryptoInterface {
     })
   }
 
-  public getNetworkAdaptor(networkId: string): Promise<BaseAdaptor|boolean> {
+  public getNetworkAdaptor(networkId: string): Promise<BaseAdaptor> {
     return new Promise(async (resolve, reject) => {
       try {
         const config = await this.getNetworkConfig(networkId)
@@ -156,7 +160,7 @@ class CryptoInterface {
             break
         }
         if (adaptor) {
-          this.chacedNetworks[networkId] = adaptor
+          this.cachedNetworks[networkId] = adaptor
           resolve(adaptor)
         }
       } catch (e) {
@@ -170,6 +174,16 @@ class CryptoInterface {
       fetch(`/swap.io-networks/networks/${networkId}/info.json`)
         .then(response => response.json())
         .then(data => resolve(data))
+    })
+  }
+
+  public validateMessage(signedMessage: ISignedMessage): Promise<Boolean> {
+    return new Promise( async (resolve, reject) => {
+      const { network } = signedMessage
+
+      const networkAdaptor: BaseAdaptor = await this.getNetworkAdaptor(network)
+      const isValid = networkAdaptor.validateMessage(signedMessage)
+      resolve(isValid)
     })
   }
 

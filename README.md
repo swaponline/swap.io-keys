@@ -36,6 +36,10 @@ Signs a transaction for an address.
 
 Signs a message by an address.
 
+### validateMessage()
+
+Validate message signed by `signMessage`
+
 ### publicKey()
 
 Returns public key for a specific address.
