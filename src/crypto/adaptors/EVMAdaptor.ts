@@ -34,7 +34,7 @@ class EVMAdaptor extends BaseAdaptor {
     const hashedMessage = EthUtil.keccak(Buffer.from(message, 'utf8'))
     const signature = EthUtil.ecsign(hashedMessage, privateKey)
 
-    const compactSig = EthUtil.toCompactSig(
+    const compactSig = EthUtil.toRpcSig(
       signature.v,
       signature.r,
       signature.s
@@ -46,6 +46,10 @@ class EVMAdaptor extends BaseAdaptor {
       address: signWallet.getAddress(),
       sign: compactSig
     }
+  }
+
+  public validateMessage(signedMessage: ISignedMessage): Boolean {
+    return false
   }
 }
 
