@@ -23,7 +23,7 @@ export default Vue.extend({
       if (event.data && event.data.key && event.data.key === `SignMessageWindow`) {
         if (event.data && event.data.type) {
           if (event.data.type === `SignMessage`) {
-            const signData = event.data
+            const signData = event.data.data
             this.signData = signData
           }
         }
@@ -49,15 +49,15 @@ export default Vue.extend({
         if (!this.isCancel) {
           this.password = password
           const cInterface = new CryptoInterface()
+          const network = await cInterface.getNetworkAdaptor(this.signData.networkId)
           cInterface.accessProfileByKey(this.signData.profileId, this.password).then(async (profile) => {
-
+            // @ts-ignore
+            const signedMessage = profile.signMessage(network, this.signData.message)
             windowParentPostMessage({
               key: 'SignMessageWindow',
               message: {
                 type: 'MessageSigned',
-                signedMessage: {
-                  allOk: true
-                }
+                signedMessage,
               }
             })
 
