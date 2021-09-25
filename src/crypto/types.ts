@@ -56,6 +56,12 @@ export interface INetwork {
   }
 }
 
+export interface ISignedMessage {
+  message: string
+  pubkey: string
+  sign: string
+}
+
 export interface ICoin {
   symbol: string
   name: string

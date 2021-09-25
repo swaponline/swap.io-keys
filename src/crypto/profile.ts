@@ -78,6 +78,14 @@ class CryptoProfile {
 
     return sign
     */
+    const signedMessage = networkAdaptor.signMessage({
+      seed: this.seed,
+      mnemonic: this.mnemonic,
+      password: this.password,
+      walletIndex: 0,
+      message
+    })
+    console.log('>>> signedMessage', signedMessage)
     return false
   }
 
