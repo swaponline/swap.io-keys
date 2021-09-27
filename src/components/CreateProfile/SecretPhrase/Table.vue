@@ -63,7 +63,7 @@ export default Vue.extend({
 
   @include small-phone {
     font-size: $--font-size-small;
-    grid-gap: 10px 2px;
+    grid-gap: 10px 5px;
   }
 
   &__number {
@@ -95,6 +95,14 @@ export default Vue.extend({
     padding: 4px 10px;
     color: var(--primary-text);
     white-space: nowrap;
+
+    @include tablet {
+      padding: 4px 8px;
+    }
+
+    @include phone {
+      padding: 4px 4px;
+    }
   }
 }
 </style>

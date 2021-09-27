@@ -18,18 +18,18 @@
       <template v-if="isWritePhrase || isRecoverProfile">
         <swap-button
           v-if="isRecoverProfile"
-          class="secret-phrase-show__button"
           :disabled="isDisabledRecover"
           :tooltip="isDisabledRecover ? 'Complete your secret phrase.' : null"
+          class="secret-phrase-show__button"
           @click="recoverProfile"
         >
           Recover
         </swap-button>
         <swap-button
           v-else
-          class="secret-phrase-show__button"
           :disabled="isDisabledCreate"
           :tooltip="isDisabledCreate ? 'Complete your secret phrase.' : null"
+          class="secret-phrase-show__button"
           @click="createProfile"
         >
           Create
@@ -211,8 +211,7 @@ export default Vue.extend({
   }
 
   &__button {
-    max-width: 174px;
-    min-height: 45px;
+    width: 180px;
 
     &:not(:last-child) {
       margin-right: 10px;
@@ -220,7 +219,6 @@ export default Vue.extend({
 
     @include tablet {
       width: 100%;
-      max-width: 334px;
     }
   }
 }
