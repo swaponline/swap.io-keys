@@ -34,9 +34,9 @@
         Back
       </swap-button>
       <swap-button
-        class="choose-style__button"
         :disabled="!isThemeSelected"
         :tooltip="!isThemeSelected ? 'Please pick a color scheme to proceed.' : null"
+        class="choose-style__button"
         @click="goToSecretPhrase"
       >
         Next
@@ -54,11 +54,11 @@ import windowParentPostMessage from '@/windowParentPostMessage'
 import { UserTheme } from '@/types/userTheme'
 import { ColorScheme } from '@/types/generators'
 import { CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
-import { THEME_SELECTED, CANCELED } from '@/constants/createProfile'
+import { CREATION_CANCELLED, THEME_SELECTED } from '@/constants/createProfile'
 import { ESCAPE } from '@/constants/keyCodes'
 import { setCSSCustomProperty } from '@/utils/common'
 import { getStorage } from '@/utils/storage'
-import { THEME_KEY, DARK_THEME_KEY } from '@/constants/theme'
+import { DARK_THEME_KEY, THEME_KEY } from '@/constants/theme'
 
 type Data = {
   selectedTheme: UserTheme
@@ -108,7 +108,7 @@ export default Vue.extend({
       windowParentPostMessage({
         key: CREATE_PROFILE_WINDOW,
         message: {
-          type: CANCELED
+          type: CREATION_CANCELLED
         }
       })
     },
@@ -117,7 +117,7 @@ export default Vue.extend({
         windowParentPostMessage({
           key: CREATE_PROFILE_WINDOW,
           message: {
-            type: CANCELED
+            type: CREATION_CANCELLED
           }
         })
       }
@@ -189,7 +189,7 @@ export default Vue.extend({
   }
 
   @include phone {
-    padding: 28px 0 20px;
+    padding: 28px 20px 20px;
   }
 
   &__header {
@@ -204,7 +204,7 @@ export default Vue.extend({
     }
 
     @include small-phone {
-      margin-bottom: 0;
+      margin-bottom: 10px;
     }
   }
 
@@ -227,7 +227,7 @@ export default Vue.extend({
 
   &__refresh-button {
     max-width: 135px;
-    min-height: 31px;
+    height: 31px;
     border-radius: 4px;
     padding: 6px 10px 6px 10px;
 
@@ -244,39 +244,21 @@ export default Vue.extend({
     display: flex;
     justify-content: center;
     margin-top: auto;
-
-    @include tablet {
-      margin: auto auto 0;
-      max-width: 400px;
-    }
-
-    @include phone {
-      max-width: 314px;
-    }
-
-    @include small-phone {
-      max-width: 260px;
-    }
   }
 
   &__button {
-    max-width: 174px;
-    min-height: 45px;
-
-    .swap-button__content {
-      font-weight: $--font-weight-semi-bold;
-    }
+    width: 180px;
 
     &:not(:last-child) {
       margin-right: 10px;
     }
 
     @include tablet {
-      max-width: 400px;
+      width: 100%;
     }
 
-    @include phone {
-      width: 100%;
+    .swap-button__content {
+      font-weight: $--font-weight-semi-bold;
     }
   }
 }

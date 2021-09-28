@@ -1,11 +1,13 @@
 <template>
-  <match-media v-slot="{ phone }" wrapper-tag="div" class="swap-help-text">
-    <template v-if="!phone">
-      <slot></slot>
-    </template>
-    <swap-button v-else v-close-popover class="swap-help-text__button" round :tooltip="text">
-      ?
-    </swap-button>
+  <match-media v-slot="{ phone }" wrapper-tag="div">
+    <div class="swap-help-text">
+      <template v-if="!phone">
+        <slot></slot>
+      </template>
+      <swap-button v-else v-close-popover :tooltip="text" class="swap-help-text__button" round>
+        ?
+      </swap-button>
+    </div>
   </match-media>
 </template>
 
@@ -33,7 +35,8 @@ export default Vue.extend({
 
   &__button {
     width: 23px;
-    min-height: 23px;
+    height: 23px;
+    padding: 0;
   }
 }
 </style>

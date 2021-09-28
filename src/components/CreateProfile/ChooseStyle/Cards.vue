@@ -73,10 +73,6 @@ export default Vue.extend({
     @include tablet {
       grid-template-columns: 1fr 1fr;
     }
-
-    @include small-phone {
-      margin-top: 10px;
-    }
   }
 }
 </style>
