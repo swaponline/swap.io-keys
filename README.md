@@ -1,5 +1,7 @@
 # Keys layer
 
+![key32](https://user-images.githubusercontent.com/22708849/129374594-ad722432-0c99-4b62-8e54-f2f1a0b39029.png)
+
 https://keys.swap.io
 
 localStorage-based simple multicurrency key storage. This part of swap.io is responsible
@@ -33,6 +35,10 @@ Signs a transaction for an address.
 ### signMessage()
 
 Signs a message by an address.
+
+### validateMessage()
+
+Validate message signed by `signMessage`
 
 ### publicKey()
 

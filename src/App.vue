@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="theme" :class="classes">
     <media-query-provider :queries="queries">
       <router-view />
     </media-query-provider>
@@ -9,6 +9,10 @@
 <script lang="ts">
 import Vue from 'vue'
 import { MediaQueryProvider } from 'vue-component-media-queries'
+import { getStorage } from '@/utils/storage'
+import { getUserSystemTheme } from '@/utils/theme'
+import { THEME_KEY, SYSTEM_THEME_KEY, LIGHT_THEME_KEY } from './constants/theme'
+import { messageHandler } from './messageHandler'
 
 interface Queries {
   desktop: string
@@ -24,8 +28,10 @@ const queries: Queries = {
   smallPhone: '(max-width: 320px)'
 }
 
+type Theme = 'light' | 'dark' | 'system'
 type Data = {
   queries: Queries
+  selectedAppTheme: Theme
 }
 
 export default Vue.extend({
@@ -35,7 +41,26 @@ export default Vue.extend({
   },
   data(): Data {
     return {
-      queries
+      queries,
+      selectedAppTheme: LIGHT_THEME_KEY
+    }
+  },
+  computed: {
+    classes() {
+      return `theme--${this.selectedAppTheme}`
+    }
+  },
+  async mounted() {
+    await messageHandler()
+    this.setAppTheme()
+  },
+  methods: {
+    setAppTheme() {
+      this.selectedAppTheme = getStorage(THEME_KEY) || SYSTEM_THEME_KEY
+
+      if (this.selectedAppTheme === SYSTEM_THEME_KEY) {
+        this.selectedAppTheme = getUserSystemTheme()
+      }
     }
   }
 })

@@ -1,16 +1,21 @@
 import Vue from 'vue'
 import { FIREFOX } from '@/constants/browsers'
-import UaParser from 'ua-parser-js'
 import VTooltip from 'v-tooltip'
+import UaParser from 'ua-parser-js'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import messageHandler from './messageHandler'
 import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
 import '@/assets/scss/base.scss'
+import CryptoInterface from '@/crypto/interface'
 
-Vue.use(VTooltip)
+
+//@ts-ignore
+window.cInterface = new CryptoInterface() 
+Vue.use(VTooltip, {
+  defaultTrigger: window.innerWidth > 768 ? 'hover focus click' : 'click'
+})
 Vue.use(UI)
 // Vue.config.productionTip = false
 const uaParser = new UaParser()
@@ -21,7 +26,6 @@ function checkingIframeAndDomain(location: string): boolean {
   return window.top !== window.self && location === process.env.VUE_APP_HOME_URL
 }
 
-messageHandler()
 windowParentPostMessage({ key: 'createWindow' })
 
 if (browserName === FIREFOX) {
@@ -39,3 +43,8 @@ if (shouldCreateIframe) {
     render: h => h(App)
   }).$mount('#app')
 }
+
+// TODO: Разобраться почему не работает такая реализация
+// messageHandler().then(() => {
+//   app.mount('#app') // or new Vue({ /* options */ }).mount('#app')
+// })

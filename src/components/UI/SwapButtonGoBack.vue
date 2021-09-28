@@ -1,7 +1,7 @@
 <template>
   <button class="button-back" v-bind="$attrs" v-on="$listeners">
     <span>
-      <svg-icon aria-label="Go back" class="button-back__i-back" name="i_back"></svg-icon>
+      <svg-icon aria-label="Go back" class="button-back__i-back" name="i_back" />
     </span>
   </button>
 </template>

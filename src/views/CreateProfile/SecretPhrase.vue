@@ -1,6 +1,6 @@
 <template>
   <div class="secret-phrase">
-    <secret-phrase-table
+    <secret-phrase-show
       :is-recover-profile="isRecoverProfile"
       :words="words"
       @create="toggleFormPassword(true)"
@@ -12,14 +12,14 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import SecretPhraseTable from '@/components/Profile/SecretPhraseTable.vue'
-import FormPassword from '@/components/Profile/FormPassword.vue'
+import SecretPhraseShow from '@/components/CreateProfile/SecretPhrase/Show.vue'
+import FormPassword from '@/components/CreateProfile/FormPassword.vue'
 import { encryptData } from '@/utils/cipher'
 import { getUserTheme } from '@/utils/userTheme'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { getStorage, setStorage } from '@/utils/storage'
-import { IFRAME_INITED, PROFILE_CREATED, PROFILE_RECOVERED, CANCELED } from '@/constants/createProfile'
-import { RECOVER_PROFILE_WINDOW, CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
+import { CREATION_CANCELLED, IFRAME_INITED, PROFILE_CREATED, PROFILE_RECOVERED } from '@/constants/createProfile'
+import { CREATE_PROFILE_WINDOW, RECOVER_PROFILE_WINDOW } from '@/constants/windowKey'
 import { UserTheme } from '@/types/userTheme'
 import { ESCAPE } from '@/constants/keyCodes'
 
@@ -32,7 +32,7 @@ type Data = {
 export default Vue.extend({
   name: 'SecretPhrase',
   components: {
-    SecretPhraseTable,
+    SecretPhraseShow,
     FormPassword
   },
   props: {
@@ -61,6 +61,15 @@ export default Vue.extend({
       }
     }
   },
+  created(): void {
+    document.addEventListener('keydown', this.closeByPressingESC)
+
+    if (this.isRecoverProfile) {
+      this.words = new Array(24).fill('', 0, 24)
+      return
+    }
+    this.words = this.localTheme.wordList
+  },
   mounted(): void {
     if (this.isRecoverProfile) {
       windowParentPostMessage({
@@ -74,15 +83,6 @@ export default Vue.extend({
       })
     }
   },
-  created(): void {
-    document.addEventListener('keydown', this.closeByPressingESC)
-
-    if (this.isRecoverProfile) {
-      this.words = new Array(24).fill('', 0, 24)
-      return
-    }
-    this.words = this.localTheme.wordList
-  },
   beforeDestroy() {
     document.removeEventListener('keydown', this.closeByPressingESC)
   },
@@ -92,7 +92,7 @@ export default Vue.extend({
         windowParentPostMessage({
           key: this.isRecoverProfile ? RECOVER_PROFILE_WINDOW : CREATE_PROFILE_WINDOW,
           message: {
-            type: CANCELED
+            type: CREATION_CANCELLED
           }
         })
       }
@@ -100,9 +100,9 @@ export default Vue.extend({
     async createProfile(password: string): Promise<void> {
       this.toggleFormPassword(false)
 
-      const { seed, publicKey } = this.localTheme
+      const { seed, publicKey, wordList } = this.localTheme
 
-      const newProfile = await encryptData(seed, publicKey, password)
+      const newProfile = await encryptData(seed, publicKey, wordList.join(' '), password)
       const profiles: Record<string, unknown> = getStorage('profiles') || {}
       const shortKey = this.shortPublicKey
 
@@ -138,5 +138,14 @@ export default Vue.extend({
 <style lang="scss">
 .secret-phrase {
   height: 100%;
+  padding: 32px 110px 40px;
+
+  @include tablet {
+    padding: 30px 25px 25px;
+  }
+
+  @include phone {
+    padding: 28px 20px 20px;
+  }
 }
 </style>

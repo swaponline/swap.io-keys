@@ -1,5 +1,5 @@
 <template>
-  <button class="swap-button" :class="classes" v-bind="$attrs" :disabled="disabled" v-on="$listeners">
+  <button :class="classes" :disabled="disabled" class="swap-button" v-bind="$attrs" v-on="$listeners">
     <span class="swap-button__content">
       <slot></slot>
     </span>
@@ -26,6 +26,10 @@ export default Vue.extend({
       type: Boolean as PropType<boolean>,
       default: false
     },
+    round: {
+      type: Boolean as PropType<boolean>,
+      default: false
+    },
     tooltip: {
       type: String as PropType<string>,
       default: ''
@@ -40,7 +44,8 @@ export default Vue.extend({
       const base = 'swap-button'
       return {
         [`${base}__text`]: this.text,
-        [`${base}__disabled`]: this.disabled
+        [`${base}--disabled`]: this.disabled,
+        [`${base}--round`]: this.round
       } as Classes
     },
     computedTooltipParams(): TooltipParams {
@@ -58,23 +63,24 @@ export default Vue.extend({
 <style lang="scss">
 .swap-button {
   position: relative;
-  min-height: 52px;
-  width: 100%;
+  height: 45px;
+  padding: 0 16px;
   border-radius: $--main-border-radius;
   text-transform: none;
-  background-color: $--light-grey;
+  background-color: var(--main-button-background);
   font-size: 0.875rem;
   letter-spacing: 1px;
   transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:hover {
-    background-color: $--light-grey-1;
+    background-color: var(--main-button-background-hover);
   }
 
-  --text-color: $--black;
-
   &__content {
-    color: var(--text-color);
+    color: var(--primary-text);
     font-weight: $--font-weight-bold;
     font-size: $--font-size-button;
   }
@@ -84,23 +90,28 @@ export default Vue.extend({
     color: $--dark-grey;
 
     &:hover {
-      background-color: $--light-grey;
+      background-color: var(--main-button-background-hover);
     }
   }
 
-  &__disabled {
-    background-color: $--light-grey-1;
-    color: $--dark-grey;
+  &--disabled {
     cursor: default;
 
-    &:hover {
-      background-color: $--light-grey-1;
+    .swap-button__content {
+      color: var(--main-button-text-disabled);
     }
+
+    &:hover {
+      background-color: var(--main-button-background-hover);
+    }
+  }
+
+  &--round {
+    border-radius: 50%;
   }
 
   @include phone {
     width: 100%;
-    min-height: 45px;
 
     > span {
       font-weight: $--font-weight-bold;
