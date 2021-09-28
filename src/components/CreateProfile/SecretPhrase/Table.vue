@@ -101,7 +101,7 @@ export default Vue.extend({
     }
 
     @include phone {
-      padding: 4px 4px;
+      padding: 4px;
     }
   }
 }
