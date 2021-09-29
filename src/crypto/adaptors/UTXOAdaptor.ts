@@ -10,7 +10,7 @@ import * as bitcoinMessage from 'bitcoinjs-message'
 type Seed = Buffer
 
 class UTXOAdaptor extends BaseAdaptor {
-  private network: unknown = false // For utxo like
+  private network: any = false // For utxo like
 
   constructor(networkConfig) {
     super(networkConfig)
@@ -36,23 +36,30 @@ class UTXOAdaptor extends BaseAdaptor {
     //@ts-ignore
     const signWallet: BaseWallet = this.createWallet(options)
 
-    ///
-    const FLOTESTNET = {
-      messagePrefix: '\x19FLO testnet Signed Message:\n',
+    const netinfo = this.network.settings
+    const signParams = {
+      messagePrefix: netinfo.messagePrefix,
       bip32: {
-        public: 0x013440e2,
-        private: 0x01343c23
+        public: netinfo.base58prefix.publicKeyBIP32,
+        private: netinfo.base58prefix.privateKeyBIP32,
       },
-      pubKeyHash: 0x73,
-      scriptHash: 0xc6,
-      wif: 0xef
+      pubKeyHash: netinfo.base58prefix.pubKeyHash,
+      scriptHash: netinfo.base58prefix.scriptHash,
+      wif: netinfo.base58prefix.privateKeyWIF
     }
+
     // @ts-ignore
-    var keyPair = bitcoin.ECPair.fromWIF('cRgnQe9MUu1JznntrLaoQpB476M8PURvXVQB5R2eqms5tXnzNsrr', FLOTESTNET)
+    var keyPair = bitcoin.ECPair.fromWIF(signWallet.privateKey, signParams)
     // @ts-ignore
     var signature = bitcoinMessage.sign(message, keyPair.privateKey, keyPair.compressed)
 
-    return false
+    return {
+      message,
+      pubkey: signWallet.getPublicKey(),
+      address: signWallet.getAddress(),
+      sign: signature.toString('base64'),
+      network: this.getSymbol()
+    }
   }
 
   public validateMessage(signedMessage: ISignedMessage): Boolean {
