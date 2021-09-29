@@ -64,11 +64,14 @@ class UTXOAdaptor extends BaseAdaptor {
 
   public validateMessage(signedMessage: ISignedMessage): Boolean {
     // Verify a message
-    var address = 'oWwrvqa3QP5EHHBiUn9eAQf7d1ts5BnChG'
-    var signature = 'ILqvGGBI89K8Tk9/BgrGPSMTB9ZY+Z88Z0GjVsx7uPTwOfQ+eNj/VZKZ40iSbUPgz6mSBvo6w1Dkzns9DqfYa2o='
-    var message = 'Hey this is Ranchi Mall'
-    console.log(bitcoinMessage.verify(message, address, signature))
-    return false
+    const {
+      message,
+      sign,
+      address
+    } = signedMessage
+
+    const isValid = bitcoinMessage.verify(message, address, sign)
+    return isValid
   }
 }
 
