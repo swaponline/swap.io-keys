@@ -23,7 +23,10 @@ class EVMAdaptor extends BaseAdaptor {
   }
 
   public signMessage(options): ISignedMessage|false {
-    return evmSignMessage(options)
+    return evmSignMessage({
+      ...options,
+      adaptor: this
+    })
   }
 
   public validateMessage(signedMessage: ISignedMessage): Boolean {
