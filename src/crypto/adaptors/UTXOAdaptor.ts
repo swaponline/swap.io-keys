@@ -7,6 +7,8 @@ import { ISignedMessage } from '../types'
 import * as bitcoin from 'bitcoinjs-lib'
 import * as bitcoinMessage from 'bitcoinjs-message'
 
+import { signMessage as utxoSignMessage } from '../templates/signMessage/utxoDefault'
+
 type Seed = Buffer
 
 class UTXOAdaptor extends BaseAdaptor {
