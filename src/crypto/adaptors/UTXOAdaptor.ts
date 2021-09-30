@@ -8,6 +8,7 @@ import * as bitcoin from 'bitcoinjs-lib'
 import * as bitcoinMessage from 'bitcoinjs-message'
 
 import { signMessage as utxoSignMessage } from '../templates/signMessage/utxoDefault'
+import { validateMessage as utxoValidateMessage } from '../templates/validateMessage/utxoDefault'
 
 type Seed = Buffer
 
