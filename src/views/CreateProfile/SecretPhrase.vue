@@ -18,8 +18,8 @@ import { encryptData } from '@/utils/cipher'
 import { getUserTheme } from '@/utils/userTheme'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { getStorage, setStorage } from '@/utils/storage'
-import { IFRAME_INITED, PROFILE_CREATED, PROFILE_RECOVERED, CANCELED } from '@/constants/createProfile'
-import { RECOVER_PROFILE_WINDOW, CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
+import { CREATION_CANCELLED, IFRAME_INITED, PROFILE_CREATED, PROFILE_RECOVERED } from '@/constants/createProfile'
+import { CREATE_PROFILE_WINDOW, RECOVER_PROFILE_WINDOW } from '@/constants/windowKey'
 import { UserTheme } from '@/types/userTheme'
 import { ESCAPE } from '@/constants/keyCodes'
 
@@ -92,7 +92,7 @@ export default Vue.extend({
         windowParentPostMessage({
           key: this.isRecoverProfile ? RECOVER_PROFILE_WINDOW : CREATE_PROFILE_WINDOW,
           message: {
-            type: CANCELED
+            type: CREATION_CANCELLED
           }
         })
       }
@@ -141,11 +141,11 @@ export default Vue.extend({
   padding: 32px 110px 40px;
 
   @include tablet {
-    padding: 31px 39px;
+    padding: 30px 25px 25px;
   }
 
   @include phone {
-    padding: 28px 10px 20px;
+    padding: 28px 20px 20px;
   }
 }
 </style>

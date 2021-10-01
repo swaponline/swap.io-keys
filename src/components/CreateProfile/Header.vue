@@ -36,6 +36,10 @@
       margin-right: 10px;
       margin-bottom: 0;
     }
+
+    @include small-phone {
+      font-size: $--font-size-button;
+    }
   }
 }
 </style>

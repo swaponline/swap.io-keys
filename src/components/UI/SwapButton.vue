@@ -1,5 +1,5 @@
 <template>
-  <button class="swap-button" :class="classes" v-bind="$attrs" :disabled="disabled" v-on="$listeners">
+  <button :class="classes" :disabled="disabled" class="swap-button" v-bind="$attrs" v-on="$listeners">
     <span class="swap-button__content">
       <slot></slot>
     </span>
@@ -63,14 +63,17 @@ export default Vue.extend({
 <style lang="scss">
 .swap-button {
   position: relative;
-  min-height: 42px;
-  width: 100%;
+  height: 45px;
+  padding: 0 16px;
   border-radius: $--main-border-radius;
   text-transform: none;
   background-color: var(--main-button-background);
   font-size: 0.875rem;
   letter-spacing: 1px;
   transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:hover {
     background-color: var(--main-button-background-hover);
@@ -109,7 +112,6 @@ export default Vue.extend({
 
   @include phone {
     width: 100%;
-    min-height: 45px;
 
     > span {
       font-weight: $--font-weight-bold;
