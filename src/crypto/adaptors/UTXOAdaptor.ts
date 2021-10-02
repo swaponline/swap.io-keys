@@ -2,11 +2,15 @@
 import BaseAdaptor from './BaseAdaptor'
 import BaseWallet from '../wallets/BaseWallet'
 import UTXOWallet from '../wallets/UTXOWallet'
+import { ISignedMessage } from '../types'
+
+import { signMessage as utxoSignMessage } from '../templates/signMessage/utxoDefault'
+import { validateMessage as utxoValidateMessage } from '../templates/validateMessage/utxoDefault'
 
 type Seed = Buffer
 
 class UTXOAdaptor extends BaseAdaptor {
-  private network: unknown = false // For utxo like
+  private network: any = false // For utxo like
 
   constructor(networkConfig) {
     super(networkConfig)
@@ -23,6 +27,17 @@ class UTXOAdaptor extends BaseAdaptor {
       ...options
     })
     return wallet
+  }
+
+  public signMessage(options): ISignedMessage|false {
+    return utxoSignMessage({
+      ...options,
+      adaptor: this,
+    })
+  }
+
+  public validateMessage(signedMessage: ISignedMessage): Boolean {
+    return utxoValidateMessage(signedMessage)
   }
 }
 

@@ -5,7 +5,6 @@ import BaseAdaptor from './adaptors/BaseAdaptor'
 import CryptoInterface from './interface'
 import { getStorage, setStorage } from '../utils/storage'
 import { encryptData, decryptData } from '../utils/cipher'
-import { signMessage as defaultSignMessage } from './templates/signMessage/default'
 import { ISignedMessage } from './types'
 
 

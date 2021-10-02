@@ -6,6 +6,7 @@ export const messageHandler = (): Promise<boolean> => {
   return new Promise(resolve => {
     window.addEventListener('message', event => {
       if (event.origin !== process.env.VUE_APP_HOME_URL) return
+      if (!event.data.message) return
       const { type, payload } = event.data.message
       switch (type) {
         case SET_APP_THEME:
