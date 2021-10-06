@@ -146,7 +146,7 @@ export default Vue.extend({
         message: {
           type: THEME_SELECTED,
           payload: {
-            theme: this.selectedColorScheme
+            colorScheme: this.selectedColorScheme
           }
         }
       })

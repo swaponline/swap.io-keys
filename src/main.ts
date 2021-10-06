@@ -8,11 +8,7 @@ import store from './store'
 import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
 import '@/assets/scss/base.scss'
-import CryptoInterface from '@/crypto/interface'
 
-
-//@ts-ignore
-window.cInterface = new CryptoInterface() 
 Vue.use(VTooltip, {
   defaultTrigger: window.innerWidth > 768 ? 'hover focus click' : 'click'
 })

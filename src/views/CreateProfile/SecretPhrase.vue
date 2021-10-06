@@ -100,24 +100,22 @@ export default Vue.extend({
     async createProfile(password: string): Promise<void> {
       this.toggleFormPassword(false)
 
-      const { seed, publicKey, wordList } = this.localTheme
+      const { seed, publicKey, wordList, colorScheme } = this.localTheme
 
       const newProfile = await encryptData(seed, publicKey, wordList.join(' '), password)
       const profiles: Record<string, unknown> = getStorage('profiles') || {}
       const shortKey = this.shortPublicKey
 
-      profiles[shortKey] = newProfile
+      profiles[shortKey] = { ...newProfile, colorScheme }
 
       setStorage('profiles', profiles)
-
-      const { colorScheme } = this.localTheme
 
       windowParentPostMessage({
         key: this.isRecoverProfile ? RECOVER_PROFILE_WINDOW : CREATE_PROFILE_WINDOW,
         message: {
           type: this.isRecoverProfile ? PROFILE_RECOVERED : PROFILE_CREATED,
           payload: {
-            profile: { ...colorScheme, publicKey: shortKey }
+            profile: { colorScheme, publicKey: shortKey }
           }
         }
       })
