@@ -49,7 +49,7 @@ import SecretPhraseTable from '@/components/CreateProfile/SecretPhrase/Table.vue
 import { randomInteger } from '@/utils/common'
 import { TableMatrix } from '../types'
 
-const QUANTITY_INPUTS = 0
+const QUANTITY_INPUTS = 6
 
 type Data = {
   tableMatrix: TableMatrix
