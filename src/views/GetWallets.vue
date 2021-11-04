@@ -5,6 +5,7 @@
 import Vue from 'vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import CryptoInterface from '@/crypto/interface'
+import { getStorage } from '@/utils/storage'
 
 type Data = {}
 
@@ -16,9 +17,15 @@ export default Vue.extend({
         if (event.data && event.data.type) {
           if (event.data.type === `GetWallets`) {
             const data = event.data.data
+            const { profileId } = data
+            const wallets: Record<string, unknown> = getStorage(`wallets_${profileId}`) || {}
+
             windowParentPostMessage({
               key: 'GetWalletsWindow',
-              message: {}
+              message: {
+                type: 'GetWallets',
+                wallets
+              }
             })
           }
         }
