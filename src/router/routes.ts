@@ -44,6 +44,11 @@ const routes: Array<RouteConfig> = [
     path: '/validate-message',
     name: 'ValidateMessage',
     component: () => import(/* webpackChunkName: 'ValidateMessage' */ '@/views/ValidateMessage.vue')
+  },
+  {
+    path: '/get-wallets',
+    name: 'GetWallets',
+    component: () => import(/* webpackChunkName: 'GetWallets' */ '@/views/GetWallets.vue')
   }
 ]
 
