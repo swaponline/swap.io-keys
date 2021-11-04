@@ -8,6 +8,7 @@
 /* eslint-disable */
 import Vue from 'vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
+import { getStorage, setStorage } from '@/utils/storage'
 import CryptoInterface from '@/crypto/interface'
 
 type Data = {
@@ -57,6 +58,7 @@ export default Vue.extend({
         
         cInterface.accessProfileByKey(this.profileId, this.password).then(async (profile) => {
           const wallets: Array<unknown> = []
+          const profileWallets: Record<string, unknown> = getStorage(`wallets_${this.profileId}`) || {}
           this.walletsData.forEach(async (walletData, walletIndex) => {
             const network = await cInterface.getNetworkAdaptor(walletData.networkId)
             // @ts-ignore
@@ -67,7 +69,13 @@ export default Vue.extend({
               address: wallet.getAddress(),
               publicKey: wallet.getPublicKey()
             })
+            profileWallets[`${walletData.networkId}_${wallet.getAddress()}`] = {
+              ...walletData,
+              address: wallet.getAddress(),
+              publicKey: wallet.getPublicKey()
+            }
           })
+          setStorage(`wallets_${this.profileId}`, profileWallets)
           windowParentPostMessage({
             key: 'CreateWalletsWindow',
             message: {
