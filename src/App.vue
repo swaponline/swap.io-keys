@@ -55,6 +55,7 @@ export default Vue.extend({
     this.setAppTheme()
   },
   methods: {
+    // TODO подумать над избавлением от этого метода в пользу получения темы с первого фронтенда
     setAppTheme() {
       this.selectedAppTheme = getStorage(THEME_KEY) || SYSTEM_THEME_KEY
 

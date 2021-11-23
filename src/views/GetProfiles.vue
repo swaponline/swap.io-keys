@@ -8,7 +8,7 @@
 import Vue from 'vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import CryptoInterface from '@/crypto/interface'
-import { GET_PROFILES } from '@/constants/createProfile'
+import { messageTypes } from '@/constants/profile'
 import { GET_PROFILES_WINDOW } from '@/constants/windowKey'
 
 export default Vue.extend({
@@ -17,17 +17,15 @@ export default Vue.extend({
     const cryptoInterface = new CryptoInterface()
     // @ts-ignore
     const profiles: Record<string, any> = cryptoInterface.getProfiles()
-    console.log('profiles', profiles)
     const retData = {}
     Object.keys(profiles).forEach(profileId => {
       retData[profileId] = profiles[profileId].publicKey
     })
 
-    console.log('profileKeys', retData)
     windowParentPostMessage({
       key: GET_PROFILES_WINDOW,
       message: {
-        type: GET_PROFILES,
+        type: messageTypes.GET_PROFILES,
         profiles: retData
       }
     })

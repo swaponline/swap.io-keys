@@ -1,6 +1,6 @@
 <template>
-  <div :class="['choose-style-card', isSelectedScheme && 'choose-style-card--select']" @click="select">
-    <canvas ref="backgroundCanvas" class="choose-style-card__background"></canvas>
+  <div :class="['select-style-card', isSelected && 'select-style-card--select']" @click="select">
+    <canvas ref="backgroundCanvas" class="select-style-card__background"></canvas>
   </div>
 </template>
 
@@ -9,8 +9,9 @@ import Vue, { PropType } from 'vue'
 import Canvg from 'canvg'
 import { ColorScheme } from '@/types/generators'
 
+let canvg = null
 export default Vue.extend({
-  name: 'ChooseStyleCard',
+  name: 'SelectColorSchemeCard',
   props: {
     colorScheme: {
       type: Object as PropType<ColorScheme>,
@@ -18,7 +19,7 @@ export default Vue.extend({
         return {} as ColorScheme
       }
     },
-    isSelectedScheme: {
+    isSelected: {
       type: Boolean as PropType<boolean>,
       default: false
     }
@@ -27,22 +28,23 @@ export default Vue.extend({
     colorScheme: {
       immediate: true,
       handler() {
-        this.$nextTick(() => this.setCardsBackground())
+        this.$nextTick(() => this.setCardBackground())
       }
     }
   },
 
   mounted() {
-    window.addEventListener('resize', this.setCardsBackground)
+    window.addEventListener('resize', this.setCardBackground)
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.setCardsBackground)
+    window.removeEventListener('resize', this.setCardBackground)
   },
   methods: {
     select() {
-      this.$emit('select', this.colorScheme)
+      this.$emit('select')
     },
-    setCardsBackground(): void {
+    setCardBackground(): void {
+      const { background } = this.colorScheme
       const canvas = this.$refs.backgroundCanvas
       const ctx = canvas.getContext('2d')
 
@@ -50,24 +52,31 @@ export default Vue.extend({
         ignoreMouse: true,
         ignoreAnimation: true
       }
-      const { background } = this.colorScheme
+
       // hack for scaling svg to canvas size
       canvas.style = ''
       const widthStr = `width="${canvas.offsetWidth}"\n`
       const heightStr = `height="${canvas.offsetHeight}"\n`
+
       const index = background.indexOf('viewBox')
       const resSvg = background.substring(0, index) + widthStr + heightStr + background.substring(index)
+      if (canvg) this.resetCanvg()
 
-      const canvg = Canvg.fromString(ctx, resSvg, options)
+      canvg = Canvg.fromString(ctx, resSvg, options)
 
+      canvas.style.display = 'block'
       canvg.start()
+    },
+    resetCanvg() {
+      canvg.stop()
+      canvg = null
     }
   }
 })
 </script>
 
 <style lang="scss">
-.choose-style-card {
+.select-style-card {
   display: flex;
   cursor: pointer;
   padding: 5px 5px;

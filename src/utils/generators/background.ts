@@ -1,6 +1,7 @@
 import { getMaxOfArray } from '@/utils/common'
 import { Rect, Ellipse, ColorScheme, WidthRects } from '@/types/generators'
 import { derivedRandom, randomInteger } from '@/utils/generators/randomizer'
+import { PublicKey } from '@/types/encryptionParameters'
 import { getDarkenedColor, getSecondColors, colors, hexToRGBA } from './color'
 
 export class UserColorScheme {
@@ -22,7 +23,7 @@ export class UserColorScheme {
 
   ellipseModel: Ellipse[]
 
-  constructor(publicKey: Buffer) {
+  constructor(publicKey: PublicKey) {
     derivedRandom(publicKey)
     this.DEFAULT_WIDTH_SVG = 200
     this.DEFAULT_HEIGHT_SVG = 120

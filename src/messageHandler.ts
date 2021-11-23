@@ -1,5 +1,5 @@
 import { THEME_KEY } from '@/constants/theme'
-import { SET_APP_THEME } from '@/constants/createProfile'
+import { messageTypes } from '@/constants/profile'
 import { setStorage } from './utils/storage'
 
 export const messageHandler = (): Promise<boolean> => {
@@ -9,7 +9,7 @@ export const messageHandler = (): Promise<boolean> => {
       if (!event.data.message) return
       const { type, payload } = event.data.message
       switch (type) {
-        case SET_APP_THEME:
+        case messageTypes.SET_APP_THEME:
           setStorage(THEME_KEY, payload.theme)
           resolve(true)
           break

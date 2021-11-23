@@ -4,6 +4,7 @@ import SwapInput from './SwapInput.vue'
 import SwapButtonGoBack from './SwapButtonGoBack.vue'
 import EnterPassword from './EnterPassword.vue'
 import SwapHelpText from './SwapHelpText.vue'
+import SwapStepper from './SwapStepper.vue'
 
 export default {
   // У аргумента Vue должен быть тип
@@ -15,5 +16,6 @@ export default {
     Vue.component('SwapButtonGoBack', SwapButtonGoBack)
     Vue.component('SwapHelpText', SwapHelpText)
     Vue.component('EnterPassword', EnterPassword)
+    Vue.component('SwapStepper', SwapStepper)
   }
 }

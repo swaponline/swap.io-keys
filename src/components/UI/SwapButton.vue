@@ -79,6 +79,10 @@ export default Vue.extend({
     background-color: var(--main-button-background-hover);
   }
 
+  &:active {
+    background-color: var(--main-button-background-active);
+  }
+
   &__content {
     color: var(--primary-text);
     font-weight: $--font-weight-bold;
