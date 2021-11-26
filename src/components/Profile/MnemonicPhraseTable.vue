@@ -1,6 +1,6 @@
 <template>
   <div class="mnemonic-phrase-table">
-    <template v-for="({ value, input }, index) in tableMatrix">
+    <template v-for="({ value, input }, index) in localTableMatrix">
       <swap-input
         v-if="input"
         :key="index"
@@ -22,6 +22,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 import { TableMatrix } from '@/types/components/profile'
+import { cloneDeep } from '@/utils/common'
 
 export default Vue.extend({
   name: 'SecretPhraseTable',
@@ -33,21 +34,24 @@ export default Vue.extend({
       }
     }
   },
-  computed: {
-    localTableMatrix: {
-      get() {
-        return this.tableMatrix
-      },
-      set(newTableMatrix) {
-        this.$emit('change', newTableMatrix)
+  data() {
+    return {
+      localTableMatrix: []
+    }
+  },
+  watch: {
+    tableMatrix: {
+      deep: true,
+      immediate: true,
+      handler(newTableMatrix) {
+        this.localTableMatrix = cloneDeep(newTableMatrix)
       }
     }
   },
   methods: {
     changeTableMatrixCell(index: number, value: string): void {
-      const modifiedTableMatrix = this.localTableMatrix
-      modifiedTableMatrix[index].value = value.trim()
-      this.localTableMatrix = modifiedTableMatrix
+      this.localTableMatrix[index].value = value.trim()
+      this.$emit('change', this.localTableMatrix)
     }
   }
 })

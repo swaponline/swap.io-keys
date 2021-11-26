@@ -80,20 +80,6 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.tooltip {
-  .tooltip-inner {
-    background: $--purple;
-    padding: 12px 14px;
-    border-radius: 12px;
-    width: 264px;
-    font-size: 15px;
-  }
-
-  .tooltip-arrow {
-    border-color: $--purple;
-  }
-}
-
 .select-color-scheme {
   height: 100%;
   display: flex;

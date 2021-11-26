@@ -75,8 +75,8 @@
         </div>
       </template>
       <template #4="{ changeActiveStep }">
-        <create-profile-form-password v-model="password">
-          <template #actions="{ isConfirmPassword }">
+        <create-profile-form-password v-model="selectedProfileParameters.encryptionParameters.password">
+          <template #actions="{ isValidPassword }">
             <div class="create-profile__buttons">
               <swap-button
                 class="create-profile__button"
@@ -85,8 +85,8 @@
                 Back
               </swap-button>
               <swap-button
-                :disabled="!isConfirmPassword"
-                :tooltip="!isConfirmPassword ? 'Please come up with a password.' : null"
+                :disabled="!isValidPassword"
+                :tooltip="!isValidPassword ? 'Please come up with a password.' : null"
                 class="create-profile__button"
                 @click="createProfile"
               >
@@ -128,7 +128,7 @@ import { ProfileParameters } from '@/types/profileParameters'
 import { ChangeActiveStep } from '@/types/components/UI/swapStepper'
 import { TableMatrix } from '@/types/components/profile'
 
-const QUANTITY_INPUTS = 2
+const QUANTITY_INPUTS = 6
 
 const STEPS = STEPS_CREATE_PROFILE
 
@@ -136,7 +136,6 @@ type Data = {
   profilesParameters: Array<ProfileParameters>
   selectedProfileParameters: ProfileParameters
   tableMatrix: TableMatrix
-  password: string
   isRefreshing: boolean
 }
 
@@ -146,6 +145,8 @@ async function getProfileParameters(): Promise<ProfileParameters> {
   const mnemonicPhrase = profileService.getMnemonicPhrase()
   const seed = await profileService.getSeedFromMnemonic(mnemonicPhrase)
   const publicKey = profileService.getPublicKey(seed)
+  const password = ''
+
   const colorScheme = profileService.getColorScheme(publicKey)
 
   return {
@@ -153,7 +154,8 @@ async function getProfileParameters(): Promise<ProfileParameters> {
     encryptionParameters: {
       mnemonicPhrase,
       seed,
-      publicKey
+      publicKey,
+      password
     }
   }
 }
@@ -177,7 +179,6 @@ export default {
       profilesParameters: profileService.getProfilesParameters(),
       selectedProfileParameters: profileService.getSelectedProfileParameters(),
       tableMatrix: [],
-      password: '',
       isRefreshing: false
     }
   },
@@ -196,9 +197,8 @@ export default {
     },
     isPhraseWritten(): boolean {
       const recordedMnemonicPhrase = this.tableMatrix.map(({ value }) => value)
-      const a = recordedMnemonicPhrase.toString()
-      const b = this.mnemonicPhrase.toString()
-      return a !== b
+
+      return recordedMnemonicPhrase.toString() !== this.mnemonicPhrase.toString()
     }
   },
   async created(): Promise<void> {

@@ -15,7 +15,8 @@ export type ProfileService = {
   createProfile: ({
     seed,
     publicKey,
-    mnemonicPhrase
+    mnemonicPhrase,
+    password
   }: EncryptionParameters) => Promise<{ cryptoProfile: CryptoProfile; shortKey: string }>
   saveProfileByShortKey: (cryptoProfile: CryptoProfile, shortKey: string) => void
 }

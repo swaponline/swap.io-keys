@@ -6,10 +6,5 @@ export interface EncryptionParameters {
   mnemonicPhrase: MnemonicPhrase
   publicKey: PublicKey | null
   seed: Seed | null
-}
-
-export interface EncryptionParametersService {
-  getMnemonicPhrase: () => MnemonicPhrase
-  getPublicKey: (seed: Buffer) => PublicKey
-  getSeedFromMnemonic: (mnemonicPhrase: MnemonicPhrase) => Promise<Seed>
+  password: string
 }

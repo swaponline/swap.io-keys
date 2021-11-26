@@ -5,10 +5,12 @@
   z-index: 10000;
 
   .tooltip-inner {
-    background: $--black;
     color: $--white;
-    border-radius: $--main-border-radius;
-    padding: 8px 16px;
+    background: $--purple;
+    padding: 12px 14px;
+    border-radius: 12px;
+    width: 264px;
+    font-size: 15px;
   }
 
   .tooltip-arrow {
@@ -17,7 +19,7 @@
     border-style: solid;
     position: absolute;
     margin: 5px;
-    border-color: black;
+    border-color: $--purple;
     z-index: 1;
   }
 

@@ -135,22 +135,6 @@ export async function encryptData(
   }
 }
 
-type cryptoProfile = {
-  algo: {
-    name: string
-    iterations: number
-    hash: string
-    salt: string
-  }
-  cipher: {
-    name: string
-    bits: number
-    iv: string
-    text: string
-  }
-  publicKey: PublicKey
-}
-
 export function toBuffer(ab) {
   var buf = Buffer.alloc(ab.byteLength)
   var view = new Uint8Array(ab)

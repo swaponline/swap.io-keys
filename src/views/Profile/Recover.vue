@@ -30,7 +30,7 @@
       </template>
       <template #2="{ changeActiveStep }">
         <create-profile-form-password v-model="password">
-          <template #actions="{ isConfirmPassword }">
+          <template #actions="{ isValidPassword }">
             <div class="recover-profile__buttons">
               <swap-button
                 class="recover-profile__button"
@@ -39,8 +39,8 @@
                 Back
               </swap-button>
               <swap-button
-                :disabled="!isConfirmPassword"
-                :tooltip="!isConfirmPassword ? 'Please come up with a password.' : null"
+                :disabled="!isValidPassword"
+                :tooltip="!isValidPassword ? 'Please come up with a password.' : null"
                 class="recover-profile__button"
                 @click="recoverProfile"
               >
@@ -136,7 +136,8 @@ export default Vue.extend({
       const { cryptoProfile, shortKey } = await profileService.createProfile({
         seed,
         publicKey,
-        mnemonicPhrase: this.mnemonicPhrase
+        mnemonicPhrase: this.mnemonicPhrase,
+        password: this.password
       })
       profileService.saveProfileByShortKey(cryptoProfile, shortKey)
 

@@ -24,7 +24,7 @@
         />
       </form>
     </div>
-    <slot name="actions" :is-confirm-password="isConfirmPassword"></slot>
+    <slot name="actions" :is-valid-password="isValidPassword"></slot>
   </div>
 </template>
 
@@ -53,7 +53,7 @@ export default Vue.extend({
     }
   },
   computed: {
-    isConfirmPassword(): boolean {
+    isValidPassword(): boolean {
       return this.localPassword.trim().length > 5 && this.confirmPassword === this.localPassword
     },
     localPassword: {
@@ -67,7 +67,7 @@ export default Vue.extend({
   },
   methods: {
     submit(): void {
-      if (this.isConfirmPassword) {
+      if (this.isValidPassword) {
         this.$emit('submit', this.localPassword)
         this.localPassword = ''
         this.confirmPassword = ''

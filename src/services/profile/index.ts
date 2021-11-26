@@ -68,9 +68,9 @@ export function createProfileService(): ProfileService {
       this.setSelectedProfileParameters(defaultProfileParameters)
     },
 
-    async createProfile({ seed, publicKey, mnemonicPhrase }) {
+    async createProfile({ seed, publicKey, mnemonicPhrase, password }) {
       if (seed && publicKey && mnemonicPhrase) {
-        const cryptoProfile = await encryptData(seed, publicKey, mnemonicPhrase.join(' '), this.password)
+        const cryptoProfile = await encryptData(seed, publicKey, mnemonicPhrase.join(' '), password)
         const shortKey = getShortPublicKey(publicKey)
 
         return {
