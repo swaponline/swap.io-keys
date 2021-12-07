@@ -3,7 +3,7 @@ import { FIREFOX } from '@/constants/browsers'
 import VTooltip from 'v-tooltip'
 import UaParser from 'ua-parser-js'
 import { iframeMessageTypes } from '@/constants/messageTypes'
-import { WINDOWS_KEY } from '@/constants/windowKey'
+import { WINDOW_KEYS } from '@/constants/windowKey'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -35,7 +35,7 @@ if (browserName === FIREFOX) {
 const { pathname } = window.location
 
 windowParentPostMessage({
-  key: WINDOWS_KEY[pathname],
+  key: WINDOW_KEYS[pathname],
   message: {
     type: iframeMessageTypes.IFRAME_LOADED
   }
