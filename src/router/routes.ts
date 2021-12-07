@@ -2,18 +2,18 @@ import { RouteConfig } from 'vue-router'
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/secret-phrase',
-    name: 'SecretPhrase',
+    path: '/recover-profile',
+    name: 'RecoverProfile',
     props: true,
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: 'SecretPhrase' */ '@/views/CreateProfile/SecretPhrase.vue')
+    component: () => import(/* webpackChunkName: 'Recover' */ '@/views/Profile/Recover.vue')
   },
   {
-    path: '/choose-style',
-    name: 'ChooseStyle',
-    component: () => import(/* webpackChunkName: 'ChooseStyle' */ '@/views/CreateProfile/ChooseStyle.vue')
+    path: '/create-profile',
+    name: 'CreateProfile',
+    component: () => import(/* webpackChunkName: 'Create' */ '@/views/Profile/Create.vue')
   },
   {
     path: '/get-profiles',

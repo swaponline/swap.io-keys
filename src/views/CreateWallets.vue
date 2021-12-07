@@ -36,7 +36,7 @@ export default Vue.extend({
     windowParentPostMessage({
       key: 'CreateWalletsWindow',
       message: {
-        type: 'iframeInited'
+        type: 'iframeLoaded'
       }
     })
   },

@@ -36,7 +36,9 @@ export default Vue.extend({
     },
     tooltipParams: {
       type: Object as PropType<TooltipParams>,
-      default: () => ({})
+      default: () => {
+        return {}
+      }
     }
   },
   computed: {
@@ -77,6 +79,10 @@ export default Vue.extend({
 
   &:hover {
     background-color: var(--main-button-background-hover);
+  }
+
+  &:active {
+    background-color: var(--main-button-background-active);
   }
 
   &__content {

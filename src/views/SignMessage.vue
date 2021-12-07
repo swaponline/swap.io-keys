@@ -32,7 +32,7 @@ export default Vue.extend({
     windowParentPostMessage({
       key: 'SignMessageWindow',
       message: {
-        type: 'iframeInited'
+        type: 'iframeLoaded'
       }
     })
   },
@@ -45,22 +45,21 @@ export default Vue.extend({
   },
   methods: {
     signMessage(password): void {
-      new Promise(async (resolve) => {
+      new Promise(async resolve => {
         if (!this.isCancel) {
           this.password = password
           const cInterface = new CryptoInterface()
           const network = await cInterface.getNetworkAdaptor(this.signData.networkId)
-          cInterface.accessProfileByKey(this.signData.profileId, this.password).then(async (profile) => {
+          cInterface.accessProfileByKey(this.signData.profileId, this.password).then(async profile => {
             // @ts-ignore
             const signedMessage = profile.signMessage(network, this.signData.message)
             windowParentPostMessage({
               key: 'SignMessageWindow',
               message: {
                 type: 'MessageSigned',
-                signedMessage,
+                signedMessage
               }
             })
-
           })
         } else {
           windowParentPostMessage({

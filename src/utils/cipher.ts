@@ -1,9 +1,9 @@
 /* eslint-disable */
 
-
 import * as bitcoin from 'bitcoinjs-lib'
 
 import { generateMnemonic, mnemonicToSeed } from 'bip39'
+import { CryptoProfile } from '@/types/utils/cipher'
 
 // default params
 const DEFAULT_CIPHER_PARAMS = {
@@ -89,9 +89,14 @@ function deriveKey(passwordKey, salt, keyUsage, params) {
  * @param {} params параметры для шифрования, можно менять частично
  * @returns Объект с зашифрованной
  */
-export async function encryptData(seed: Seed, publicKey: PublicKey, wordList: string, password: string, userParams = {}) {
-  const mnemonic = wordList
-  const enData = toBuffer(seed).toString('hex') + '|' + mnemonic
+export async function encryptData(
+  seed: Seed,
+  publicKey: PublicKey,
+  mnemonicPhrase: string,
+  password: string,
+  userParams = {}
+): Promise<CryptoProfile> {
+  const enData = toBuffer(seed).toString('hex') + '|' + mnemonicPhrase
   const params = { ...DEFAULT_CIPHER_PARAMS, ...userParams }
 
   const salt = window.crypto.getRandomValues(new Uint8Array(16))
@@ -105,7 +110,7 @@ export async function encryptData(seed: Seed, publicKey: PublicKey, wordList: st
       iv
     },
     aesKey,
-    // seed + mnemonic
+    // seed + mnemonicPhrase
     new TextEncoder().encode(enData)
   )
 
@@ -134,7 +139,7 @@ export function toBuffer(ab) {
   var buf = Buffer.alloc(ab.byteLength)
   var view = new Uint8Array(ab)
   for (var i = 0; i < buf.length; ++i) {
-      buf[i] = view[i]
+    buf[i] = view[i]
   }
   return buf
 }
@@ -172,14 +177,13 @@ export async function decryptData(encryptedData, password, withMnemonic = false)
     console.log('>>>> enData', enData)
     const seedAndMnemonic = enData.split(`|`)
     if (seedAndMnemonic.length !== 2) throw new Error(`Fail decode entropy`)
- 
-    return (withMnemonic)
-      ? {
-        seed: hexToBuff(seedAndMnemonic[0]),
-        mnemonic: seedAndMnemonic[1]
-      }
-      : hexToBuff(seedAndMnemonic[0]) // @to-do - remove only seed
 
+    return withMnemonic
+      ? {
+          seed: hexToBuff(seedAndMnemonic[0]),
+          mnemonicPhrase: seedAndMnemonic[1]
+        }
+      : hexToBuff(seedAndMnemonic[0]) // @to-do - remove only seed
   } catch (e) {
     console.log(`Error - ${e}`)
     return ''

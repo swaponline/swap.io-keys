@@ -69,7 +69,8 @@ export default Vue.extend({
     classes() {
       return [
         {
-          'swap-input--error': this.isError
+          'swap-input--error': this.isError,
+          'swap-input--focused': this.isFocused
         },
         this.size && `swap-input--size--${this.size}`
       ]
@@ -127,6 +128,10 @@ export default Vue.extend({
     border: 1px solid $--text-color-error;
     margin-bottom: 10px;
     transition: $--transition-duration;
+  }
+
+  &--focused {
+    border-color: var(--main-color);
   }
 }
 

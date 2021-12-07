@@ -1,19 +1,19 @@
 <template>
-  <div class="secret-phrase-table">
-    <template v-for="({ value, input }, index) in tableMatrix">
+  <div class="mnemonic-phrase-table">
+    <template v-for="({ value, input }, index) in localTableMatrix">
       <swap-input
         v-if="input"
         :key="index"
         :value="value"
-        class="secret-phrase-table__input"
-        @input="setValue(index, $event)"
+        class="mnemonic-phrase-table__input"
+        @input="changeTableMatrixCell(index, $event)"
       >
         <template #prepend>
-          <span class="secret-phrase-table__number">{{ index + 1 }}. </span>
+          <span class="mnemonic-phrase-table__number">{{ index + 1 }}. </span>
         </template>
       </swap-input>
-      <div v-else :key="index" class="secret-phrase-table__word">
-        <span class="secret-phrase-table__number">{{ index + 1 }}.</span> {{ value }}
+      <div v-else :key="index" class="mnemonic-phrase-table__word">
+        <span class="mnemonic-phrase-table__number">{{ index + 1 }}.</span> {{ value }}
       </div>
     </template>
   </div>
@@ -21,7 +21,8 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import { TableMatrix } from '../types'
+import { TableMatrix } from '@/types/components/profile'
+import { cloneDeep } from '@/utils/common'
 
 type Data = {
   localTableMatrix: TableMatrix
@@ -32,19 +33,36 @@ export default Vue.extend({
   props: {
     tableMatrix: {
       type: Array as PropType<TableMatrix>,
-      default: () => []
+      default: () => {
+        return []
+      }
+    }
+  },
+  data(): Data {
+    return {
+      localTableMatrix: []
+    }
+  },
+  watch: {
+    tableMatrix: {
+      deep: true,
+      immediate: true,
+      handler(newTableMatrix) {
+        this.localTableMatrix = cloneDeep(newTableMatrix)
+      }
     }
   },
   methods: {
-    setValue(index: number, value: string): void {
-      this.$emit('change', { index, value: value.trim() })
+    changeTableMatrixCell(index: number, value: string): void {
+      this.localTableMatrix[index].value = value.trim()
+      this.$emit('change', this.localTableMatrix)
     }
   }
 })
 </script>
 
 <style lang="scss">
-.secret-phrase-table {
+.mnemonic-phrase-table {
   width: 100%;
   display: grid;
   grid-template-rows: 1fr;

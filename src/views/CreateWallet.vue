@@ -32,7 +32,7 @@ export default Vue.extend({
     windowParentPostMessage({
       key: 'CreateWalletWindow',
       message: {
-        type: 'iframeInited'
+        type: 'iframeLoaded'
       }
     })
   },
@@ -45,12 +45,12 @@ export default Vue.extend({
   },
   methods: {
     createWallet(password): void {
-      new Promise(async (resolve) => {
+      new Promise(async resolve => {
         if (!this.isCancel) {
           this.password = password
           const cInterface = new CryptoInterface()
           const network = await cInterface.getNetworkAdaptor(this.walletData.networkId)
-          cInterface.accessProfileByKey(this.walletData.profileId, this.password).then(async (profile) => {
+          cInterface.accessProfileByKey(this.walletData.profileId, this.password).then(async profile => {
             // @ts-ignore
             const wallet = profile.createWallet(network, this.walletData.walletNumber)
             windowParentPostMessage({
@@ -58,7 +58,7 @@ export default Vue.extend({
               message: {
                 type: 'WalletCreated',
                 wallet: {
-                  ... this.walletData,
+                  ...this.walletData,
                   address: wallet.getAddress(),
                   publicKey: wallet.getPublicKey()
                 }

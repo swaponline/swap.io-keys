@@ -12,7 +12,6 @@ import { MediaQueryProvider } from 'vue-component-media-queries'
 import { getStorage } from '@/utils/storage'
 import { getUserSystemTheme } from '@/utils/theme'
 import { THEME_KEY, SYSTEM_THEME_KEY, LIGHT_THEME_KEY } from './constants/theme'
-import { messageHandler } from './messageHandler'
 
 interface Queries {
   desktop: string
@@ -50,11 +49,12 @@ export default Vue.extend({
       return `theme--${this.selectedAppTheme}`
     }
   },
-  async mounted() {
-    await messageHandler()
+
+  created() {
     this.setAppTheme()
   },
   methods: {
+    // TODO подумать над избавлением от этого метода в пользу получения темы с первого фронтенда
     setAppTheme() {
       this.selectedAppTheme = getStorage(THEME_KEY) || SYSTEM_THEME_KEY
 
