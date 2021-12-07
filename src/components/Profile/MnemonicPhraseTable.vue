@@ -24,6 +24,10 @@ import Vue, { PropType } from 'vue'
 import { TableMatrix } from '@/types/components/profile'
 import { cloneDeep } from '@/utils/common'
 
+type Data = {
+  localTableMatrix: TableMatrix
+}
+
 export default Vue.extend({
   name: 'SecretPhraseTable',
   props: {
@@ -34,7 +38,7 @@ export default Vue.extend({
       }
     }
   },
-  data() {
+  data(): Data {
     return {
       localTableMatrix: []
     }

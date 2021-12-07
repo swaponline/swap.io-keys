@@ -14,12 +14,12 @@
           <mnemonic-phrase-table :table-matrix="tableMatrix" @change="changeTableMatrix" />
 
           <div class="recover-profile__buttons">
-            <swap-button class="recover-profile__button" @click="recoverCanceled">
+            <swap-button class="recover-profile__button" @click="cancelRecovery">
               Back
             </swap-button>
             <swap-button
-              :disabled="isPhraseWritten"
-              :tooltip="isPhraseWritten ? 'Complete your secret phrase.' : null"
+              :disabled="isPhraseNotFilled"
+              :tooltip="isPhraseNotFilled ? 'Complete your secret phrase.' : null"
               class="recover-profile__button"
               @click="changeActiveStep($options.STEPS[$options.FORM_PASSWORD])"
             >
@@ -62,16 +62,15 @@ import mnemonicPhraseTable from '@/components/Profile/MnemonicPhraseTable.vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { profileService } from '@/services/profile'
 import { RECOVER_PROFILE_WINDOW } from '@/constants/windowKey'
-import { messageTypes, STEPS_CREATE_PROFILE, MNEMONIC_PHRASE_WRITE, FORM_PASSWORD } from '@/constants/profile'
+import { messageTypes, STEPS_RECOVER_PROFILE, MNEMONIC_PHRASE_WRITE, FORM_PASSWORD } from '@/constants/profile'
 
 import { TableMatrix } from '@/types/components/profile'
 
-const STEPS = STEPS_CREATE_PROFILE
+const STEPS = STEPS_RECOVER_PROFILE
 
 type Data = {
   password: string
   tableMatrix: TableMatrix
-  mnemonicPhrase: string[]
 }
 
 export default Vue.extend({
@@ -87,23 +86,23 @@ export default Vue.extend({
   data(): Data {
     return {
       password: '',
-      tableMatrix: [],
-      mnemonicPhrase: []
+      tableMatrix: []
     }
   },
   computed: {
-    isPhraseWritten() {
-      const recordedMnemonicPhrase = this.tableMatrix.map(({ value }) => value)
-      return recordedMnemonicPhrase.some((word: string) => {
+    isPhraseNotFilled() {
+      return this.recordedMnemonicPhrase.some((word: string) => {
         return word === ''
       })
+    },
+    recordedMnemonicPhrase() {
+      return this.tableMatrix.map(({ value }) => value)
     }
   },
   created() {
-    this.mnemonicPhrase = new Array(24).fill('', 0, 24)
-    this.tableMatrix = this.mnemonicPhrase.map((word: string) => {
+    this.tableMatrix = Array.from({ length: 24 }, () => {
       return {
-        value: word,
+        value: '',
         input: true
       }
     })
@@ -119,7 +118,7 @@ export default Vue.extend({
     changeTableMatrix(newTableMatrix: TableMatrix): void {
       this.tableMatrix = newTableMatrix
     },
-    recoverCanceled() {
+    cancelRecovery() {
       windowParentPostMessage({
         key: RECOVER_PROFILE_WINDOW,
         message: {
@@ -128,15 +127,14 @@ export default Vue.extend({
       })
     },
     async recoverProfile() {
-      this.mnemonicPhrase = this.tableMatrix.map(({ value }) => value)
-      const seed = await profileService.getSeedFromMnemonic(this.mnemonicPhrase)
+      const seed = await profileService.getSeedFromMnemonic(this.recordedMnemonicPhrase)
       const publicKey = profileService.getPublicKey(seed)
       const colorScheme = profileService.getColorScheme(publicKey)
 
       const { cryptoProfile, shortKey } = await profileService.createProfile({
         seed,
         publicKey,
-        mnemonicPhrase: this.mnemonicPhrase,
+        mnemonicPhrase: this.recordedMnemonicPhrase,
         password: this.password
       })
       profileService.saveProfileByShortKey(cryptoProfile, shortKey)

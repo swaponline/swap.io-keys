@@ -64,8 +64,8 @@
               Back
             </swap-button>
             <swap-button
-              :disabled="isPhraseWritten"
-              :tooltip="isPhraseWritten ? 'Complete your secret phrase.' : null"
+              :disabled="isPhraseFilledIncorrectly"
+              :tooltip="isPhraseFilledIncorrectly ? 'Complete your secret phrase.' : null"
               class="create-profile__button"
               @click="changeActiveStep($options.STEPS[$options.FORM_PASSWORD])"
             >
@@ -195,9 +195,8 @@ export default {
     colorSchemes(): ColorScheme[] {
       return this.profilesParameters.map(({ colorScheme }) => colorScheme)
     },
-    isPhraseWritten(): boolean {
+    isPhraseFilledIncorrectly(): boolean {
       const recordedMnemonicPhrase = this.tableMatrix.map(({ value }) => value)
-
       return recordedMnemonicPhrase.toString() !== this.mnemonicPhrase.toString()
     }
   },
