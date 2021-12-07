@@ -17,7 +17,7 @@ export default Vue.extend({
           if (event.data.type === `ValidateMessage`) {
             const validateData = event.data.data
             const cInterface = new CryptoInterface()
-            cInterface.validateMessage(validateData).then((isValid) => {
+            cInterface.validateMessage(validateData).then(isValid => {
               windowParentPostMessage({
                 key: 'ValidateMessageWindow',
                 message: {
@@ -33,7 +33,7 @@ export default Vue.extend({
     windowParentPostMessage({
       key: 'ValidateMessageWindow',
       message: {
-        type: 'iframeInited'
+        type: 'iframeLoaded'
       }
     })
   },

@@ -8,7 +8,7 @@ import { ProfileService } from '@/types/services/profileService'
 const SELECTED_PROFILE_PARAMETERS_KEY = 'selectedProfileParametersKey'
 const PROFILES_PARAMETERS_KEY = 'profilesParametersKey'
 
-function getDefaultProfileParameters(): ProfileParameters {
+export function getDefaultProfileParameters(): ProfileParameters {
   return {
     colorScheme: {
       background: '',
@@ -17,6 +17,7 @@ function getDefaultProfileParameters(): ProfileParameters {
       selectionColor: ''
     },
     encryptionParameters: {
+      password: '',
       mnemonicPhrase: [],
       publicKey: null,
       seed: null

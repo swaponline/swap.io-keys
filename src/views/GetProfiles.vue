@@ -8,7 +8,7 @@
 import Vue from 'vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import CryptoInterface from '@/crypto/interface'
-import { messageTypes } from '@/constants/profile'
+import { profileMessageTypes } from '@/constants/messageTypes'
 import { GET_PROFILES_WINDOW } from '@/constants/windowKey'
 
 export default Vue.extend({
@@ -25,7 +25,7 @@ export default Vue.extend({
     windowParentPostMessage({
       key: GET_PROFILES_WINDOW,
       message: {
-        type: messageTypes.GET_PROFILES,
+        type: profileMessageTypes.GET_PROFILES,
         profiles: retData
       }
     })

@@ -2,12 +2,15 @@ import Vue from 'vue'
 import { FIREFOX } from '@/constants/browsers'
 import VTooltip from 'v-tooltip'
 import UaParser from 'ua-parser-js'
+import { iframeMessageTypes } from '@/constants/messageTypes'
+import { CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import windowParentPostMessage from './windowParentPostMessage'
 import UI from './components/UI'
 import '@/assets/scss/base.scss'
+import { messageHandler } from './messageHandler'
 
 Vue.use(VTooltip, {
   defaultTrigger: window.innerWidth > 768 ? 'hover focus click' : 'click'
@@ -22,25 +25,28 @@ function checkingIframeAndDomain(location: string): boolean {
   return window.top !== window.self && location === process.env.VUE_APP_HOME_URL
 }
 
-windowParentPostMessage({ key: 'createWindow' })
-
 if (browserName === FIREFOX) {
   shouldCreateIframe = checkingIframeAndDomain(document.referrer.substring(0, document.referrer.length - 1))
 } else {
   shouldCreateIframe = checkingIframeAndDomain(window.location.ancestorOrigins[0])
 }
 
+// We send a message that the iframe is loaded and ready to work
+windowParentPostMessage({
+  key: CREATE_PROFILE_WINDOW,
+  message: {
+    type: iframeMessageTypes.IFRAME_LOADED
+  }
+})
+
 // Не разрешаем обычное открытие, только в iframe и только на определенном домене
 if (shouldCreateIframe) {
-  /* eslint-disable vue/require-name-property */
-  new Vue({
-    router,
-    store,
-    render: h => h(App)
-  }).$mount('#app')
+  messageHandler().then(() => {
+    /* eslint-disable vue/require-name-property */
+    new Vue({
+      router,
+      store,
+      render: h => h(App)
+    }).$mount('#app')
+  })
 }
-
-// TODO: Разобраться почему не работает такая реализация
-// messageHandler().then(() => {
-//   app.mount('#app') // or new Vue({ /* options */ }).mount('#app')
-// })

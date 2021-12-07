@@ -62,7 +62,8 @@ import mnemonicPhraseTable from '@/components/Profile/MnemonicPhraseTable.vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { profileService } from '@/services/profile'
 import { RECOVER_PROFILE_WINDOW } from '@/constants/windowKey'
-import { messageTypes, STEPS_RECOVER_PROFILE, MNEMONIC_PHRASE_WRITE, FORM_PASSWORD } from '@/constants/profile'
+import { STEPS_RECOVER_PROFILE, MNEMONIC_PHRASE_WRITE, FORM_PASSWORD } from '@/constants/profile'
+import { iframeMessageTypes, profileMessageTypes } from '@/constants/messageTypes'
 
 import { TableMatrix } from '@/types/components/profile'
 
@@ -110,7 +111,7 @@ export default Vue.extend({
     windowParentPostMessage({
       key: RECOVER_PROFILE_WINDOW,
       message: {
-        type: messageTypes.IFRAME_LOADED
+        type: iframeMessageTypes.IFRAME_LOADED
       }
     })
   },
@@ -122,7 +123,7 @@ export default Vue.extend({
       windowParentPostMessage({
         key: RECOVER_PROFILE_WINDOW,
         message: {
-          type: messageTypes.RECOVER_CANCELED
+          type: profileMessageTypes.RECOVER_CANCELED
         }
       })
     },
@@ -142,7 +143,7 @@ export default Vue.extend({
       windowParentPostMessage({
         key: RECOVER_PROFILE_WINDOW,
         message: {
-          type: messageTypes.PROFILE_RECOVERED,
+          type: profileMessageTypes.PROFILE_RECOVERED,
           payload: {
             profile: { colorScheme, publicKey: shortKey }
           }

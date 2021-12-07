@@ -1,15 +1,3 @@
-export const messageTypes = {
-  IFRAME_LOADED: 'iframeInited',
-  THEME_SELECTED: 'themeSelected',
-  PROFILE_CREATED: 'profileCreated',
-  CREATION_CANCELLED: 'creationCancelled',
-  RECOVER_CANCELED: 'recoverCanceled',
-  PROFILE_RECOVERED: 'profileRecovered',
-  IFRAME_DESTROYED: 'iframeDestroyed',
-  SET_APP_THEME: 'setAppTheme',
-  GET_PROFILES: 'iframeGetProfiles'
-}
-
 export const SELECT_COLOR_SCHEME = 'selectColorScheme'
 export const MNEMONIC_PHRASE_SHOW = 'mnemonicPhraseShow'
 export const FORM_PASSWORD = 'formPassword'

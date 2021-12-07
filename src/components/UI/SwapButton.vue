@@ -36,7 +36,9 @@ export default Vue.extend({
     },
     tooltipParams: {
       type: Object as PropType<TooltipParams>,
-      default: () => ({})
+      default: () => {
+        return {}
+      }
     }
   },
   computed: {

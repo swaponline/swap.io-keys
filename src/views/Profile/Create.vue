@@ -10,7 +10,7 @@
         >
           <template #actions>
             <div class="create-profile__buttons">
-              <swap-button class="create-profile__button" @click="cancelCreation"> Back</swap-button>
+              <swap-button class="create-profile__button" @click="cancelCreation">Back</swap-button>
               <swap-button
                 :disabled="!isColorSchemeSelected"
                 :tooltip="!isColorSchemeSelected ? 'Please pick a color scheme to proceed.' : null"
@@ -110,7 +110,7 @@ import mnemonicPhraseTable from '@/components/Profile/MnemonicPhraseTable.vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { profileService } from '@/services/profile'
 import { getStorage } from '@/utils/storage'
-import { randomInteger, setCSSCustomProperty } from '@/utils/common'
+import { getRandomIntegers, setCSSCustomProperty } from '@/utils/common'
 import { ESCAPE } from '@/constants/keyCodes'
 import { DARK_THEME_KEY, THEME_KEY } from '@/constants/theme'
 import { CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
@@ -119,16 +119,16 @@ import {
   SELECT_COLOR_SCHEME,
   MNEMONIC_PHRASE_SHOW,
   MNEMONIC_PHRASE_WRITE,
-  FORM_PASSWORD,
-  messageTypes
+  FORM_PASSWORD
 } from '@/constants/profile'
+import { iframeMessageTypes, profileMessageTypes } from '@/constants/messageTypes'
 import { ColorScheme } from '@/types/generators'
 import { EncryptionParameters, MnemonicPhrase } from '@/types/encryptionParameters'
 import { ProfileParameters } from '@/types/profileParameters'
 import { ChangeActiveStep } from '@/types/components/UI/swapStepper'
 import { TableMatrix } from '@/types/components/profile'
 
-const QUANTITY_INPUTS = 6
+const INPUTS_COUNT = 6
 
 const STEPS = STEPS_CREATE_PROFILE
 
@@ -139,7 +139,7 @@ type Data = {
   isRefreshing: boolean
 }
 
-const QUANTITY_PROFILE = 4
+const PROFILES_COUNT = 4
 
 async function getProfileParameters(): Promise<ProfileParameters> {
   const mnemonicPhrase = profileService.getMnemonicPhrase()
@@ -202,7 +202,7 @@ export default {
   },
   async created(): Promise<void> {
     if (!this.profilesParameters.length) {
-      this.profilesParameters = await this.getProfilesParameters(QUANTITY_PROFILE)
+      this.profilesParameters = await this.getProfilesParameters(PROFILES_COUNT)
       profileService.setProfilesParameters(this.profilesParameters)
     }
 
@@ -211,7 +211,7 @@ export default {
     windowParentPostMessage({
       key: CREATE_PROFILE_WINDOW,
       message: {
-        type: messageTypes.IFRAME_LOADED
+        type: iframeMessageTypes.IFRAME_RENDERED
       }
     })
 
@@ -249,7 +249,7 @@ export default {
     async refreshProfilesParameters(): Promise<void> {
       if (!this.isRefreshing) {
         this.isRefreshing = true
-        this.profilesParameters = await this.getProfilesParameters(QUANTITY_PROFILE)
+        this.profilesParameters = await this.getProfilesParameters(PROFILES_COUNT)
         profileService.setProfilesParameters(this.profilesParameters)
         this.isRefreshing = false
       }
@@ -281,7 +281,7 @@ export default {
       windowParentPostMessage({
         key: CREATE_PROFILE_WINDOW,
         message: {
-          type: messageTypes.THEME_SELECTED,
+          type: profileMessageTypes.THEME_SELECTED,
           payload: {
             colorScheme: selectedColorScheme
           }
@@ -303,7 +303,7 @@ export default {
       windowParentPostMessage({
         key: CREATE_PROFILE_WINDOW,
         message: {
-          type: messageTypes.CREATION_CANCELLED
+          type: profileMessageTypes.CREATION_CANCELLED
         }
       })
     },
@@ -312,23 +312,20 @@ export default {
       changeActiveStep(STEPS[MNEMONIC_PHRASE_SHOW])
     },
     goToStepWriteMnemonicPhrase(changeActiveStep: ChangeActiveStep): void {
-      let index = 0
       const modifiedTableMatrix: TableMatrix = [...this.tableMatrix]
-      while (index < QUANTITY_INPUTS) {
-        const replacementIndex = randomInteger(0, modifiedTableMatrix.length - 1)
-        const { value } = this.tableMatrix[replacementIndex]
+      const randomIntegers = getRandomIntegers(INPUTS_COUNT, modifiedTableMatrix.length - 1)
 
-        if (value) {
-          modifiedTableMatrix[replacementIndex] = {
-            value: '',
-            input: true
-          }
-          index += 1
+      randomIntegers.forEach(replacementIndex => {
+        modifiedTableMatrix[replacementIndex] = {
+          value: '',
+          input: true
         }
-      }
+      })
+
       this.tableMatrix = modifiedTableMatrix
       changeActiveStep(STEPS[MNEMONIC_PHRASE_WRITE])
     },
+
     async createProfile(): Promise<void> {
       const { colorScheme, encryptionParameters } = this.selectedProfileParameters
 
@@ -341,7 +338,7 @@ export default {
       windowParentPostMessage({
         key: CREATE_PROFILE_WINDOW,
         message: {
-          type: messageTypes.PROFILE_CREATED,
+          type: profileMessageTypes.PROFILE_CREATED,
           payload: {
             profile: { colorScheme, publicKey: shortKey }
           }
