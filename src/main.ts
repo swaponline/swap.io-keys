@@ -3,7 +3,7 @@ import { FIREFOX } from '@/constants/browsers'
 import VTooltip from 'v-tooltip'
 import UaParser from 'ua-parser-js'
 import { iframeMessageTypes } from '@/constants/messageTypes'
-import { CREATE_PROFILE_WINDOW } from '@/constants/windowKey'
+import { WINDOWS_KEY } from '@/constants/windowKey'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -32,8 +32,10 @@ if (browserName === FIREFOX) {
 }
 
 // We send a message that the iframe is loaded and ready to work
+const { pathname } = window.location
+
 windowParentPostMessage({
-  key: CREATE_PROFILE_WINDOW,
+  key: WINDOWS_KEY[pathname],
   message: {
     type: iframeMessageTypes.IFRAME_LOADED
   }

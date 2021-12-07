@@ -9,7 +9,7 @@ export const profileMessageTypes = {
   THEME_SELECTED: 'themeSelected',
   PROFILE_CREATED: 'profileCreated',
   CREATION_CANCELLED: 'creationCancelled',
-  RECOVER_CANCELED: 'recoverCanceled',
+  RECOVER_CANCELED: 'recoverCancelled',
   PROFILE_RECOVERED: 'profileRecovered',
   SET_APP_THEME: 'setAppTheme'
 }

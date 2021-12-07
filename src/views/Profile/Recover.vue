@@ -111,7 +111,7 @@ export default Vue.extend({
     windowParentPostMessage({
       key: RECOVER_PROFILE_WINDOW,
       message: {
-        type: iframeMessageTypes.IFRAME_LOADED
+        type: iframeMessageTypes.IFRAME_RENDERED
       }
     })
   },
