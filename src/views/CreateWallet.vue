@@ -9,6 +9,7 @@
 import Vue from 'vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import CryptoInterface from '@/crypto/interface'
+import { iframeMessageTypes } from '@/constants/messageTypes'
 
 type Data = {
   password: string
@@ -32,7 +33,7 @@ export default Vue.extend({
     windowParentPostMessage({
       key: 'CreateWalletWindow',
       message: {
-        type: 'iframeLoaded'
+        type: iframeMessageTypes.IFRAME_RENDERED
       }
     })
   },
