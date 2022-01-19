@@ -10,5 +10,5 @@ export const WINDOW_KEYS = {
   '/create-profile': CREATE_PROFILE_WINDOW,
   '/recover-profile': RECOVER_PROFILE_WINDOW,
   '/get-profile': GET_PROFILES_WINDOW,
-  '/create-wallet': CREATE_PROFILE_WINDOW
+  '/create-wallet': CREATE_WALLET_WINDOW
 }
