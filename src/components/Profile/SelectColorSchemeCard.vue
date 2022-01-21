@@ -9,7 +9,8 @@ import Vue, { PropType } from 'vue'
 import Canvg from 'canvg'
 import { ColorScheme } from '@/types/generators'
 
-let canvg = null
+let canvg: any = null
+
 export default Vue.extend({
   name: 'SelectColorSchemeCard',
   props: {

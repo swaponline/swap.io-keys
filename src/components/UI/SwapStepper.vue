@@ -10,7 +10,6 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import { ChangeActiveStep } from '@/types/components/swapStepper'
 
 export default Vue.extend({
   name: 'VStepper',
@@ -40,7 +39,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    changeActiveStep(step: number): ChangeActiveStep {
+    changeActiveStep(step: number): void {
       this.activeStep = step
     }
   }

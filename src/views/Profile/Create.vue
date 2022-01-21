@@ -38,7 +38,7 @@
           <div class="create-profile__buttons">
             <swap-button
               class="create-profile__button"
-              @click="changeActiveStep($options.STEPS[$options.SELECT_COLOR_SCHEME])"
+              @click="changeActiveStep($options.constants.STEPS[$options.constants.SELECT_COLOR_SCHEME])"
             >
               Back
             </swap-button>
@@ -67,7 +67,7 @@
               :disabled="isPhraseFilledIncorrectly"
               :tooltip="isPhraseFilledIncorrectly ? 'Complete your secret phrase.' : null"
               class="create-profile__button"
-              @click="changeActiveStep($options.STEPS[$options.FORM_PASSWORD])"
+              @click="changeActiveStep($options.constants.STEPS[$options.constants.FORM_PASSWORD])"
             >
               Next
             </swap-button>
@@ -80,7 +80,7 @@
             <div class="create-profile__buttons">
               <swap-button
                 class="create-profile__button"
-                @click="changeActiveStep($options.STEPS[$options.MNEMONIC_PHRASE_WRITE])"
+                @click="changeActiveStep($options.constants.STEPS[$options.constants.MNEMONIC_PHRASE_WRITE])"
               >
                 Back
               </swap-button>
@@ -101,6 +101,7 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import SwapStepper from '@/components/UI/SwapStepper.vue'
 import CreateProfileSelectColorScheme from '@/components/Profile/SelectColorScheme.vue'
 import CreateProfileFormPassword from '@/components/Profile/FormPassword.vue'
@@ -159,12 +160,13 @@ async function getProfileParameters(): Promise<ProfileParameters> {
     }
   }
 }
-
-export default {
-  SELECT_COLOR_SCHEME,
-  MNEMONIC_PHRASE_WRITE,
-  FORM_PASSWORD,
-  STEPS,
+export default Vue.extend({
+  constants: {
+    SELECT_COLOR_SCHEME,
+    MNEMONIC_PHRASE_WRITE,
+    FORM_PASSWORD,
+    STEPS
+  },
   name: 'CreateProfile',
   components: {
     SwapStepper,
@@ -351,7 +353,7 @@ export default {
       }
     }
   }
-}
+})
 </script>
 
 <style lang="scss">

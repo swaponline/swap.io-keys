@@ -21,7 +21,7 @@
               :disabled="isPhraseNotFilled"
               :tooltip="isPhraseNotFilled ? 'Complete your secret phrase.' : null"
               class="recover-profile__button"
-              @click="changeActiveStep($options.STEPS[$options.FORM_PASSWORD])"
+              @click="changeActiveStep($options.constants.STEPS[$options.constants.FORM_PASSWORD])"
             >
               Next
             </swap-button>
@@ -34,7 +34,7 @@
             <div class="recover-profile__buttons">
               <swap-button
                 class="recover-profile__button"
-                @click="changeActiveStep($options.STEPS[$options.MNEMONIC_PHRASE_WRITE])"
+                @click="changeActiveStep($options.constants.STEPS[$options.constants.MNEMONIC_PHRASE_WRITE])"
               >
                 Back
               </swap-button>
@@ -75,9 +75,11 @@ type Data = {
 }
 
 export default Vue.extend({
-  MNEMONIC_PHRASE_WRITE,
-  FORM_PASSWORD,
-  STEPS,
+  constants: {
+    MNEMONIC_PHRASE_WRITE,
+    FORM_PASSWORD,
+    STEPS
+  },
   name: 'RecoverProfile',
   components: {
     CreateProfileFormPassword,
