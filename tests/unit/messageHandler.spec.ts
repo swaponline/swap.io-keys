@@ -22,13 +22,14 @@ const DEFAULT_MESSAGE = {
   }
 }
 
+const promiseMessageHandler = messageHandler()
+
 describe('message handler', () => {
   afterAll(() => {
     window.removeEventListener('message', injectOriginHandler)
   })
 
   it('sets theme to storage', async () => {
-    messageHandler()
     window.postMessage(DEFAULT_MESSAGE, '*')
     await flushPromises()
 
@@ -36,7 +37,6 @@ describe('message handler', () => {
   })
 
   it('sets iframe state', async () => {
-    messageHandler()
     window.postMessage(DEFAULT_MESSAGE, '*')
     await flushPromises()
 
@@ -45,10 +45,9 @@ describe('message handler', () => {
   })
 
   it('resolves promise if a message is received', async () => {
-    const results = messageHandler()
     window.postMessage(DEFAULT_MESSAGE, '*')
     await flushPromises()
 
-    expect(await results).toBe(true)
+    expect(await promiseMessageHandler).toBe(true)
   })
 })
