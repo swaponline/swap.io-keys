@@ -14,7 +14,7 @@ export function derivedRandom(source: Buffer): void {
 
 // ! Conveniently you can use this function:
 //! randomInteger(Math.log2(128)));
-export const randomInteger = (bits: number): number => {
+export const getIntegerBasedOn = (bits: number): number => {
   const ret = parseInt(deterministicStr.substring(0, bits), 2)
   deterministicStr = deterministicStr.substring(bits) + deterministicStr.substring(0, bits)
   return ret

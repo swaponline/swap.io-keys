@@ -2,7 +2,7 @@ export type ColorHex = string
 export type ColorRGB = number[]
 export type DimmingPercentage = number
 
-export type Rect = {
+export type RectModel = {
   xOffset: number
   yOffset: number
   width: number
@@ -10,7 +10,7 @@ export type Rect = {
   color: ColorHex
 }
 
-export type Ellipse = {
+export type EllipseModel = {
   cx: number
   cy: number
   rx: number
@@ -19,6 +19,8 @@ export type Ellipse = {
 }
 
 export type WidthRects = number[]
+export type RectView = string
+export type EllipseView = string
 
 export type ColorScheme = {
   background: string

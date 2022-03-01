@@ -132,7 +132,7 @@ export default Vue.extend({
     async recoverProfile() {
       const seed = await profileService.getSeedFromMnemonic(this.recordedMnemonicPhrase)
       const publicKey = profileService.getPublicKey(seed)
-      const colorScheme = profileService.getColorScheme(publicKey)
+      const colorScheme = profileService.getUserColorScheme(publicKey)
 
       const { cryptoProfile, shortKey } = await profileService.createProfile({
         seed,

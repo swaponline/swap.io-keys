@@ -5,11 +5,11 @@ export type ProfileService = {
   getMnemonicPhrase: () => MnemonicPhrase
   getPublicKey: (seed: Seed) => PublicKey
   getSeedFromMnemonic: (mnemonicPhrase: MnemonicPhrase) => Promise<Seed>
-  getColorScheme: (publicKey: PublicKey) => ColorScheme
+  getUserColorScheme: (publicKey: PublicKey) => ColorScheme
   getProfilesParameters: () => ProfileParameters[]
   setProfilesParameters: (profileParameters: ProfileParameters[]) => void
-  resetProfilesParameters: () => void
   getSelectedProfileParameters: () => ProfileParameters
+  resetProfilesParameters: () => void
   setSelectedProfileParameters: (selectedProfileParameters: ProfileParameters) => void
   resetSelectedProfileParameters: () => void
   createProfile: ({
