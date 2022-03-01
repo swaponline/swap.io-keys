@@ -34,8 +34,8 @@ describe('Form password', () => {
   it('emits submit form', async () => {
     const password = '123456'
     createComponent({ propsData: { value: password } })
-    const confirmpasswordInput = wrapper.findAllComponents(SwapInput).wrappers[1]
-    confirmpasswordInput.vm.$emit('input', password)
+    const confirmPasswordInput = wrapper.findAllComponents(SwapInput).wrappers[1]
+    confirmPasswordInput.vm.$emit('input', password)
 
     const form = wrapper.find('form')
     await form.trigger('submit')
