@@ -6,7 +6,7 @@ import { profileService, getDefaultProfileParameters } from '@/services/profile'
 import { injectOriginToBlankPostMessages } from './__helpers__/postMessage'
 import flushPromises from './__helpers__/flushPromises'
 
-injectOriginToBlankPostMessages(window, 'http://localhost')
+const injectOriginHandler = injectOriginToBlankPostMessages(window, 'http://localhost')
 jest.spyOn(storageService, 'setStorage')
 jest.spyOn(profileService, 'setProfilesParameters')
 jest.spyOn(profileService, 'setSelectedProfileParameters')
@@ -23,6 +23,10 @@ const DEFAULT_MESSAGE = {
 }
 
 describe('message handler', () => {
+  afterAll(() => {
+    window.removeEventListener('message', injectOriginHandler)
+  })
+
   it('sets theme to storage', async () => {
     messageHandler()
     window.postMessage(DEFAULT_MESSAGE, '*')
