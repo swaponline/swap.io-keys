@@ -1,5 +1,5 @@
 import { ColorHex, ColorRGB, DimmingPercentage } from '@/types/generators'
-import { randomInteger } from './randomizer'
+import { getIntegerBasedOn } from '@/services/background/utils/randomizer'
 
 function isTestHex(hex: ColorHex): boolean {
   return /^#([a-f0-9]{3}){1,2}$/.test(hex)
@@ -70,7 +70,7 @@ export function getSecondColors(prevColorIdx: number): number {
   const excludeOppositeEnd = 768 + excludeSimilarSize
 
   let calculatedPositionCurrentColor = Math.round(
-    (randomInteger(Math.log2(256)) / 256) * (maxNumberColors - (excludeOppositeEnd - excludeOppositeStart))
+    (getIntegerBasedOn(Math.log2(256)) / 256) * (maxNumberColors - (excludeOppositeEnd - excludeOppositeStart))
   )
 
   //! если мы попали в запрещенный диапазон, выносим за предели запрещенного диапазона

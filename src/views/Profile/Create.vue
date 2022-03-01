@@ -148,7 +148,7 @@ async function getProfileParameters(): Promise<ProfileParameters> {
   const publicKey = profileService.getPublicKey(seed)
   const password = ''
 
-  const colorScheme = profileService.getColorScheme(publicKey)
+  const colorScheme = profileService.getUserColorScheme(publicKey)
 
   return {
     colorScheme,
@@ -332,6 +332,7 @@ export default Vue.extend({
       const { colorScheme, encryptionParameters } = this.selectedProfileParameters
 
       const { cryptoProfile, shortKey } = await profileService.createProfile(encryptionParameters)
+
       profileService.saveProfileByShortKey(cryptoProfile, shortKey)
 
       profileService.resetProfilesParameters()

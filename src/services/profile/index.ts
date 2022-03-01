@@ -1,9 +1,9 @@
 import { encryptData, getMnemonicPhrase, getPublicKey, getSeedFromMnemonic } from '@/utils/cipher'
 import { getStorage, setStorage } from '@/utils/storage'
-import { UserColorScheme } from '@/utils/generators/background'
 import { cloneDeep } from '@/utils/common'
 import { ProfileParameters } from '@/types/profileParameters'
 import { ProfileService } from '@/types/services/profileService'
+import { getUserColorScheme } from '@/services/background'
 
 const SELECTED_PROFILE_PARAMETERS_KEY = 'selectedProfileParametersKey'
 const PROFILES_PARAMETERS_KEY = 'profilesParametersKey'
@@ -38,8 +38,8 @@ export function createProfileService(): ProfileService {
     getMnemonicPhrase,
     getPublicKey,
     getSeedFromMnemonic,
-    getColorScheme(publicKey) {
-      return new UserColorScheme(publicKey).getColorScheme()
+    getUserColorScheme(publicKey) {
+      return getUserColorScheme(publicKey)
     },
 
     getProfilesParameters() {
@@ -72,6 +72,7 @@ export function createProfileService(): ProfileService {
     async createProfile({ seed, publicKey, mnemonicPhrase, password }) {
       if (seed && publicKey && mnemonicPhrase) {
         const cryptoProfile = await encryptData(seed, publicKey, mnemonicPhrase.join(' '), password)
+
         const shortKey = getShortPublicKey(publicKey)
 
         return {
