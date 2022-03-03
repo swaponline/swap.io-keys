@@ -144,6 +144,7 @@ const PROFILES_COUNT = 4
 
 async function getProfileParameters(): Promise<ProfileParameters> {
   const mnemonicPhrase = profileService.getMnemonicPhrase()
+
   const seed = await profileService.getSeedFromMnemonic(mnemonicPhrase)
   const publicKey = profileService.getPublicKey(seed)
   const password = ''

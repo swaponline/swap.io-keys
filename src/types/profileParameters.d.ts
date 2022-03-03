@@ -1,4 +1,4 @@
-import { ColorScheme } from '@/types/generators/'
+import { ColorScheme } from '@/types/services/userColorSchemeService'
 import { EncryptionParameters } from '@/types/encryptionParameters'
 
 export type ProfileParameters = {

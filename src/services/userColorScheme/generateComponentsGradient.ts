@@ -1,5 +1,5 @@
-import { RectModel, EllipseModel, WidthRects, RectView, EllipseView } from '@/types/generators'
-import { getSecondColors, colors } from '@/services/background/utils/color'
+import { RectModel, EllipseModel, WidthRects, RectView, EllipseView } from '@/types/services/userColorSchemeService'
+import { getSecondColors, colors } from '@/services/userColorScheme/utils/color'
 import { getIntegerBasedOn } from './utils/randomizer'
 
 const DEFAULT_HEIGHT_RECTANGLES = 500

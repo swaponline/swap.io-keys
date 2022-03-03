@@ -1,5 +1,5 @@
-import { ColorHex, ColorRGB, DimmingPercentage } from '@/types/generators'
-import { getIntegerBasedOn } from '@/services/background/utils/randomizer'
+import { ColorHex, ColorRGB, DimmingPercentage } from '@/types/services/userColorSchemeService'
+import { getIntegerBasedOn } from '@/services/userColorScheme/utils/randomizer'
 
 function isTestHex(hex: ColorHex): boolean {
   return /^#([a-f0-9]{3}){1,2}$/.test(hex)

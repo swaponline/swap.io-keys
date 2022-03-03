@@ -28,3 +28,7 @@ export type ColorScheme = {
   colorForDarkTheme: string
   selectionColor: string
 }
+
+export type UserColorSchemeService = {
+  getColorScheme: () => ColorScheme
+}
