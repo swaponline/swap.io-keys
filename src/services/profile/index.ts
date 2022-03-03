@@ -3,7 +3,7 @@ import { getStorage, setStorage } from '@/utils/storage'
 import { cloneDeep } from '@/utils/common'
 import { ProfileParameters } from '@/types/profileParameters'
 import { ProfileService } from '@/types/services/profileService'
-import { getUserColorScheme } from '@/services/background'
+import { userColorSchemeService } from '@/services/userColorScheme'
 
 const SELECTED_PROFILE_PARAMETERS_KEY = 'selectedProfileParametersKey'
 const PROFILES_PARAMETERS_KEY = 'profilesParametersKey'
@@ -39,7 +39,7 @@ export function createProfileService(): ProfileService {
     getPublicKey,
     getSeedFromMnemonic,
     getUserColorScheme(publicKey) {
-      return getUserColorScheme(publicKey)
+      return userColorSchemeService(publicKey).getColorScheme()
     },
 
     getProfilesParameters() {
