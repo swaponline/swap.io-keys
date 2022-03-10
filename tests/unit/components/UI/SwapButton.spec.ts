@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils'
 
 const slotText = 'slot test'
 
-describe('Form password', () => {
+describe('Swap button', () => {
   let wrapper
 
   const createComponent = ({ propsData = {}, provide = {} } = {}) => {
