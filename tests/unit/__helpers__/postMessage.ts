@@ -1,4 +1,4 @@
-export function injectOriginToBlankPostMessages(window: Window, origin: string): (MessageEvent) => void {
+export function injectOriginToBlankPostMessages(window: Window, origin: string): () => void {
   function messageHandler(event: MessageEvent) {
     if (event.origin === '') {
       event.stopImmediatePropagation()
@@ -10,7 +10,11 @@ export function injectOriginToBlankPostMessages(window: Window, origin: string):
     }
   }
 
+  function removeMessageListener() {
+    window.removeEventListener('message', messageHandler)
+  }
+
   window.addEventListener('message', messageHandler)
 
-  return messageHandler
+  return removeMessageListener
 }

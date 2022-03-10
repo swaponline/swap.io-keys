@@ -6,7 +6,7 @@ import { profileService, getDefaultProfileParameters } from '@/services/profile'
 import { injectOriginToBlankPostMessages } from './__helpers__/postMessage'
 import flushPromises from './__helpers__/flushPromises'
 
-const injectOriginHandler = injectOriginToBlankPostMessages(window, 'http://localhost')
+const removeMessageListener = injectOriginToBlankPostMessages(window, 'http://localhost')
 jest.spyOn(storageService, 'setStorage')
 jest.spyOn(profileService, 'setProfilesParameters')
 jest.spyOn(profileService, 'setSelectedProfileParameters')
@@ -26,7 +26,7 @@ const promiseMessageHandler = messageHandler()
 
 describe('message handler', () => {
   afterAll(() => {
-    window.removeEventListener('message', injectOriginHandler)
+    removeMessageListener()
   })
 
   it('sets theme to storage', async () => {
