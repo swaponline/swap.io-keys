@@ -1,7 +1,7 @@
 <template>
   <div class="swap-stepper">
     <template v-for="step in stepsCount">
-      <div v-show="step === activeStep" :key="step" class="swap-stepper__content">
+      <div v-show="step === activeStep" :key="step" class="swap-stepper__content" data-test-id="swap-stepper-content">
         <slot :name="step" :change-active-step="changeActiveStep"></slot>
       </div>
     </template>
