@@ -50,6 +50,9 @@ describe('Profile service', () => {
     profileService = createProfileService()
 
     profileService.setProfilesParameters(NEW_PROFILES)
+
+    expect(profileService.getProfilesParameters()).toEqual(NEW_PROFILES)
+
     profileService.resetProfilesParameters()
 
     expect(profileService.getProfilesParameters()).toEqual([])
