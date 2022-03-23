@@ -44,7 +44,7 @@ describe('SwapInput', () => {
     expect(findToogleTypeButton().exists()).toBe(true)
   })
 
-  it('shange button text when toggle type', async () => {
+  it('change button text when toggle type', async () => {
     createComponent({ propsData: { type: 'password' } })
     const toggleButton = findToogleTypeButton()
     expect(toggleButton.text()).toBe('Show')
@@ -54,7 +54,7 @@ describe('SwapInput', () => {
     expect(toggleButton.text()).toBe('Hide')
   })
 
-  it('shange input type', async () => {
+  it('change input type', async () => {
     createComponent({ propsData: { type: 'password' } })
     const inputWrapper = findInput()
     expect(inputWrapper.element.type).toBe('password')
@@ -62,5 +62,30 @@ describe('SwapInput', () => {
     await findToogleTypeButton().trigger('click')
 
     expect(inputWrapper.element.type).toBe('text')
+  })
+
+  it('has focused class when focus', async () => {
+    createComponent()
+
+    const inputWrapper = findInput()
+    await inputWrapper.trigger('focus')
+
+    expect(wrapper.element.classList.value.includes('focused'))
+  })
+
+  it('has error class when error', () => {
+    createComponent({ propsData: { isError: true } })
+
+    expect(wrapper.element.classList.value.includes('error'))
+  })
+
+  it('emits input event', async () => {
+    createComponent()
+    const testText = 'test'
+
+    const inputWrapper = findInput()
+    await inputWrapper.trigger('input', testText)
+
+    expect(wrapper.emitted().input).toBeTruthy()
   })
 })
