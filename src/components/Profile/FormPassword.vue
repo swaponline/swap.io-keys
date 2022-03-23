@@ -31,6 +31,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 import HeaderProfile from '@/components/Profile/Header.vue'
+import SwapInput from '@/components/UI/SwapInput.vue'
 
 type Data = {
   confirmPassword: string
@@ -39,7 +40,8 @@ type Data = {
 export default Vue.extend({
   name: 'FormPassword',
   components: {
-    HeaderProfile
+    HeaderProfile,
+    SwapInput
   },
   props: {
     value: {
