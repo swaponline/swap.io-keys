@@ -7,6 +7,14 @@
   </header>
 </template>
 
+<script lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
+  name: 'HeaderProfile'
+})
+</script>
+
 <style lang="scss">
 .profile-header {
   width: 100%;
