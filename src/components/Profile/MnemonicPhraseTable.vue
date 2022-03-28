@@ -12,7 +12,7 @@
           <span class="mnemonic-phrase-table__number">{{ index + 1 }}. </span>
         </template>
       </swap-input>
-      <div v-else :key="index" class="mnemonic-phrase-table__word">
+      <div v-else :key="index" class="mnemonic-phrase-table__word" data-testid="matrix-word">
         <span class="mnemonic-phrase-table__number">{{ index + 1 }}.</span> {{ value }}
       </div>
     </template>
