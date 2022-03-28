@@ -9,6 +9,8 @@ Canvg.fromString = jest.fn().mockReturnValue({
   stop: jest.fn()
 })
 
+HTMLCanvasElement.prototype.getContext = jest.fn()
+
 describe('Select color scheme card', () => {
   let wrapper
 
