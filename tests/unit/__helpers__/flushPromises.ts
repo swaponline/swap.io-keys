@@ -1,3 +1,3 @@
-export function flushPromises() {
-  return new Promise(setImmediate)
+export default function flushPromises(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 0))
 }
