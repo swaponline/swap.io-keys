@@ -24,7 +24,7 @@
         </create-profile-select-color-scheme>
       </template>
       <template #2="{ changeActiveStep }">
-        <div class="create-profile__mnemonic-phrase-table">
+        <div class="create-profile__mnemonic-phrase-table" data-testid="step-mnemonic-phrase">
           <create-profile-header class="create-profile__header">
             Your secret phrase
             <template #help-text>
@@ -49,7 +49,7 @@
         </div>
       </template>
       <template #3="{ changeActiveStep }">
-        <div class="create-profile__mnemonic-phrase-table">
+        <div class="create-profile__mnemonic-phrase-table" data-testid="step-mnemonic-phrase-edit">
           <create-profile-header class="create-profile__header">
             Fill in the missing words
             <template #help-text>
