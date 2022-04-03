@@ -9,7 +9,7 @@ import SwapButton from '@/components/UI/SwapButton.vue'
 import windowParentPostMessage from '@/windowParentPostMessage'
 import { profileService } from '@/services/profile'
 import { profileMessageTypes } from '@/constants/messageTypes'
-import flushPromises from 'flush-promises'
+import { flushPromises } from '../../__helpers__/flushPromises'
 import { stubComponent } from '../../__helpers__/stubComponent'
 
 const mockMnemonicPhrase = ['test1', 'test2', 'test3', 'test4', 'test5', 'test6', 'test7']

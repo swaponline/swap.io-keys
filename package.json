@@ -22,7 +22,6 @@
     "core-js": "^3.6.5",
     "ed25519-hd-key": "^1.2.0",
     "ethereumjs-wallet": "^1.0.1",
-    "flush-promises": "^1.0.2",
     "handshake-util": "^1.2.0",
     "js-base64": "^3.6.0",
     "lodash.clonedeep": "^4.5.0",
