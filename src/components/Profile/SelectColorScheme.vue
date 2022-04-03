@@ -32,7 +32,7 @@
 import Vue, { PropType } from 'vue'
 import HeaderProfile from '@/components/Profile/Header.vue'
 import SelectColorSchemeCard from '@/components/Profile/SelectColorSchemeCard.vue'
-import { ColorScheme } from '@/types/generators'
+import { ColorScheme } from '@/types/services/userColorSchemeService'
 
 export default Vue.extend({
   name: 'SelectColorScheme',

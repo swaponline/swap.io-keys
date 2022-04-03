@@ -24,7 +24,7 @@
         </create-profile-select-color-scheme>
       </template>
       <template #2="{ changeActiveStep }">
-        <div class="create-profile__mnemonic-phrase-table">
+        <div class="create-profile__mnemonic-phrase-table" data-testid="step-mnemonic-phrase">
           <create-profile-header class="create-profile__header">
             Your secret phrase
             <template #help-text>
@@ -49,7 +49,7 @@
         </div>
       </template>
       <template #3="{ changeActiveStep }">
-        <div class="create-profile__mnemonic-phrase-table">
+        <div class="create-profile__mnemonic-phrase-table" data-testid="step-mnemonic-phrase-edit">
           <create-profile-header class="create-profile__header">
             Fill in the missing words
             <template #help-text>
@@ -123,7 +123,7 @@ import {
   FORM_PASSWORD
 } from '@/constants/profile'
 import { iframeMessageTypes, profileMessageTypes } from '@/constants/messageTypes'
-import { ColorScheme } from '@/types/generators'
+import { ColorScheme } from '@/types/services/userColorSchemeService'
 import { EncryptionParameters, MnemonicPhrase } from '@/types/encryptionParameters'
 import { ProfileParameters } from '@/types/profileParameters'
 import { ChangeActiveStep } from '@/types/components/UI/swapStepper'
@@ -179,7 +179,7 @@ export default Vue.extend({
 
   data(): Data {
     return {
-      profilesParameters: profileService.getProfilesParameters(),
+      profilesParameters: [],
       selectedProfileParameters: profileService.getSelectedProfileParameters(),
       tableMatrix: [],
       isRefreshing: false
@@ -206,10 +206,13 @@ export default Vue.extend({
   async created(): Promise<void> {
     if (!this.profilesParameters.length) {
       this.profilesParameters = await this.getProfilesParameters(PROFILES_COUNT)
+
       profileService.setProfilesParameters(this.profilesParameters)
+    } else {
+      this.profilesParameters = profileService.getProfilesParameters()
     }
 
-    document.addEventListener('keydown', this.closeByPressingESC)
+    window.addEventListener('keydown', this.closeByPressingESC)
 
     windowParentPostMessage({
       key: CREATE_PROFILE_WINDOW,
@@ -247,12 +250,14 @@ export default Vue.extend({
       }
 
       const profilesParameters = await Promise.all(profilesParametersResolvers)
+
       return profilesParameters
     },
     async refreshProfilesParameters(): Promise<void> {
       if (!this.isRefreshing) {
         this.isRefreshing = true
         this.profilesParameters = await this.getProfilesParameters(PROFILES_COUNT)
+
         profileService.setProfilesParameters(this.profilesParameters)
         this.isRefreshing = false
       }
@@ -312,6 +317,7 @@ export default Vue.extend({
     },
     goToStepShowMnemonicPhrase(changeActiveStep: ChangeActiveStep): void {
       this.tableMatrix = this.getDefaultTableMatrix()
+
       changeActiveStep(STEPS[MNEMONIC_PHRASE_SHOW])
     },
     goToStepWriteMnemonicPhrase(changeActiveStep: ChangeActiveStep): void {
