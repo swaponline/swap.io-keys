@@ -1,9 +1,3 @@
-export const STEPS = {
-  1: 0,
-  2: 1
-}
-export const VALID_PASSWORD = '123456'
-export const INVALID_PASSWORD = '123'
 export const DEFAULT_TABLE_MATRIX = Array.from({ length: 24 }, () => {
   return {
     value: '',
@@ -22,3 +16,10 @@ export const CHANGE_TABLE_MATRIX = DEFAULT_TABLE_MATRIX.map((tableMAtrix, index)
 
   return changeTableMatrix
 })
+
+export const USER_COLOR_SCHEME = {
+  background: 'test',
+  color: 'test',
+  colorForDarkTheme: 'test',
+  selectionColor: 'test'
+}

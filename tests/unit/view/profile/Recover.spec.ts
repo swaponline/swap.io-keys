@@ -4,22 +4,56 @@ import { shallowMount } from '@vue/test-utils'
 import MnemonicPhraseTable from '@/components/Profile/MnemonicPhraseTable.vue'
 import SwapButton from '@/components/UI/SwapButton.vue'
 import CreateProfileFormPassword from '@/components/Profile/FormPassword.vue'
+import { STEPS_RECOVER_PROFILE, MNEMONIC_PHRASE_WRITE, FORM_PASSWORD } from '@/constants/profile'
+import { profileMessageTypes } from '@/constants/messageTypes'
+import windowParentPostMessage from '@/windowParentPostMessage'
 import { stubComponent } from '../../__helpers__/stubComponents'
+import flushPromises from '../../__helpers__/flushPromises'
 import {
-  STEPS,
   DEFAULT_TABLE_MATRIX,
   CHANGE_TABLE_MATRIX,
   FULL_TABLE_MATRIX,
-  VALID_PASSWORD,
-  INVALID_PASSWORD
+  USER_COLOR_SCHEME
 } from '../../__mocks__/profile/Recover.mock'
 
-const createProfileFormPasswordStub = stubComponent(CreateProfileFormPassword, {
-  template: `
-    <div>
-      <slot name="actions" ></slot>
-    </div>
-  `
+jest.mock('@/windowParentPostMessage')
+jest.mock('@/services/profile', () => {
+  return {
+    profileService: {
+      createProfile: jest.fn().mockResolvedValue({
+        cryptoProfile: {},
+        shortKey: 'test'
+      }),
+      getSeedFromMnemonic: jest.fn().mockResolvedValue({}),
+      getPublicKey: jest.fn().mockReturnValue(''),
+      getUserColorScheme: jest.fn().mockReturnValue({
+        background: 'test',
+        color: 'test',
+        colorForDarkTheme: 'test',
+        selectionColor: 'test'
+      }),
+      saveProfileByShortKey: jest.fn()
+    }
+  }
+})
+
+const CreateProfileFormPasswordStub = (isValidPassword = false) => {
+  return stubComponent(CreateProfileFormPassword, {
+    render(h) {
+      return h('div', [this.$scopedSlots.actions?.({ isValidPassword })])
+    }
+  })
+}
+
+const mockChangeActiveStep = jest.fn()
+
+const SwapStepperStub = stubComponent(SwapStepper, {
+  render(h) {
+    return h('div', [
+      this.$scopedSlots['1']?.({ changeActiveStep: mockChangeActiveStep }),
+      this.$scopedSlots['2']?.({ changeActiveStep: mockChangeActiveStep })
+    ])
+  }
 })
 
 describe('Recover Profile', () => {
@@ -28,23 +62,30 @@ describe('Recover Profile', () => {
   const findMnemonicPhraseTable = () => wrapper.findComponent(MnemonicPhraseTable)
   const findCreateProfileFormPassword = () => wrapper.findComponent(CreateProfileFormPassword)
   const findSwapStepper = () => wrapper.findComponent(SwapStepper)
-  const findButtonByText = (text, index) => {
-    return wrapper
-      .findAllComponents(SwapButton)
-      .filter(buttonWrapper => buttonWrapper.text().includes(text))
-      .at(index)
+  const findAllButtonsByText = (text, context = wrapper) => {
+    return context.findAllComponents(SwapButton).filter(buttonWrapper => buttonWrapper.text().includes(text))
   }
-  const findSwapStepperContentItems = () => wrapper.findAll('[data-test-id=swap-stepper-content]')
+  const findButtonByText = (text, context = wrapper) => findAllButtonsByText(text, context).at(0)
+
+  const goToSeconStep = async () => {
+    const mnemonicPhraseTable = findMnemonicPhraseTable()
+    mnemonicPhraseTable.vm.$emit('change', FULL_TABLE_MATRIX)
+    await wrapper.vm.$nextTick()
+
+    const nextButton = findButtonByText('Next')
+    await nextButton.vm.$emit('click')
+  }
 
   afterEach(() => {
     wrapper.destroy()
   })
 
-  const createComponent = () => {
+  const createComponent = ({ stubs = {} } = {}) => {
     wrapper = shallowMount(RecoverProfile, {
       stubs: {
-        SwapStepper,
-        CreateProfileFormPassword: createProfileFormPasswordStub
+        SwapStepper: SwapStepperStub,
+        CreateProfileFormPassword: CreateProfileFormPasswordStub(),
+        ...stubs
       }
     })
   }
@@ -61,7 +102,7 @@ describe('Recover Profile', () => {
     })
 
     it(`
-        After creating the Recover profile page, 
+        After creating the Recover profile page,
         prop component mnemonicPhraseTable to equal DEFAULT_TABLE_MATRIX`, () => {
       createComponent()
 
@@ -86,7 +127,7 @@ describe('Recover Profile', () => {
     it('The button to go to the next step is blocked until the mnemonicPhrase is entered', () => {
       createComponent()
 
-      const backButton = findButtonByText('Next', 0)
+      const backButton = findButtonByText('Next')
 
       expect(backButton.props().disabled).toBe(true)
     })
@@ -94,13 +135,13 @@ describe('Recover Profile', () => {
     it('The text of the popup hint in the disabled button corresponds to reality', () => {
       createComponent()
 
-      const nextButton = findButtonByText('Next', 0)
+      const nextButton = findButtonByText('Next')
 
-      expect(nextButton.attributes('tooltip')).toContain('Complete your secret phrase')
+      expect(nextButton.props().tooltip).toContain('Complete your secret phrase')
     })
 
     it(`
-       After entering the phrase and clicking on the Next button, 
+       After entering the phrase and clicking on the Next button,
        the transition to the next step takes place
     `, async () => {
       createComponent()
@@ -109,11 +150,11 @@ describe('Recover Profile', () => {
       mnemonicPhraseTable.vm.$emit('change', FULL_TABLE_MATRIX)
       await wrapper.vm.$nextTick()
 
-      const nextButton = findButtonByText('Next', 0)
+      const nextButton = findButtonByText('Next')
 
       await nextButton.vm.$emit('click')
 
-      expect(findSwapStepperContentItems().wrappers[STEPS[1]].attributes().style).toBe('display: none;')
+      expect(mockChangeActiveStep).toBeCalledWith(STEPS_RECOVER_PROFILE[FORM_PASSWORD])
     })
   })
 
@@ -121,12 +162,7 @@ describe('Recover Profile', () => {
     beforeEach(async () => {
       createComponent()
 
-      const mnemonicPhraseTable = findMnemonicPhraseTable()
-      mnemonicPhraseTable.vm.$emit('change', FULL_TABLE_MATRIX)
-      await wrapper.vm.$nextTick()
-
-      const nextButton = findButtonByText('Next', 0)
-      await nextButton.vm.$emit('click')
+      await goToSeconStep()
     })
 
     it('After going to the second step, there is a component CreateProfileFormPassword', () => {
@@ -134,34 +170,51 @@ describe('Recover Profile', () => {
     })
 
     it('After clicking on the Back button, the transition to the previous step takes place', async () => {
-      const backButton = findButtonByText('Back', 1)
+      const formPassword = wrapper.findComponent(CreateProfileFormPassword)
+      const backButton = findButtonByText('Back', formPassword)
+
       await backButton.vm.$emit('click')
 
-      expect(findSwapStepperContentItems().wrappers[STEPS[2]].attributes().style).toBe('display: none;')
-
-      expect(findSwapStepperContentItems().wrappers[STEPS[1]].attributes().style).toBe('')
+      expect(mockChangeActiveStep).toBeCalledWith(STEPS_RECOVER_PROFILE[MNEMONIC_PHRASE_WRITE])
     })
 
-    it(`
-        after the input event in component CreateProfileForm Password,
-        prop value to equal to the entered value`, async () => {
-      const createProfileFormPassword = findCreateProfileFormPassword()
+    it('disables the button when the password form says the password is invalid', async () => {
+      createComponent({ stubs: { CreateProfileFormPassword: CreateProfileFormPasswordStub(false) } })
+      await goToSeconStep()
 
-      await createProfileFormPassword.vm.$emit('input', VALID_PASSWORD)
+      const recoverButton = findButtonByText('Recover')
+
+      expect(recoverButton.props().disabled).toBe(true)
+      expect(recoverButton.props().tooltip).toBe('Please come up with a password.')
+    })
+
+    it('enables the button when the password form says the password is valid', async () => {
+      createComponent({ stubs: { CreateProfileFormPassword: CreateProfileFormPasswordStub(true) } })
+      await goToSeconStep()
+
+      const recoverButton = findButtonByText('Recover')
+
+      expect(recoverButton.props().disabled).toBe(false)
+      expect(recoverButton.props().tooltip).toBe(null)
+    })
+
+    it('sends post message with created profile', async () => {
+      const recoverButton = findButtonByText('Recover')
+
+      recoverButton.vm.$emit('click')
       await wrapper.vm.$nextTick()
+      await flushPromises()
 
-      expect(createProfileFormPassword.props().value).toBe(VALID_PASSWORD)
+      expect(windowParentPostMessage).toBeCalledWith(
+        expect.objectContaining({
+          message: {
+            type: profileMessageTypes.PROFILE_RECOVERED,
+            payload: {
+              profile: { colorScheme: USER_COLOR_SCHEME, publicKey: 'test' }
+            }
+          }
+        })
+      )
     })
-
-    // it('', async () => {
-    //   const createProfileFormPassword = findCreateProfileFormPassword()
-
-    //   await createProfileFormPassword.vm.$emit('input', VALID_PASSWORD)
-    //   await wrapper.vm.$nextTick()
-
-    //   const nextButton = findButtonByText('Recover', 0)
-
-    //   expect(nextButton.props().disabled).toBe(true)
-    // })
   })
 })
