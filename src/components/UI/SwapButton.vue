@@ -4,7 +4,12 @@
       <slot></slot>
     </span>
 
-    <span v-if="tooltip" v-tooltip="computedTooltipParams" class="swap-button__tooltip"></span>
+    <span
+      v-if="tooltip"
+      v-tooltip="computedTooltipParams"
+      data-testid="button-tooltip"
+      class="swap-button__tooltip"
+    ></span>
   </button>
 </template>
 
