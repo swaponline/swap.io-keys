@@ -6,7 +6,7 @@ const slotText = 'slot test'
 describe('Swap button', () => {
   let wrapper
 
-  const createComponent = ({ propsData = {}, provide = {} } = {}) => {
+  const createComponent = ({ propsData = {}, provide = {}, listeners = {} } = {}) => {
     wrapper = shallowMount(SwapButton, {
       propsData: {
         ...propsData
@@ -17,7 +17,8 @@ describe('Swap button', () => {
       },
       slots: {
         default: slotText
-      }
+      },
+      listeners
     })
   }
 
@@ -44,5 +45,19 @@ describe('Swap button', () => {
     createComponent({ propsData: { [propName]: true } })
 
     expect(wrapper.element.classList.value.includes(propName)).toBe(true)
+  })
+
+  it.each`
+    eventName
+    ${'click'}
+    ${'focus'}
+    ${'blur'}
+  `('emits $eventName event', async ({ eventName }) => {
+    const handler = jest.fn()
+    createComponent({ listeners: { [eventName]: handler } })
+
+    await wrapper.find('button').trigger(eventName)
+
+    expect(handler).toHaveBeenCalled()
   })
 })
