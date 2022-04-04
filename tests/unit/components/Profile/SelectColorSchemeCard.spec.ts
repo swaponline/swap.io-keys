@@ -25,10 +25,14 @@ describe('Select color scheme card', () => {
     })
   }
 
-  it('sets selected class', () => {
-    createComponent({ propsData: { isSelected: true, colorScheme: mockColorScheme1 } })
+  it('sets selected class', async () => {
+    createComponent({ propsData: { isSelected: false, colorScheme: mockColorScheme1 } })
 
-    expect(wrapper.element.classList.value.includes('select')).toBe(true)
+    expect(wrapper.element.classList.value.includes('--select')).toBe(false)
+
+    await wrapper.setProps({ isSelected: true })
+
+    expect(wrapper.element.classList.value.includes('--select')).toBe(true)
   })
 
   it('emits select', async () => {
